@@ -48,6 +48,14 @@ public class YourSolver implements Solver<Board> {
     private Dice dice;
     private Board board;
 
+    private boolean fury;
+    private boolean fly;
+
+    private boolean pill;
+    private int pillCounter;
+
+    private static final Direction[] DEFAULT_PRIORITY = new Direction[]{RIGHT, DOWN, LEFT, UP};
+
     YourSolver(Dice dice) {
         this.dice = dice;
     }
@@ -57,51 +65,70 @@ public class YourSolver implements Solver<Board> {
         this.board = board;
         if (board.isGameOver()) return "";
 
-        Point p = board.getMe();
-        Direction[] priority = getPriority(p);
+        Point me = board.getMe();
+        checkPills(me);
 
-        boolean evil = board.isAt(p, HEAD_EVIL);
-        if (evil) {
-            System.out.println("EVIL");
+        Optional<Direction> go = realTime(me);
+        if (go.isPresent())
+            return go.get().toString();
+
+        go = midTerm(me);
+        if (go.isPresent())
+            return go.get().toString();
+
+        return lastCall(me);
+    }
+
+    private void checkPills(Point point) {
+        if (board.isAt(point, HEAD_EVIL, HEAD_FLY)) {
+            fury = board.isAt(point, HEAD_EVIL);
+            fly = board.isAt(point, HEAD_FLY);
+            if (!pill) {
+                pill = true;
+            } else {
+                ++pillCounter;
+            }
+        } else {
+            pill = false;
+            fury = false;
+            fly = false;
+            pillCounter = 0;
+        }
+        System.out.println("pill [" + pillCounter + "]: " + pill + ", fury: " + fury + ", fly: " + fly);
+    }
+
+    private Optional<Direction> realTime(Point point) {
+        Optional<Direction> go = tryElements(point, FURY_PILL, DEFAULT_PRIORITY);
+        if (go.isPresent()) {
+            pillCounter = 0;
+            return go;
         }
 
-        Optional<Direction> go = realTime(p, priority, evil);
+        go = tryElements(point, GOLD, DEFAULT_PRIORITY);
         if (go.isPresent())
-            return go.get().toString();
+            return go;
 
-        go = midTerm(p, priority, evil);
+        go = tryElements(point, APPLE, DEFAULT_PRIORITY);
         if (go.isPresent())
-            return go.get().toString();
+            return go;
 
-        return lastCall(p, priority, evil);
+        go = tryElements(point, FLYING_PILL, DEFAULT_PRIORITY);
+        if (go.isPresent()) {
+            pillCounter = 0;
+        }
+        return go;
     }
 
-    private Optional<Direction> realTime(Point p, Direction[] priority, boolean evil) {
-        Optional<Direction> go = tryElements(p, FURY_PILL, priority);
+    private Optional<Direction> midTerm(Point point) {
+        Optional<Direction> go = board.bfs(point,board.size() / 4, FURY_PILL);
         if (go.isPresent())
             return go;
 
-        go = tryElements(p, GOLD, priority);
-        if (go.isPresent())
-            return go;
-
-        go = tryElements(p, APPLE, priority);
-        if (go.isPresent())
-            return go;
-
-        return tryElements(p, FLYING_PILL, priority);
+        return board.bfs(point, board.size() / 2, FURY_PILL, GOLD, APPLE);
     }
 
-    private Optional<Direction> midTerm(Point p, Direction[] priority, boolean evil) {
-        Optional<Direction> go = board.bfs(p,board.size() / 4, FURY_PILL);
-        if (go.isPresent())
-            return go;
-
-        return board.bfs(p, board.size() / 2, FURY_PILL, GOLD, APPLE);
-    }
-
-    private String lastCall(Point p, Direction[] priority, boolean evil) {
-        Optional<Direction> go = avoidBarrierOrStone(p, priority);
+    private String lastCall(Point point) {
+        Optional<Direction> go = avoidBarrierOrStone(point, DEFAULT_PRIORITY);
         if (go.isPresent())
             return go.get().toString();
 
@@ -124,10 +151,6 @@ public class YourSolver implements Solver<Board> {
             }
         }
         return Optional.empty();
-    }
-
-    private Direction[] getPriority(Point p) {
-        return new Direction[]{RIGHT, DOWN, LEFT, UP};
     }
 
     public static void main(String[] args) {
