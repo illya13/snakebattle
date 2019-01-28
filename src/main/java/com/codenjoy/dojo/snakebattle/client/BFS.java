@@ -9,7 +9,7 @@ import static com.codenjoy.dojo.services.Direction.*;
 
 
 public class BFS {
-    public static Optional<Direction> bfs(Board board, Point start, Elements elements, int size) {
+    public static Optional<Direction> bfs(Board board, Point start, Elements[] elements, int size) {
         Queue<Point> queue = new LinkedList<>();
         queue.add(start);
 
@@ -29,7 +29,7 @@ public class BFS {
         return Optional.of(visited.get(point).getDirection());
     }
 
-    private static Optional<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements elements, int max) {
+    private static Optional<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements[] elements, int max) {
         while (!queue.isEmpty()) {
             Point point = queue.poll();
 

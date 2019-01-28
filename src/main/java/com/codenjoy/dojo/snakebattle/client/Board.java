@@ -87,10 +87,10 @@ public class Board extends AbstractBoard<Elements> {
         return get(HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY);
     }
 
-    public Optional<Direction> bfs(Point start, Elements elements, int max) {
+    public Optional<Direction> bfs(Point start, int max, Elements... elements) {
         Optional<Direction> result = BFS.bfs(this, start, elements, max);
         if (result.isPresent()) {
-            System.out.println(elements.name() + ", " + result.get());
+            System.out.println("BFS: " + result.get());
         }
         return result;
     }

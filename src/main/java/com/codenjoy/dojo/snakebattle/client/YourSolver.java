@@ -60,39 +60,48 @@ public class YourSolver implements Solver<Board> {
         Point p = board.getMe();
         Direction[] priority = getPriority(p);
 
-        Optional<Direction> go = tryElements(p, GOLD, priority);
-        if (go.isPresent())
-            return go.get().toString();
-
-        go = tryElements(p, FURY_PILL, priority);
-        if (go.isPresent())
-            return go.get().toString();
-
-        go = tryElements(p, APPLE, priority);
-        if (go.isPresent())
-            return go.get().toString();
-
-        go = tryElements(p, FLYING_PILL, priority);
-        if (go.isPresent())
-            return go.get().toString();
-
-        go = board.bfs(p, FURY_PILL, board.size() / 2);
-        if (go.isPresent())
-            return go.get().toString();
-
-        if (board.isAt(p, HEAD_EVIL)) {
+        boolean evil = board.isAt(p, HEAD_EVIL);
+        if (evil) {
             System.out.println("EVIL");
         }
 
-        go = board.bfs(p, APPLE, board.size() / 2);
+        Optional<Direction> go = realTime(p, priority, evil);
         if (go.isPresent())
             return go.get().toString();
 
-        go = board.bfs(p, GOLD, board.size() / 2);
+        go = midTerm(p, priority, evil);
         if (go.isPresent())
             return go.get().toString();
 
-        go = avoidBarrierOrStone(p, priority);
+        return lastCall(p, priority, evil);
+    }
+
+    private Optional<Direction> realTime(Point p, Direction[] priority, boolean evil) {
+        Optional<Direction> go = tryElements(p, FURY_PILL, priority);
+        if (go.isPresent())
+            return go;
+
+        go = tryElements(p, GOLD, priority);
+        if (go.isPresent())
+            return go;
+
+        go = tryElements(p, APPLE, priority);
+        if (go.isPresent())
+            return go;
+
+        return tryElements(p, FLYING_PILL, priority);
+    }
+
+    private Optional<Direction> midTerm(Point p, Direction[] priority, boolean evil) {
+        Optional<Direction> go = board.bfs(p,board.size() / 4, FURY_PILL);
+        if (go.isPresent())
+            return go;
+
+        return board.bfs(p, board.size() / 2, FURY_PILL, GOLD, APPLE);
+    }
+
+    private String lastCall(Point p, Direction[] priority, boolean evil) {
+        Optional<Direction> go = avoidBarrierOrStone(p, priority);
         if (go.isPresent())
             return go.get().toString();
 
