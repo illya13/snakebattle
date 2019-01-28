@@ -93,10 +93,10 @@
                                                **/target/**"
                                      update="true"/>
 
-                                <zip destfile="${user.resources}/${module.name}-servers-js.zip"
+                                <!--zip destfile="${user.resources}/${module.name}-servers-js.zip"
                                      basedir="src/main/javascript"
                                      includes="**"
-                                     update="true"/>
+                                     update="true"/-->
 
                                 <zip destfile="${user.resources}/${module.name}-servers-js.zip"
                                      basedir="."
