@@ -90,7 +90,7 @@ public class Board extends AbstractBoard<Elements> {
     public Optional<Direction> bfs(Point start, int max, Elements[] barrier, Elements... elements) {
         Optional<Direction> result = BFS.bfs(this, start, barrier, elements, max);
         if (result.isPresent()) {
-            System.out.println("BFS: " + result.get());
+            System.out.println(" " + result.get());
         }
         return result;
     }

@@ -21,6 +21,8 @@ public class BFS {
             return Optional.empty();
 
         Point point = found.get();
+        System.out.print("BFS: " + point);
+
         while (!visited.get(point).getFrom().equals(start)) {
             point = visited.get(point).getFrom();
             if (point == null)
@@ -38,7 +40,7 @@ public class BFS {
 
             for (Direction direction: new Direction[]{RIGHT, DOWN, LEFT, UP}) {
                 Point p = direction.change(point);
-                if (!visited.containsKey(p) && !board.isAt(direction.change(p), barrier) && !p.isOutOf(board.size())) {
+                if (!visited.containsKey(p) && !board.isAt(p, barrier) && !p.isOutOf(board.size())) {
                     int distance = visited.get(point).getDistance();
                     if (distance < max) {
                         queue.add(p);
