@@ -157,7 +157,8 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> tryElements(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
-            if(board.isAt(direction.change(point), elements)) {
+            Point p = direction.change(point);
+            if(board.isSafe(p) && board.isAt(p, elements)) {
                 return Optional.of(direction);
             }
         }
@@ -166,7 +167,8 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> avoid(Point point, Direction[] directions) {
         for (Direction direction: directions) {
-            if(!board.isAt(direction.change(point), BARRIER_ENEMY)) {
+            Point p = direction.change(point);
+            if(board.isSafe(p) && !board.isAt(p, BARRIER_ENEMY)) {
                 return Optional.of(direction);
             }
         }
