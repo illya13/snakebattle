@@ -38,7 +38,7 @@ public class BFS {
 
             for (Direction direction: new Direction[]{RIGHT, DOWN, LEFT, UP}) {
                 Point p = direction.change(point);
-                if (!visited.containsKey(p) && !board.isBarrierOrStoneOrMeAt(p) && !p.isOutOf(board.size())) {
+                if (!visited.containsKey(p) && !board.isBarrierOrStoneOrEnemyOrMeAt(p) && !p.isOutOf(board.size())) {
                     int distance = visited.get(point).getDistance();
                     if (distance < max) {
                         queue.add(p);

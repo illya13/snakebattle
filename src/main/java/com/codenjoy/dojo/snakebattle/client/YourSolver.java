@@ -98,7 +98,13 @@ public class YourSolver implements Solver<Board> {
     }
 
     private Optional<Direction> realTime(Point point) {
-        Optional<Direction> go = tryElements(point, FURY_PILL, DEFAULT_PRIORITY);
+        Optional<Direction> go = findEnemy(point, DEFAULT_PRIORITY);
+        if (go.isPresent() && fury) {
+            System.out.println("ATTACK NOW");
+            return go;
+        }
+
+        go = tryElements(point, FURY_PILL, DEFAULT_PRIORITY);
         if (go.isPresent()) {
             pillCounter = 0;
             return go;
@@ -120,7 +126,13 @@ public class YourSolver implements Solver<Board> {
     }
 
     private Optional<Direction> midTerm(Point point) {
-        Optional<Direction> go = board.bfs(point,board.size() / 4, FURY_PILL);
+        Optional<Direction> go = board.bfs(point,board.size() / 4, Board.ENEMY_ELEMENTS);
+        if (go.isPresent() && fury && (pillCounter < 5)) {
+            System.out.println("ATTACK SOON");
+            return go;
+        }
+
+        go = board.bfs(point,board.size() / 4, FURY_PILL);
         if (go.isPresent())
             return go;
 
@@ -128,7 +140,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private String lastCall(Point point) {
-        Optional<Direction> go = avoidBarrierOrStone(point, DEFAULT_PRIORITY);
+        Optional<Direction> go = avoid(point, DEFAULT_PRIORITY);
         if (go.isPresent())
             return go.get().toString();
 
@@ -144,9 +156,18 @@ public class YourSolver implements Solver<Board> {
         return Optional.empty();
     }
 
-    private Optional<Direction> avoidBarrierOrStone(Point point, Direction[] directions) {
+    private Optional<Direction> findEnemy(Point point, Direction[] directions) {
         for (Direction direction: directions) {
-            if(!board.isBarrierOrStoneOrMeAtDirection(point, direction)) {
+            if(board.isEnemyAtDirection(point, direction)) {
+                return Optional.of(direction);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Direction> avoid(Point point, Direction[] directions) {
+        for (Direction direction: directions) {
+            if(!board.isBarrierOrStoneOrEnemyOrMeAtDirection(point, direction)) {
                 return Optional.of(direction);
             }
         }
