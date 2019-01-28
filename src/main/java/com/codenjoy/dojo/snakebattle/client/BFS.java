@@ -9,14 +9,14 @@ import static com.codenjoy.dojo.services.Direction.*;
 
 
 public class BFS {
-    public static Optional<Direction> bfs(Board board, Point start, Elements[] elements, int size) {
+    public static Optional<Direction> bfs(Board board, Point start, Elements[] barrier, Elements[] target, int size) {
         Queue<Point> queue = new LinkedList<>();
         queue.add(start);
 
         Map<Point, Path> visited = new HashMap<>();
         visited.put(start, new Path(null, null, 0));
 
-        Optional<Point> found = bfs(board, queue, visited, elements, size);
+        Optional<Point> found = bfs(board, queue, visited, barrier, target, size);
         if (!found.isPresent())
             return Optional.empty();
 
@@ -29,16 +29,16 @@ public class BFS {
         return Optional.of(visited.get(point).getDirection());
     }
 
-    private static Optional<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements[] elements, int max) {
+    private static Optional<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements[] barrier, Elements[] target, int max) {
         while (!queue.isEmpty()) {
             Point point = queue.poll();
 
-            if (board.isAt(point, elements))
+            if (board.isAt(point, target))
                 return Optional.of(point);
 
             for (Direction direction: new Direction[]{RIGHT, DOWN, LEFT, UP}) {
                 Point p = direction.change(point);
-                if (!visited.containsKey(p) && !board.isBarrierOrStoneOrEnemyOrMeAt(p) && !p.isOutOf(board.size())) {
+                if (!visited.containsKey(p) && !board.isAt(direction.change(p), barrier) && !p.isOutOf(board.size())) {
                     int distance = visited.get(point).getDistance();
                     if (distance < max) {
                         queue.add(p);
