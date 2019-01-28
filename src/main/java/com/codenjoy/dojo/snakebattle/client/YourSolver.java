@@ -35,6 +35,7 @@ import com.codenjoy.dojo.snakebattle.model.Elements;
 import java.util.Optional;
 
 import static com.codenjoy.dojo.services.Direction.*;
+import static com.codenjoy.dojo.snakebattle.client.Board.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 
 /**
@@ -55,6 +56,9 @@ public class YourSolver implements Solver<Board> {
     private int pillCounter;
 
     private static final Direction[] DEFAULT_PRIORITY = new Direction[]{RIGHT, DOWN, LEFT, UP};
+
+    private static final Elements[] BARRIER_ENEMY = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
+    private static final Elements[] BARRIER = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS);
 
     YourSolver(Dice dice) {
         this.dice = dice;
@@ -98,7 +102,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private Optional<Direction> realTime(Point point) {
-        Optional<Direction> go = findEnemy(point, DEFAULT_PRIORITY);
+        Optional<Direction> go = tryElements(point, ENEMY_ELEMENTS, DEFAULT_PRIORITY);
         if (go.isPresent() && fury) {
             System.out.println("ATTACK NOW");
             return go;
@@ -126,17 +130,17 @@ public class YourSolver implements Solver<Board> {
     }
 
     private Optional<Direction> midTerm(Point point) {
-        Optional<Direction> go = board.bfs(point,board.size() / 4, Board.ENEMY_ELEMENTS);
+        Optional<Direction> go = board.bfs(point,board.size() / 4, BARRIER, ENEMY_ELEMENTS);
         if (go.isPresent() && fury && (pillCounter < 5)) {
             System.out.println("ATTACK SOON");
             return go;
         }
 
-        go = board.bfs(point,board.size() / 4, FURY_PILL);
+        go = board.bfs(point,board.size() / 4, BARRIER_ENEMY, FURY_PILL);
         if (go.isPresent())
             return go;
 
-        return board.bfs(point, board.size() / 2, FURY_PILL, GOLD, APPLE);
+        return board.bfs(point, board.size() / 2, BARRIER_ENEMY, FURY_PILL, GOLD, APPLE);
     }
 
     private String lastCall(Point point) {
@@ -148,17 +152,12 @@ public class YourSolver implements Solver<Board> {
     }
 
     private Optional<Direction> tryElements(Point point, Elements elements, Direction[] directions) {
-        for (Direction direction: directions) {
-            if(board.isAtDirection(point, direction, elements)) {
-                return Optional.of(direction);
-            }
-        }
-        return Optional.empty();
+        return tryElements(point, new Elements[]{elements}, directions);
     }
 
-    private Optional<Direction> findEnemy(Point point, Direction[] directions) {
+    private Optional<Direction> tryElements(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
-            if(board.isEnemyAtDirection(point, direction)) {
+            if(board.isAt(direction.change(point), elements)) {
                 return Optional.of(direction);
             }
         }
@@ -167,7 +166,7 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> avoid(Point point, Direction[] directions) {
         for (Direction direction: directions) {
-            if(!board.isBarrierOrStoneOrEnemyOrMeAtDirection(point, direction)) {
+            if(!board.isAt(direction.change(point), BARRIER_ENEMY)) {
                 return Optional.of(direction);
             }
         }

@@ -38,6 +38,8 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  * но ты можешь добавить сюда любые свои методы на их основе.
  */
 public class Board extends AbstractBoard<Elements> {
+    public static final Elements[] STONE_ELEMENTS = new Elements[] {STONE};
+
     public static final Elements[] BARRIER_ELEMENTS = new Elements[] {WALL, START_FLOOR, ENEMY_HEAD_SLEEP, ENEMY_TAIL_INACTIVE};
 
     public static final Elements[] ME_ELEMENTS = new Elements[] {TAIL_END_DOWN, TAIL_END_LEFT, TAIL_END_UP, TAIL_END_RIGHT, TAIL_INACTIVE,
@@ -47,41 +49,25 @@ public class Board extends AbstractBoard<Elements> {
             ENEMY_TAIL_END_DOWN, ENEMY_TAIL_END_LEFT, ENEMY_TAIL_END_UP, ENEMY_TAIL_END_RIGHT, ENEMY_TAIL_INACTIVE,
             ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP};
 
+    public static Elements[] join(Elements[]... arrays) {
+        int i = 0;
+        for (Elements[] array: arrays) {
+            i += array.length;
+        }
+        Elements[] result = new Elements[i];
+
+        i = 0;
+        for (Elements[] array: arrays) {
+            for (Elements element: array) {
+                result[i++] = element;
+            }
+        }
+        return result;
+    }
+
     @Override
     public Elements valueOf(char ch) {
         return Elements.valueOf(ch);
-    }
-
-    public boolean isBarrierAt(Point point) {
-        return isAt(point, BARRIER_ELEMENTS);
-    }
-
-    public boolean isStoneAt(Point point) {
-        return isAt(point, STONE);
-    }
-
-    public boolean isMeAt(Point point) {
-        return isAt(point, ME_ELEMENTS);
-    }
-
-    public boolean isEnemyAt(Point point) {
-        return isAt(point, ENEMY_ELEMENTS);
-    }
-
-    public boolean isBarrierOrStoneOrEnemyOrMeAt(Point point) {
-        return isBarrierAt(point) || isStoneAt(point) || isMeAt(point) || isEnemyAt(point);
-    }
-
-    public boolean isBarrierOrStoneOrEnemyOrMeAtDirection(Point point, Direction direction) {
-        return isBarrierOrStoneOrEnemyOrMeAt(direction.change(point));
-    }
-
-    public boolean isAtDirection(Point point, Direction direction, Elements elements) {
-        return isAt(direction.change(point), elements);
-    }
-
-    public boolean isEnemyAtDirection(Point point, Direction direction) {
-        return isEnemyAt(direction.change(point));
     }
 
     @Override
@@ -101,8 +87,8 @@ public class Board extends AbstractBoard<Elements> {
         return get(HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY);
     }
 
-    public Optional<Direction> bfs(Point start, int max, Elements... elements) {
-        Optional<Direction> result = BFS.bfs(this, start, elements, max);
+    public Optional<Direction> bfs(Point start, int max, Elements[] barrier, Elements... elements) {
+        Optional<Direction> result = BFS.bfs(this, start, barrier, elements, max);
         if (result.isPresent()) {
             System.out.println("BFS: " + result.get());
         }
