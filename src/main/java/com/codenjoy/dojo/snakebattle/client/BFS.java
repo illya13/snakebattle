@@ -42,10 +42,14 @@ public class BFS {
                 Point p = direction.change(point);
                 if (!visited.containsKey(p) && !board.isAt(p, barrier) && !p.isOutOf(board.size())) {
                     int distance = visited.get(point).getDistance();
-                    if (distance < max) {
-                        queue.add(p);
-                        visited.put(p, new Path(point, direction, distance+1));
-                    }
+                    if (distance > max)
+                        continue;
+
+                    if (!board.isSafe(p))
+                        continue;
+
+                    queue.add(p);
+                    visited.put(p, new Path(point, direction,distance+1));
                 }
             }
         }

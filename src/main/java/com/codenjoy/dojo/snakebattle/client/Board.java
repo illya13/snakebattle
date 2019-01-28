@@ -30,6 +30,7 @@ import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.*;
 
+import static com.codenjoy.dojo.services.Direction.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 
 /**
@@ -39,6 +40,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  */
 public class Board extends AbstractBoard<Elements> {
     public static final Elements[] STONE_ELEMENTS = new Elements[] {STONE};
+    public static final Elements[] EMPTY_ELEMENTS = new Elements[] {NONE, APPLE, FLYING_PILL, FURY_PILL, GOLD};
 
     public static final Elements[] BARRIER_ELEMENTS = new Elements[] {WALL, START_FLOOR, ENEMY_HEAD_SLEEP, ENEMY_TAIL_INACTIVE};
 
@@ -73,6 +75,16 @@ public class Board extends AbstractBoard<Elements> {
     @Override
     protected int inversionY(int y) {
         return size - 1 - y;
+    }
+
+    public boolean isSafe(Point point) {
+        int count = 0;
+        for (Direction direction: new Direction[]{UP, RIGHT, DOWN, LEFT}) {
+            if (isAt(direction.change(point), EMPTY_ELEMENTS)) {
+                count++;
+            }
+        }
+        return count > 1;
     }
 
     public Point getMe() {
