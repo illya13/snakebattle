@@ -111,17 +111,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
 
-        go = tryToGo(point, FURY_PILL, priority);
-        if (go.isPresent()) {
-            pillCounter = 0;
-            return go;
-        }
-
         go = tryToGo(point, GOLD, priority);
-        if (go.isPresent())
-            return go;
-
-        go = tryToGo(point, APPLE, priority);
         if (go.isPresent())
             return go;
 
@@ -129,11 +119,26 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent()) {
             pillCounter = 0;
         }
+
+        go = tryToGo(point, FURY_PILL, priority);
+        if (go.isPresent()) {
+            pillCounter = 0;
+            return go;
+        }
+
+        go = tryToGo(point, APPLE, priority);
+        if (go.isPresent())
+            return go;
+
         return go;
     }
 
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
+
+        go = board.bfs(point,board.size() * 2, BARRIER_ENEMY, GOLD);
+        if (go.isPresent())
+            return go;
 
         if (fury || board.iAmTheBoss()) {
             go = board.bfs(point, board.size(), BARRIER, ENEMY_HEAD_ELEMENTS);
@@ -152,7 +157,7 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent())
             return go;
 
-        return board.bfs(point, board.size(), BARRIER_ENEMY, FURY_PILL, GOLD, APPLE);
+        return board.bfs(point, board.size(), BARRIER_ENEMY, FURY_PILL, APPLE);
     }
 
     private String lastCall(Point point) {
