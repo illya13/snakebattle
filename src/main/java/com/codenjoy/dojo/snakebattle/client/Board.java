@@ -86,9 +86,11 @@ public class Board extends AbstractBoard<Elements> {
         return size - 1 - y;
     }
 
+    private static final int SAFE_TRACE_ROUNDS = 3;
+
     private boolean[][] safeGo;
     private boolean[][] safeAttack;
-    private static final int SAFE_TRACE_ROUNDS = 3;
+
     public void traceSafe() {
         safeGo = new boolean[size()][size()];
         safeAttack = new boolean[size()][size()];
@@ -122,6 +124,32 @@ public class Board extends AbstractBoard<Elements> {
                 }
             }
         }
+
+/*
+        System.out.println();
+        for(int y = size()-1; y >= 0; --y) {
+            for (int x = 0; x < size(); ++x) {
+                if (!safeGo[x][y]) {
+                    System.out.print(getAllAt(x, y));
+                } else {
+                    System.out.print("   ");
+                }
+            }
+            System.out.println();
+        }
+
+        System.out.println();
+        for(int y = size()-1; y >= 0; --y) {
+            for (int x = 0; x < size(); ++x) {
+                if (!safeAttack[x][y]) {
+                    System.out.print(getAllAt(x, y));
+                } else {
+                    System.out.print("   ");
+                }
+            }
+            System.out.println();
+        }
+*/
     }
 
     public boolean isSafeToGo(Point point) {
