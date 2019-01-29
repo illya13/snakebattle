@@ -111,14 +111,6 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
 
-        go = tryToGo(point, GOLD, priority);
-        if (go.isPresent())
-            return go;
-
-        go = tryToGo(point, APPLE, priority);
-        if (go.isPresent())
-            return go;
-
         go = tryToGo(point, FLYING_PILL, priority);
         if (go.isPresent()) {
             pillCounter = 0;
@@ -130,11 +122,23 @@ public class YourSolver implements Solver<Board> {
             return go;
         }
 
+        go = tryToGo(point, GOLD, priority);
+        if (go.isPresent())
+            return go;
+
+        go = tryToGo(point, APPLE, priority);
+        if (go.isPresent())
+            return go;
+
         return go;
     }
 
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
+
+        go = board.bfs(point, board.size() / 4, BARRIER_ENEMY, FURY_PILL, FLYING_PILL);
+        if (go.isPresent())
+            return go;
 
         go = board.bfs(point, board.size(), BARRIER_ENEMY, GOLD, APPLE);
         if (go.isPresent())
