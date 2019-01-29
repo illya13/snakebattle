@@ -152,7 +152,7 @@ public class YourSolver implements Solver<Board> {
             }
         }
 
-        go = board.bfs(point,board.size() / 2, BARRIER_ENEMY, FURY_PILL);
+        go = board.bfs(point,board.size() / 2, BARRIER_ENEMY, FURY_PILL, FLYING_PILL);
         if (go.isPresent())
             return go;
 
