@@ -60,7 +60,7 @@ public class YourSolver implements Solver<Board> {
 
     private static final Elements[] BARRIER_ENEMY = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
     private static final Elements[] BARRIER = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS);
-    private static final Elements[] LAST_CALL = join(BARRIER_ELEMENTS, ME_ELEMENTS, ENEMY_TAIL_ELEMENTS);
+    private static final Elements[] LAST_CALL = join(BARRIER_ELEMENTS, ME_BODY_ELEMENTS, ENEMY_TAIL_ELEMENTS);
 
     YourSolver(Dice dice) {
         this.dice = dice;
@@ -169,6 +169,10 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent())
             return go.get().toString();
 
+        go = lastCall(point, DEFAULT_PRIORITY);
+        if (go.isPresent())
+            return go.get().toString();
+
         return Direction.STOP.toString();
     }
 
@@ -204,6 +208,16 @@ public class YourSolver implements Solver<Board> {
         for (Direction direction: directions) {
             Point p = direction.change(point);
             if(board.isSafeToGo(p) && !board.isAt(p, LAST_CALL)) {
+                return Optional.of(direction);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Direction> lastCall(Point point, Direction[] directions) {
+        for (Direction direction: directions) {
+            Point p = direction.change(point);
+            if(!board.isAt(p, LAST_CALL)) {
                 return Optional.of(direction);
             }
         }
