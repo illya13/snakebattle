@@ -54,6 +54,7 @@ public class YourSolver implements Solver<Board> {
 
     private boolean pill;
     private int pillCounter;
+    private static final int MAX_FURY = 10;
 
     private static final Direction[] DEFAULT_PRIORITY = new Direction[]{RIGHT, DOWN, LEFT, UP};
 
@@ -131,10 +132,14 @@ public class YourSolver implements Solver<Board> {
     }
 
     private Optional<Direction> midTerm(Point point) {
-        Optional<Direction> go = board.bfs(point,board.size() / 4, BARRIER, ENEMY_HEAD_ELEMENTS);
-        if (go.isPresent() && fury && (pillCounter < 5)) {
-            System.out.println("ATTACK SOON");
-            return go;
+        Optional<Direction> go;
+
+        if (fury) {
+            go = board.bfs(point, Math.max(2, MAX_FURY-pillCounter), BARRIER, ENEMY_HEAD_ELEMENTS);
+            if (go.isPresent()) {
+                System.out.println("ATTACK SOON");
+                return go;
+            }
         }
 
         go = board.bfs(point,board.size() / 2, BARRIER_ENEMY, FURY_PILL);
