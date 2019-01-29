@@ -154,6 +154,10 @@ public class Board extends AbstractBoard<Elements> {
 */
     }
 
+    public Direction[] getPriority() {
+        return new Direction[]{RIGHT, DOWN, LEFT, UP};
+    }
+
     private int mySize;
     private int enemySnakes;
     private int enemySize;

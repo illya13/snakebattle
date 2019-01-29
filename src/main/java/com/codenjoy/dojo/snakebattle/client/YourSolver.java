@@ -55,8 +55,6 @@ public class YourSolver implements Solver<Board> {
     private boolean pill;
     private int pillCounter;
 
-    private static final Direction[] DEFAULT_PRIORITY = new Direction[]{RIGHT, DOWN, LEFT, UP};
-
     private static final Elements[] BARRIER_ENEMY = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
     private static final Elements[] BARRIER = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS);
     private static final Elements[] LAST_CALL = join(BARRIER_ELEMENTS, ME_BODY_ELEMENTS, ENEMY_TAIL_ELEMENTS);
@@ -111,29 +109,25 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
 
-        go = tryToGo(point, FURY_PILL, getPriority());
+        go = tryToGo(point, FURY_PILL, board.getPriority());
         if (go.isPresent()) {
             pillCounter = 0;
             return go;
         }
 
-        go = tryToGo(point, GOLD, getPriority());
+        go = tryToGo(point, GOLD, board.getPriority());
         if (go.isPresent())
             return go;
 
-        go = tryToGo(point, APPLE, getPriority());
+        go = tryToGo(point, APPLE, board.getPriority());
         if (go.isPresent())
             return go;
 
-        go = tryToGo(point, FLYING_PILL, getPriority());
+        go = tryToGo(point, FLYING_PILL, board.getPriority());
         if (go.isPresent()) {
             pillCounter = 0;
         }
         return go;
-    }
-
-    private Direction[] getPriority() {
-        return DEFAULT_PRIORITY;
     }
 
     private Optional<Direction> midTerm(Point point) {
@@ -160,15 +154,15 @@ public class YourSolver implements Solver<Board> {
     }
 
     private String lastCall(Point point) {
-        Optional<Direction> go = avoid(point, getPriority());
+        Optional<Direction> go = avoid(point, board.getPriority());
         if (go.isPresent())
             return go.get().toString();
 
-        go = lastCall(point, LAST_CALL, getPriority());
+        go = lastCall(point, LAST_CALL, board.getPriority());
         if (go.isPresent())
             return go.get().toString();
 
-        go = lastCall(point, NO_WAY, getPriority());
+        go = lastCall(point, NO_WAY, board.getPriority());
         if (go.isPresent())
             return go.get().toString();
 
