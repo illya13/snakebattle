@@ -50,11 +50,11 @@ public class Board extends AbstractBoard<Elements> {
     public static final Elements[] ME_ELEMENTS = new Elements[] {TAIL_END_DOWN, TAIL_END_LEFT, TAIL_END_UP, TAIL_END_RIGHT, TAIL_INACTIVE,
             BODY_HORIZONTAL, BODY_VERTICAL, BODY_LEFT_DOWN, BODY_LEFT_UP, BODY_RIGHT_DOWN, BODY_RIGHT_UP};
 
-    public static final Elements[] ENEMY_ELEMENTS = new Elements[] {ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
+    public static final Elements[] ENEMY_ELEMENTS = new Elements[] {ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP, ENEMY_HEAD_FLY, ENEMY_HEAD_EVIL,
             ENEMY_TAIL_END_DOWN, ENEMY_TAIL_END_LEFT, ENEMY_TAIL_END_UP, ENEMY_TAIL_END_RIGHT,
             ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP};
 
-    public static final Elements[] ENEMY_HEAD_ELEMENTS = new Elements[] {ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP};
+    public static final Elements[] ENEMY_HEAD_ELEMENTS = new Elements[] {ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP, ENEMY_HEAD_FLY, ENEMY_HEAD_EVIL};
 
     public static final Elements[] ENEMY_TAIL_ELEMENTS = new Elements[] {ENEMY_TAIL_END_DOWN, ENEMY_TAIL_END_LEFT, ENEMY_TAIL_END_UP, ENEMY_TAIL_END_RIGHT, ENEMY_TAIL_INACTIVE,
             ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP};
@@ -155,11 +155,13 @@ public class Board extends AbstractBoard<Elements> {
     private int mySize;
     private int enemySnakes;
     private int enemySize;
+    private int enemyFury;
 
     public void traceSnakes() {
         mySize = 0;
         enemySnakes = 0;
         enemySize = 0;
+        enemyFury = 0;
 
         for (int x = 0; x < size(); ++x) {
             for (int y = 0; y < size(); ++y) {
@@ -169,6 +171,8 @@ public class Board extends AbstractBoard<Elements> {
                     enemySize++;
                 if (isAt(x, y, ENEMY_HEAD_ELEMENTS))
                     enemySnakes++;
+                if (isAt(x, y, ENEMY_HEAD_EVIL))
+                    enemyFury++;
             }
         }
     }
@@ -186,7 +190,7 @@ public class Board extends AbstractBoard<Elements> {
     }
 
     public boolean iAmTheBoss() {
-        return (enemySnakes == 1) && (mySize > enemySize);
+        return (enemySnakes == 1) && (enemyFury == 0) && (mySize > enemySize);
     }
 
     public boolean isSafeToGo(Point point) {
