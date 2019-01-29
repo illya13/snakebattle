@@ -54,6 +54,7 @@ public class YourSolver implements Solver<Board> {
 
     private boolean pill;
     private int pillCounter;
+    private int stoneCounter = 0;
 
     private static final Elements[] BARRIER_ENEMY = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
     private static final Elements[] BARRIER = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS);
@@ -68,7 +69,10 @@ public class YourSolver implements Solver<Board> {
     @Override
     public String get(Board board) {
         this.board = board;
-        if (board.isGameOver()) return "";
+        if (board.isGameOver()) {
+            stoneCounter = 0;
+            return "";
+        }
 
         board.traceSnakes();
         System.out.println("me [" + board.getMySize() + "], enemies [" + board.getEnemySnakes()+ "]: " + board.getEnemySize());
@@ -106,7 +110,7 @@ public class YourSolver implements Solver<Board> {
             fly = false;
             pillCounter = 0;
         }
-        System.out.println("pill [" + pillCounter + "]: " + pill + ", fury: " + fury + ", fly: " + fly);
+        System.out.println("stones[" + stoneCounter + "], pill[" + pillCounter + "]: " + pill + ", fury: " + fury + ", fly: " + fly);
     }
 
     private Optional<Direction> realTime(Point point) {
@@ -114,8 +118,10 @@ public class YourSolver implements Solver<Board> {
 
         if (board.getMySize() > 4) {
             go = tryToGo(point, STONE, priority);
-            if (go.isPresent())
+            if (go.isPresent()) {
+                stoneCounter++;
                 return go;
+            }
         }
 
         go = tryToGo(point, FLYING_PILL, priority);
