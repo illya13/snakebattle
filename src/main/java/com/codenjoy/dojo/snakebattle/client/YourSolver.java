@@ -147,8 +147,13 @@ public class YourSolver implements Solver<Board> {
         if (fury || board.iAmTheBoss()) {
             go = board.bfs(point, Math.max(2, MAX_FURY-pillCounter), BARRIER, ENEMY_HEAD_ELEMENTS);
             if (go.isPresent()) {
-                System.out.println("AGGRESSIVE");
-                return go;
+                Point p = go.get().change(point);
+                if (board.isSafeToGo(p)) {
+                    System.out.println("AGGRESSIVE");
+                    return go;
+                } else {
+                    System.out.println("CLOSE");
+                }
             }
         }
 
