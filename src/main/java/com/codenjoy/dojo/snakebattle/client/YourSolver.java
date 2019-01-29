@@ -146,7 +146,7 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         if (fury || board.iAmTheBoss()) {
-            go = board.bfs(point, Math.max(2, MAX_FURY-pillCounter), BARRIER, ENEMY_HEAD_ELEMENTS);
+            go = board.bfs(point, board.size(), BARRIER, ENEMY_HEAD_ELEMENTS);
             if (go.isPresent()) {
                 Point p = go.get().change(point);
                 if (board.isSafeToGo(p)) {
