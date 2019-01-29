@@ -35,7 +35,7 @@ public class BFS {
         Queue<Point> queue = new LinkedList<>();
         queue.add(start);
 
-        Map<Point, Path> visited = new HashMap<>();
+        Map<Point, Path> visited = new HashMap<>(size*2);
         visited.put(start, new Path(null, null, 0));
 
         Optional<Point> found = bfs(board, queue, visited, barrier, target, size);
@@ -67,7 +67,7 @@ public class BFS {
                     if (distance > max)
                         continue;
 
-                    if (!board.isSafe(p))
+                    if (!board.isSafeToAttack(p))
                         continue;
 
                     queue.add(p);

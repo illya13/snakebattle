@@ -368,7 +368,7 @@ public class SolverTest {
                 "☼☼               ○           ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", RIGHT);
-/*
+
         asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼         ○                 ☼\n" +
                 "☼#                           ☼\n" +
@@ -399,7 +399,6 @@ public class SolverTest {
                 "☼☼               ○           ☼\n" +
                 "☼☼                 ○         ☼\n" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", RIGHT);
-*/
     }
 
     private void asertAI(String board, Direction expected) {

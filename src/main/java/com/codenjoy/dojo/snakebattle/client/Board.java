@@ -26,6 +26,7 @@ package com.codenjoy.dojo.snakebattle.client;
 import com.codenjoy.dojo.client.AbstractBoard;
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
+import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.*;
@@ -85,14 +86,50 @@ public class Board extends AbstractBoard<Elements> {
         return size - 1 - y;
     }
 
-    public boolean isSafe(Point point) {
-        int count = 0;
-        for (Direction direction: new Direction[]{UP, RIGHT, DOWN, LEFT}) {
-            if (isAt(direction.change(point), join(EMPTY_ELEMENTS, ME_HEAD_ELEMENTS))) {
-                count++;
+    private boolean[][] safeGo;
+    private boolean[][] safeAttack;
+    private static final int SAFE_TRACE_ROUNDS = 3;
+    public void traceSafe() {
+        safeGo = new boolean[size()][size()];
+        safeAttack = new boolean[size()][size()];
+
+        for(int x = 0; x < size(); ++x) {
+            for(int y = 0; y < size(); ++y) {
+                safeGo[x][y] = isAt(x, y, join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS));
+                safeAttack[x][y] = isAt(x, y, join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS, ENEMY_HEAD_ELEMENTS));
             }
         }
-        return count > 1;
+
+        for(int i = 0; i < SAFE_TRACE_ROUNDS; ++i) {
+            for (int x = 0; x < size(); ++x) {
+                for (int y = 0; y < size(); ++y) {
+                    int goCount = 0;
+                    int attackCount = 0;
+                    for (Direction direction: new Direction[]{UP, RIGHT, DOWN, LEFT}) {
+                        Point p = direction.change(PointImpl.pt(x, y));
+                        if (p.isOutOf(size()))
+                            continue;
+
+                        if (safeGo[p.getX()][p.getY()] && isAt(p, join(EMPTY_ELEMENTS, ME_HEAD_ELEMENTS))) {
+                            goCount++;
+                        }
+                        if (safeAttack[p.getX()][p.getY()] && isAt(p, join(EMPTY_ELEMENTS, ME_HEAD_ELEMENTS, ENEMY_HEAD_ELEMENTS))) {
+                            attackCount++;
+                        }
+                    }
+                    safeGo[x][y] = safeGo[x][y] && (goCount > 1);
+                    safeAttack[x][y] = safeAttack[x][y] && (attackCount > 1);
+                }
+            }
+        }
+    }
+
+    public boolean isSafeToGo(Point point) {
+        return safeGo[point.getX()][point.getY()];
+    }
+
+    public boolean isSafeToAttack(Point point) {
+        return safeAttack[point.getX()][point.getY()];
     }
 
     public Point getMe() {

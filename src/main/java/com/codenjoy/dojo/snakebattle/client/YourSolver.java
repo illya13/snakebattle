@@ -70,6 +70,7 @@ public class YourSolver implements Solver<Board> {
     public String get(Board board) {
         this.board = board;
         if (board.isGameOver()) return "";
+        board.traceSafe();
 
         Point me = board.getMe();
         checkPills(me);
@@ -104,27 +105,30 @@ public class YourSolver implements Solver<Board> {
     }
 
     private Optional<Direction> realTime(Point point) {
-        Optional<Direction> go = tryElements(point, ENEMY_HEAD_ELEMENTS, DEFAULT_PRIORITY);
-        if (go.isPresent() && fury) {
-            System.out.println("ATTACK NOW");
-            return go;
+        Optional<Direction> go;
+        if (fury) {
+            go = tryToAttack(point, ENEMY_HEAD_ELEMENTS, DEFAULT_PRIORITY);
+            if (go.isPresent()) {
+                System.out.println("ATTACK NOW");
+                return go;
+            }
         }
 
-        go = tryElements(point, FURY_PILL, DEFAULT_PRIORITY);
+        go = tryToGo(point, FURY_PILL, DEFAULT_PRIORITY);
         if (go.isPresent()) {
             pillCounter = 0;
             return go;
         }
 
-        go = tryElements(point, GOLD, DEFAULT_PRIORITY);
+        go = tryToGo(point, GOLD, DEFAULT_PRIORITY);
         if (go.isPresent())
             return go;
 
-        go = tryElements(point, APPLE, DEFAULT_PRIORITY);
+        go = tryToGo(point, APPLE, DEFAULT_PRIORITY);
         if (go.isPresent())
             return go;
 
-        go = tryElements(point, FLYING_PILL, DEFAULT_PRIORITY);
+        go = tryToGo(point, FLYING_PILL, DEFAULT_PRIORITY);
         if (go.isPresent()) {
             pillCounter = 0;
         }
@@ -157,14 +161,28 @@ public class YourSolver implements Solver<Board> {
         return Direction.STOP.toString();
     }
 
-    private Optional<Direction> tryElements(Point point, Elements elements, Direction[] directions) {
-        return tryElements(point, new Elements[]{elements}, directions);
+    private Optional<Direction> tryToGo(Point point, Elements elements, Direction[] directions) {
+        return tryToGo(point, new Elements[]{elements}, directions);
     }
 
-    private Optional<Direction> tryElements(Point point, Elements[] elements, Direction[] directions) {
+    private Optional<Direction> tryToGo(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if(board.isSafe(p) && board.isAt(p, elements)) {
+            if(board.isSafeToGo(p) && board.isAt(p, elements)) {
+                return Optional.of(direction);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Direction> tryToAttack(Point point, Elements elements, Direction[] directions) {
+        return tryToAttack(point, new Elements[]{elements}, directions);
+    }
+
+    private Optional<Direction> tryToAttack(Point point, Elements[] elements, Direction[] directions) {
+        for (Direction direction: directions) {
+            Point p = direction.change(point);
+            if(board.isSafeToAttack(p) && board.isAt(p, elements)) {
                 return Optional.of(direction);
             }
         }
@@ -174,7 +192,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> avoid(Point point, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if(board.isSafe(p) && !board.isAt(p, LAST_CALL)) {
+            if(board.isSafeToGo(p) && !board.isAt(p, LAST_CALL)) {
                 return Optional.of(direction);
             }
         }
