@@ -149,7 +149,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if (board.getMySize() > 4 && !fly) {
+        if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
             go = board.bfs(point, board.size() / 4, BARRIER_ENEMY, STONE);
             if (go.isPresent())
                 return go;
