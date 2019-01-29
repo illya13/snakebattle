@@ -137,6 +137,12 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
+        if (board.getMySize() > 4) {
+            go = board.bfs(point, board.size() / 4, BARRIER_ENEMY, STONE);
+            if (go.isPresent())
+                return go;
+        }
+
         go = board.bfs(point, board.size() / 4, BARRIER_ENEMY, FURY_PILL, FLYING_PILL);
         if (go.isPresent())
             return go;
