@@ -163,11 +163,11 @@ public class Board extends AbstractBoard<Elements> {
 
         for (int x = 0; x < size(); ++x) {
             for (int y = 0; y < size(); ++y) {
-                if (isAt(x, y, join(ME_ELEMENTS)))
+                if (isAt(x, y, join(ME_HEAD_ELEMENTS, ME_ELEMENTS)))
                     mySize++;
-                if (isAt(x, y, join(ENEMY_ELEMENTS)))
+                if (isAt(x, y, ENEMY_ELEMENTS))
                     enemySize++;
-                if (isAt(x, y, join(ENEMY_HEAD_ELEMENTS)))
+                if (isAt(x, y, ENEMY_HEAD_ELEMENTS))
                     enemySnakes++;
             }
         }
