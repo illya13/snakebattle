@@ -110,6 +110,7 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
+/*
         if (fury) {
             go = tryToAttack(point, ENEMY_HEAD_ELEMENTS, DEFAULT_PRIORITY);
             if (go.isPresent()) {
@@ -117,6 +118,7 @@ public class YourSolver implements Solver<Board> {
                 return go;
             }
         }
+*/
 
         go = tryToGo(point, FURY_PILL, DEFAULT_PRIORITY);
         if (go.isPresent()) {
@@ -142,10 +144,10 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if (fury) {
+        if (fury || board.iAmTheBoss()) {
             go = board.bfs(point, Math.max(2, MAX_FURY-pillCounter), BARRIER, ENEMY_HEAD_ELEMENTS);
             if (go.isPresent()) {
-                System.out.println("ATTACK SOON");
+                System.out.println("AGGRESSIVE");
                 return go;
             }
         }

@@ -185,6 +185,10 @@ public class Board extends AbstractBoard<Elements> {
         return enemySize;
     }
 
+    public boolean iAmTheBoss() {
+        return (enemySnakes == 1) && (mySize > enemySize);
+    }
+
     public boolean isSafeToGo(Point point) {
         return safeGo[point.getX()][point.getY()];
     }
