@@ -69,9 +69,14 @@ public class YourSolver implements Solver<Board> {
     @Override
     public String get(Board board) {
         this.board = board;
+
         if (board.isGameOver()) {
             stoneCounter = 0;
             return "";
+        }
+
+        if (board.isGameStart()) {
+            stoneCounter = 0;
         }
 
         board.traceSnakes();

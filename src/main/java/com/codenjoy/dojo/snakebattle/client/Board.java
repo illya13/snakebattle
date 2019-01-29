@@ -245,6 +245,10 @@ public class Board extends AbstractBoard<Elements> {
         return getMyHead().isEmpty();
     }
 
+    public boolean isGameStart() {
+        return !get(HEAD_SLEEP).isEmpty();
+    }
+
     private List<Point> getMyHead() {
         return get(ME_HEAD_ELEMENTS);
     }
