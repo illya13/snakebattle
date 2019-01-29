@@ -44,6 +44,8 @@ public class Board extends AbstractBoard<Elements> {
 
     public static final Elements[] BARRIER_ELEMENTS = new Elements[] {WALL, START_FLOOR, ENEMY_HEAD_SLEEP, ENEMY_TAIL_INACTIVE};
 
+    public static final Elements[] ME_HEAD_ELEMENTS = new Elements[] {HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY};
+
     public static final Elements[] ME_ELEMENTS = new Elements[] {TAIL_END_DOWN, TAIL_END_LEFT, TAIL_END_UP, TAIL_END_RIGHT, TAIL_INACTIVE,
             BODY_HORIZONTAL, BODY_VERTICAL, BODY_LEFT_DOWN, BODY_LEFT_UP, BODY_RIGHT_DOWN, BODY_RIGHT_UP};
 
@@ -86,7 +88,7 @@ public class Board extends AbstractBoard<Elements> {
     public boolean isSafe(Point point) {
         int count = 0;
         for (Direction direction: new Direction[]{UP, RIGHT, DOWN, LEFT}) {
-            if (isAt(direction.change(point), EMPTY_ELEMENTS)) {
+            if (isAt(direction.change(point), join(EMPTY_ELEMENTS, ME_HEAD_ELEMENTS))) {
                 count++;
             }
         }
@@ -102,7 +104,7 @@ public class Board extends AbstractBoard<Elements> {
     }
 
     private List<Point> getMyHead() {
-        return get(HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY);
+        return get(ME_HEAD_ELEMENTS);
     }
 
     public Optional<Direction> bfs(Point start, int max, Elements[] barrier, Elements... elements) {
