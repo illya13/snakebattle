@@ -54,7 +54,6 @@ public class YourSolver implements Solver<Board> {
 
     private boolean pill;
     private int pillCounter;
-    private static final int MAX_FURY = 10;
 
     private static final Direction[] DEFAULT_PRIORITY = new Direction[]{RIGHT, DOWN, LEFT, UP};
 
@@ -111,35 +110,30 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
-/*
-        if (fury) {
-            go = tryToAttack(point, ENEMY_HEAD_ELEMENTS, DEFAULT_PRIORITY);
-            if (go.isPresent()) {
-                System.out.println("ATTACK NOW");
-                return go;
-            }
-        }
-*/
 
-        go = tryToGo(point, FURY_PILL, DEFAULT_PRIORITY);
+        go = tryToGo(point, FURY_PILL, getPriority());
         if (go.isPresent()) {
             pillCounter = 0;
             return go;
         }
 
-        go = tryToGo(point, GOLD, DEFAULT_PRIORITY);
+        go = tryToGo(point, GOLD, getPriority());
         if (go.isPresent())
             return go;
 
-        go = tryToGo(point, APPLE, DEFAULT_PRIORITY);
+        go = tryToGo(point, APPLE, getPriority());
         if (go.isPresent())
             return go;
 
-        go = tryToGo(point, FLYING_PILL, DEFAULT_PRIORITY);
+        go = tryToGo(point, FLYING_PILL, getPriority());
         if (go.isPresent()) {
             pillCounter = 0;
         }
         return go;
+    }
+
+    private Direction[] getPriority() {
+        return DEFAULT_PRIORITY;
     }
 
     private Optional<Direction> midTerm(Point point) {
@@ -166,15 +160,15 @@ public class YourSolver implements Solver<Board> {
     }
 
     private String lastCall(Point point) {
-        Optional<Direction> go = avoid(point, DEFAULT_PRIORITY);
+        Optional<Direction> go = avoid(point, getPriority());
         if (go.isPresent())
             return go.get().toString();
 
-        go = lastCall(point, LAST_CALL, DEFAULT_PRIORITY);
+        go = lastCall(point, LAST_CALL, getPriority());
         if (go.isPresent())
             return go.get().toString();
 
-        go = lastCall(point, NO_WAY, DEFAULT_PRIORITY);
+        go = lastCall(point, NO_WAY, getPriority());
         if (go.isPresent())
             return go.get().toString();
 
@@ -194,22 +188,6 @@ public class YourSolver implements Solver<Board> {
         }
         return Optional.empty();
     }
-
-/*
-    private Optional<Direction> tryToAttack(Point point, Elements elements, Direction[] directions) {
-        return tryToAttack(point, new Elements[]{elements}, directions);
-    }
-
-    private Optional<Direction> tryToAttack(Point point, Elements[] elements, Direction[] directions) {
-        for (Direction direction: directions) {
-            Point p = direction.change(point);
-            if(board.isSafeToAttack(p) && board.isAt(p, elements)) {
-                return Optional.of(direction);
-            }
-        }
-        return Optional.empty();
-    }
-*/
 
     private Optional<Direction> avoid(Point point, Direction[] directions) {
         for (Direction direction: directions) {
