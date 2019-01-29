@@ -190,6 +190,7 @@ public class YourSolver implements Solver<Board> {
         return Optional.empty();
     }
 
+/*
     private Optional<Direction> tryToAttack(Point point, Elements elements, Direction[] directions) {
         return tryToAttack(point, new Elements[]{elements}, directions);
     }
@@ -203,6 +204,7 @@ public class YourSolver implements Solver<Board> {
         }
         return Optional.empty();
     }
+*/
 
     private Optional<Direction> avoid(Point point, Direction[] directions) {
         for (Direction direction: directions) {
