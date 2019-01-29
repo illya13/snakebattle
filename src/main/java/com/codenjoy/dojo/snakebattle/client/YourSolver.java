@@ -70,6 +70,10 @@ public class YourSolver implements Solver<Board> {
     public String get(Board board) {
         this.board = board;
         if (board.isGameOver()) return "";
+
+        board.traceSnakes();
+        System.out.println("me [" + board.getMySize() + "], enemies [" + board.getEnemySnakes()+ "]: " + board.getEnemySize());
+
         board.traceSafe();
 
         Point me = board.getMe();

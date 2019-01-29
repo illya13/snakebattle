@@ -51,7 +51,7 @@ public class Board extends AbstractBoard<Elements> {
             BODY_HORIZONTAL, BODY_VERTICAL, BODY_LEFT_DOWN, BODY_LEFT_UP, BODY_RIGHT_DOWN, BODY_RIGHT_UP};
 
     public static final Elements[] ENEMY_ELEMENTS = new Elements[] {ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
-            ENEMY_TAIL_END_DOWN, ENEMY_TAIL_END_LEFT, ENEMY_TAIL_END_UP, ENEMY_TAIL_END_RIGHT, ENEMY_TAIL_INACTIVE,
+            ENEMY_TAIL_END_DOWN, ENEMY_TAIL_END_LEFT, ENEMY_TAIL_END_UP, ENEMY_TAIL_END_RIGHT,
             ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP};
 
     public static final Elements[] ENEMY_HEAD_ELEMENTS = new Elements[] {ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP};
@@ -150,6 +150,39 @@ public class Board extends AbstractBoard<Elements> {
             System.out.println();
         }
 */
+    }
+
+    private int mySize;
+    private int enemySnakes;
+    private int enemySize;
+
+    public void traceSnakes() {
+        mySize = 0;
+        enemySnakes = 0;
+        enemySize = 0;
+
+        for (int x = 0; x < size(); ++x) {
+            for (int y = 0; y < size(); ++y) {
+                if (isAt(x, y, join(ME_ELEMENTS)))
+                    mySize++;
+                if (isAt(x, y, join(ENEMY_ELEMENTS)))
+                    enemySize++;
+                if (isAt(x, y, join(ENEMY_HEAD_ELEMENTS)))
+                    enemySnakes++;
+            }
+        }
+    }
+
+    public int getMySize() {
+        return mySize;
+    }
+
+    public int getEnemySnakes() {
+        return enemySnakes;
+    }
+
+    public int getEnemySize() {
+        return enemySize;
     }
 
     public boolean isSafeToGo(Point point) {
