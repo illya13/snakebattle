@@ -112,6 +112,12 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
 
+        if (board.getMySize() > 4) {
+            go = tryToGo(point, STONE, priority);
+            if (go.isPresent())
+                return go;
+        }
+
         go = tryToGo(point, FLYING_PILL, priority);
         if (go.isPresent()) {
             pillCounter = 0;
