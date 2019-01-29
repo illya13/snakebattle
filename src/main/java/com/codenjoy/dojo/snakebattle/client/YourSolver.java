@@ -59,7 +59,7 @@ public class YourSolver implements Solver<Board> {
 
     private static final Elements[] BARRIER_ENEMY = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
     private static final Elements[] BARRIER = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS);
-    private static final Elements[] LAST_CALL = join(BARRIER_ELEMENTS, ME_ELEMENTS);
+    private static final Elements[] LAST_CALL = join(BARRIER_ELEMENTS, ME_ELEMENTS, ENEMY_TAIL_ELEMENTS);
 
     YourSolver(Dice dice) {
         this.dice = dice;
@@ -103,7 +103,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private Optional<Direction> realTime(Point point) {
-        Optional<Direction> go = tryElements(point, ENEMY_ELEMENTS, DEFAULT_PRIORITY);
+        Optional<Direction> go = tryElements(point, ENEMY_HEAD_ELEMENTS, DEFAULT_PRIORITY);
         if (go.isPresent() && fury) {
             System.out.println("ATTACK NOW");
             return go;
@@ -131,7 +131,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private Optional<Direction> midTerm(Point point) {
-        Optional<Direction> go = board.bfs(point,board.size() / 4, BARRIER, ENEMY_ELEMENTS);
+        Optional<Direction> go = board.bfs(point,board.size() / 4, BARRIER, ENEMY_HEAD_ELEMENTS);
         if (go.isPresent() && fury && (pillCounter < 5)) {
             System.out.println("ATTACK SOON");
             return go;
