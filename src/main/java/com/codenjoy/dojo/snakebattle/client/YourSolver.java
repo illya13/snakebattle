@@ -116,7 +116,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
 
-        if (board.getMySize() > 4) {
+        if (board.getMySize() > 4  && !fly) {
             go = tryToGo(point, STONE, priority);
             if (go.isPresent()) {
                 stoneCounter++;
@@ -149,7 +149,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if (board.getMySize() > 4) {
+        if (board.getMySize() > 4 && !fly) {
             go = board.bfs(point, board.size() / 4, BARRIER_ENEMY, STONE);
             if (go.isPresent())
                 return go;
