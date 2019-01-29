@@ -57,8 +57,8 @@ public class YourSolver implements Solver<Board> {
 
     private static final Elements[] BARRIER_ENEMY = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
     private static final Elements[] BARRIER = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS);
-    private static final Elements[] LAST_CALL = join(BARRIER_ELEMENTS, ME_BODY_ELEMENTS, ENEMY_TAIL_ELEMENTS);
-    private static final Elements[] NO_WAY = join(ME_BODY_ELEMENTS, ENEMY_TAIL_ELEMENTS);
+    private static final Elements[] LAST_CALL = join(BARRIER_ELEMENTS, ENEMY_TAIL_ELEMENTS);
+    private static final Elements[] NO_WAY = join(ENEMY_TAIL_ELEMENTS);
 
     YourSolver(Dice dice) {
         this.dice = dice;
