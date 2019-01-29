@@ -161,13 +161,13 @@ public class YourSolver implements Solver<Board> {
             return go;
 
         if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
-            go = board.bfs(point, board.size() / 5, BARRIER_ENEMY, STONE);
+            go = board.bfs(point, board.size() / 3, BARRIER_ENEMY, STONE);
             if (go.isPresent()) {
                 return go;
             }
         }
 
-        go = board.bfs(point, board.size(), BARRIER_ENEMY, GOLD, APPLE);
+        go = board.bfs(point, board.size() / 2, BARRIER_ENEMY, GOLD, APPLE);
         if (go.isPresent())
             return go;
 
