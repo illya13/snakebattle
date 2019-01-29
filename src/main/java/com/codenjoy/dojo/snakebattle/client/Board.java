@@ -192,7 +192,7 @@ public class Board extends AbstractBoard<Elements> {
     }
 
     public boolean iAmTheBoss() {
-        return (enemySnakes == 1) && (enemyFury == 0) && (mySize > enemySize);
+        return (enemyFury == 0) && (mySize > enemySize);
     }
 
     public boolean isSafeToGo(Point point) {
