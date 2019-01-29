@@ -57,7 +57,8 @@ public class YourSolver implements Solver<Board> {
 
     private static final Elements[] BARRIER_ENEMY = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
     private static final Elements[] BARRIER = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS);
-    private static final Elements[] LAST_CALL = join(BARRIER_ELEMENTS, ENEMY_TAIL_ELEMENTS);
+    private static final Elements[] NORMAL = join(BARRIER_ELEMENTS, ME_ELEMENTS, ENEMY_TAIL_ELEMENTS);
+    private static final Elements[] CUT_MYSELF = join(BARRIER_ELEMENTS, ENEMY_TAIL_ELEMENTS);
     private static final Elements[] NO_WAY = join(ENEMY_TAIL_ELEMENTS);
 
     YourSolver(Dice dice) {
@@ -165,7 +166,11 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent())
             return go.get().toString();
 
-        go = lastCall(point, LAST_CALL, priority);
+        go = lastCall(point, NORMAL, priority);
+        if (go.isPresent())
+            return go.get().toString();
+
+        go = lastCall(point, CUT_MYSELF, priority);
         if (go.isPresent())
             return go.get().toString();
 
@@ -193,7 +198,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> avoid(Point point, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if(board.isSafeToGo(p) && !board.isAt(p, LAST_CALL)) {
+            if(board.isSafeToGo(p) && !board.isAt(p, NORMAL)) {
                 return Optional.of(direction);
             }
         }
