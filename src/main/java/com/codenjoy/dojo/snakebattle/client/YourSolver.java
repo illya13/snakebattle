@@ -34,7 +34,6 @@ import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.Optional;
 
-import static com.codenjoy.dojo.services.Direction.*;
 import static com.codenjoy.dojo.snakebattle.client.Board.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 
@@ -48,6 +47,7 @@ public class YourSolver implements Solver<Board> {
 
     private Dice dice;
     private Board board;
+    private Direction[] priority;
 
     private boolean fury;
     private boolean fly;
@@ -76,6 +76,8 @@ public class YourSolver implements Solver<Board> {
 
         Point me = board.getMe();
         checkPills(me);
+
+        priority = board.getPriority(me);
 
         Optional<Direction> go = realTime(me);
         if (go.isPresent())
@@ -109,21 +111,21 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
 
-        go = tryToGo(point, FURY_PILL, board.getPriority());
+        go = tryToGo(point, FURY_PILL, priority);
         if (go.isPresent()) {
             pillCounter = 0;
             return go;
         }
 
-        go = tryToGo(point, GOLD, board.getPriority());
+        go = tryToGo(point, GOLD, priority);
         if (go.isPresent())
             return go;
 
-        go = tryToGo(point, APPLE, board.getPriority());
+        go = tryToGo(point, APPLE, priority);
         if (go.isPresent())
             return go;
 
-        go = tryToGo(point, FLYING_PILL, board.getPriority());
+        go = tryToGo(point, FLYING_PILL, priority);
         if (go.isPresent()) {
             pillCounter = 0;
         }
@@ -154,19 +156,19 @@ public class YourSolver implements Solver<Board> {
     }
 
     private String lastCall(Point point) {
-        Optional<Direction> go = avoid(point, board.getPriority());
+        Optional<Direction> go = avoid(point, priority);
         if (go.isPresent())
             return go.get().toString();
 
-        go = lastCall(point, LAST_CALL, board.getPriority());
+        go = lastCall(point, LAST_CALL, priority);
         if (go.isPresent())
             return go.get().toString();
 
-        go = lastCall(point, NO_WAY, board.getPriority());
+        go = lastCall(point, NO_WAY, priority);
         if (go.isPresent())
             return go.get().toString();
 
-        return Direction.STOP.toString();
+        return priority[0].toString();
     }
 
     private Optional<Direction> tryToGo(Point point, Elements elements, Direction[] directions) {

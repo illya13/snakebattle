@@ -30,6 +30,7 @@ import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.codenjoy.dojo.services.Direction.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
@@ -93,14 +94,17 @@ public class Board extends AbstractBoard<Elements> {
     private boolean[][] safeGo;
     private boolean[][] safeAttack;
 
+    private Elements[] SAFE_GO_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS);
+    private Elements[] SAFE_ATTACK_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS, ENEMY_HEAD_ELEMENTS);
+
     public void traceSafe() {
         safeGo = new boolean[size()][size()];
         safeAttack = new boolean[size()][size()];
 
         for(int x = 0; x < size(); ++x) {
             for(int y = 0; y < size(); ++y) {
-                safeGo[x][y] = isAt(x, y, join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS));
-                safeAttack[x][y] = isAt(x, y, join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS, ENEMY_HEAD_ELEMENTS));
+                safeGo[x][y] = isAt(x, y, SAFE_GO_ELEMENTS);
+                safeAttack[x][y] = isAt(x, y, SAFE_ATTACK_ELEMENTS);
             }
         }
 
@@ -114,10 +118,10 @@ public class Board extends AbstractBoard<Elements> {
                         if (p.isOutOf(size()))
                             continue;
 
-                        if (safeGo[p.getX()][p.getY()] && isAt(p, join(EMPTY_ELEMENTS, ME_HEAD_ELEMENTS))) {
+                        if (safeGo[p.getX()][p.getY()] && isAt(p, SAFE_GO_ELEMENTS)) {
                             goCount++;
                         }
-                        if (safeAttack[p.getX()][p.getY()] && isAt(p, join(EMPTY_ELEMENTS, ME_HEAD_ELEMENTS, ENEMY_HEAD_ELEMENTS))) {
+                        if (safeAttack[p.getX()][p.getY()] && isAt(p, SAFE_ATTACK_ELEMENTS)) {
                             attackCount++;
                         }
                     }
@@ -154,8 +158,34 @@ public class Board extends AbstractBoard<Elements> {
 */
     }
 
-    public Direction[] getPriority() {
-        return new Direction[]{RIGHT, DOWN, LEFT, UP};
+    public Direction[] getPriority(Point point) {
+        Map<Direction, Integer> map = new HashMap<>();
+        for (Direction direction:  new Direction[]{RIGHT, DOWN, LEFT, UP}) {
+            Point p = direction.change(point);
+            int count = countNear(p, SAFE_TRACE_ROUNDS-1, SAFE_GO_ELEMENTS);
+            map.put(direction, count);
+        }
+
+        Map<Direction, Integer> sorted = map.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        System.out.println("priority: " + sorted);
+        return sorted.keySet().toArray(new Direction[4]);
+    }
+
+    public int countNear(Point point, int radius, Elements[] elements) {
+        int result = 0;
+        for(int dx = -radius; dx <= radius; ++dx) {
+            for(int dy = -radius; dy <= radius; ++dy) {
+                if (!PointImpl.pt(point.getX() + dx, point.getY() + dy).isOutOf(this.size) && (dx != 0 || dy != 0) && (!this.withoutCorners() || dx == 0 || dy == 0)) {
+                    if (isAt(point.getX() + dx, point.getY() + dy, elements)) {
+                        result++;
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private int mySize;
