@@ -72,11 +72,13 @@ public class YourSolver implements Solver<Board> {
 
         if (board.isGameOver()) {
             stoneCounter = 0;
+            pill = false;
             return "";
         }
 
         if (board.isGameStart()) {
             stoneCounter = 0;
+            pill = false;
         }
 
         board.traceSnakes();
@@ -121,14 +123,6 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
 
-        if (board.getMySize() > 4  && !fly) {
-            go = tryToGo(point, STONE, priority);
-            if (go.isPresent()) {
-                stoneCounter++;
-                return go;
-            }
-        }
-
         go = tryToGo(point, FLYING_PILL, priority);
         if (go.isPresent()) {
             pillCounter = 0;
@@ -138,6 +132,14 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent()) {
             pillCounter = 0;
             return go;
+        }
+
+        if (board.getMySize() > 4  && !fly) {
+            go = tryToGo(point, STONE, priority);
+            if (go.isPresent()) {
+                stoneCounter++;
+                return go;
+            }
         }
 
         go = tryToGo(point, GOLD, priority);
@@ -154,15 +156,16 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
-            go = board.bfs(point, board.size() / 4, BARRIER_ENEMY, STONE);
-            if (go.isPresent())
-                return go;
-        }
-
-        go = board.bfs(point, board.size() / 4, BARRIER_ENEMY, FURY_PILL, FLYING_PILL);
+        go = board.bfs(point, board.size() / 5, BARRIER_ENEMY, FURY_PILL, FLYING_PILL);
         if (go.isPresent())
             return go;
+
+        if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
+            go = board.bfs(point, board.size() / 5, BARRIER_ENEMY, STONE);
+            if (go.isPresent()) {
+                return go;
+            }
+        }
 
         go = board.bfs(point, board.size(), BARRIER_ENEMY, GOLD, APPLE);
         if (go.isPresent())
@@ -192,6 +195,10 @@ public class YourSolver implements Solver<Board> {
         go = lastCall(point, NORMAL, priority);
         if (go.isPresent())
             return go.get().toString();
+
+        if (fly) {
+            return priority[0].toString();
+        }
 
         go = lastCall(point, CUT_MYSELF, priority);
         if (go.isPresent())
