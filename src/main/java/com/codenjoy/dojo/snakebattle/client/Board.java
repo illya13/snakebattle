@@ -91,20 +91,16 @@ public class Board extends AbstractBoard<Elements> {
 
     private static final int SAFE_TRACE_ROUNDS = 3;
 
-    private boolean[][] safeGo;
-    private boolean[][] safeAttack;
+    private boolean[][] safe;
 
-    private Elements[] SAFE_GO_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS);
-    private Elements[] SAFE_ATTACK_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS, ENEMY_HEAD_ELEMENTS);
+    private Elements[] SAFE_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS);
 
     public void traceSafe() {
-        safeGo = new boolean[size()][size()];
-        safeAttack = new boolean[size()][size()];
+        safe = new boolean[size()][size()];
 
         for(int x = 0; x < size(); ++x) {
             for(int y = 0; y < size(); ++y) {
-                safeGo[x][y] = isAt(x, y, SAFE_GO_ELEMENTS);
-                safeAttack[x][y] = isAt(x, y, SAFE_ATTACK_ELEMENTS);
+                safe[x][y] = isAt(x, y, SAFE_ELEMENTS);
             }
         }
 
@@ -112,30 +108,23 @@ public class Board extends AbstractBoard<Elements> {
             for (int x = 0; x < size(); ++x) {
                 for (int y = 0; y < size(); ++y) {
                     int goCount = 0;
-                    int attackCount = 0;
                     for (Direction direction: new Direction[]{UP, RIGHT, DOWN, LEFT}) {
                         Point p = direction.change(PointImpl.pt(x, y));
                         if (p.isOutOf(size()))
                             continue;
 
-                        if (safeGo[p.getX()][p.getY()] && isAt(p, SAFE_GO_ELEMENTS)) {
+                        if (safe[p.getX()][p.getY()] && isAt(p, SAFE_ELEMENTS)) {
                             goCount++;
                         }
-                        if (safeAttack[p.getX()][p.getY()] && isAt(p, SAFE_ATTACK_ELEMENTS)) {
-                            attackCount++;
-                        }
                     }
-                    safeGo[x][y] = safeGo[x][y] && (goCount > 1);
-                    safeAttack[x][y] = safeAttack[x][y] && (attackCount > 1);
+                    safe[x][y] = safe[x][y] && (goCount > 1);
                 }
             }
         }
 
-/*
-        System.out.println();
         for(int y = size()-1; y >= 0; --y) {
             for (int x = 0; x < size(); ++x) {
-                if (!safeGo[x][y]) {
+                if (!safe[x][y]) {
                     System.out.print(getAllAt(x, y));
                 } else {
                     System.out.print("   ");
@@ -143,26 +132,17 @@ public class Board extends AbstractBoard<Elements> {
             }
             System.out.println();
         }
+    }
 
-        System.out.println();
-        for(int y = size()-1; y >= 0; --y) {
-            for (int x = 0; x < size(); ++x) {
-                if (!safeAttack[x][y]) {
-                    System.out.print(getAllAt(x, y));
-                } else {
-                    System.out.print("   ");
-                }
-            }
-            System.out.println();
-        }
-*/
+    public boolean isSafe(Point point) {
+        return safe[point.getX()][point.getY()];
     }
 
     public Direction[] getPriority(Point point) {
         Map<Direction, Integer> map = new HashMap<>();
         for (Direction direction:  new Direction[]{RIGHT, DOWN, LEFT, UP}) {
             Point p = direction.change(point);
-            int count = countNear(p, SAFE_TRACE_ROUNDS-1, SAFE_GO_ELEMENTS);
+            int count = countNear(p, SAFE_TRACE_ROUNDS-1, SAFE_ELEMENTS);
             map.put(direction, count);
         }
 
@@ -229,13 +209,6 @@ public class Board extends AbstractBoard<Elements> {
         return (enemyFury == 0) && (mySize > enemySize);
     }
 
-    public boolean isSafeToGo(Point point) {
-        return safeGo[point.getX()][point.getY()];
-    }
-
-    public boolean isSafeToAttack(Point point) {
-        return safeAttack[point.getX()][point.getY()];
-    }
 
     public Point getMe() {
         return getMyHead().get(0);

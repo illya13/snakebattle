@@ -24,6 +24,7 @@ package com.codenjoy.dojo.snakebattle.client;
 
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
+import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.*;
@@ -43,7 +44,18 @@ public class BFS {
             return Optional.empty();
 
         Point point = found.get();
-        System.out.print("BFS: " + point);
+
+        for(int y = board.size()-1; y >= 0; --y) {
+            for (int x = 0; x < board.size(); ++x) {
+                Point p = PointImpl.pt(x, y);
+                if (!visited.containsKey(p)) {
+                    System.out.print(board.isSafe(p) ? "   " : board.getAllAt(x, y));
+                } else {
+                    System.out.printf("%3d", visited.get(p).distance);
+                }
+            }
+            System.out.println();
+        }
 
         while (!visited.get(point).getFrom().equals(start)) {
             point = visited.get(point).getFrom();
@@ -67,7 +79,7 @@ public class BFS {
                     if (distance > max)
                         continue;
 
-                    if (!board.isSafeToAttack(p))
+                    if (!board.isSafe(p))
                         continue;
 
                     queue.add(p);

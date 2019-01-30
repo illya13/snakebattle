@@ -157,34 +157,30 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         go = board.bfs(point, board.size() / 5, BARRIER_ENEMY, FURY_PILL, FLYING_PILL);
-        if (go.isPresent())
+        if (go.isPresent()) {
+            System.out.println("=> PILL");
             return go;
+        }
 
         if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
             go = board.bfs(point, board.size() / 3, BARRIER_ENEMY, STONE);
             if (go.isPresent()) {
+                System.out.println("=> STONE");
                 return go;
             }
         }
 
         go = board.bfs(point, board.size() / 2, BARRIER_ENEMY, GOLD, APPLE);
-        if (go.isPresent())
+        if (go.isPresent()) {
+            System.out.println("=> GOLD, APPLE");
             return go;
-
-        if (fury || board.iAmTheBoss()) {
-            go = board.bfs(point, board.size() / 4, BARRIER, ENEMY_HEAD_ELEMENTS);
-            if (go.isPresent()) {
-                Point p = go.get().change(point);
-                if (board.isSafeToGo(p)) {
-                    System.out.println("AGGRESSIVE");
-                    return go;
-                } else {
-                    System.out.println("CLOSE");
-                }
-            }
         }
 
-        return board.bfs(point, board.size() * 2, BARRIER_ENEMY, GOLD, APPLE, FURY_PILL, FLYING_PILL);
+        go = board.bfs(point, board.size() * 2, BARRIER_ENEMY, GOLD, APPLE, FURY_PILL, FLYING_PILL);
+        if (go.isPresent()) {
+            System.out.println("=> GOLD, APPLE, FURY_PILL, FLYING_PILL");
+        }
+        return go;
     }
 
     private String lastCall(Point point) {
@@ -218,7 +214,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> tryToGo(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if(board.isSafeToGo(p) && board.isAt(p, elements)) {
+            if(board.isSafe(p) && board.isAt(p, elements)) {
                 return Optional.of(direction);
             }
         }
@@ -228,7 +224,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> avoid(Point point, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if(board.isSafeToGo(p) && !board.isAt(p, NORMAL)) {
+            if(board.isSafe(p) && !board.isAt(p, NORMAL)) {
                 return Optional.of(direction);
             }
         }
