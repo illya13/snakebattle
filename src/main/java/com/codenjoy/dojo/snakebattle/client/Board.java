@@ -232,6 +232,7 @@ public class Board extends AbstractBoard<Elements> {
     }
 
     public Point getMyTail() {
-        return get(ME_TAIL_ELEMENTS).get(0);
+        List<Point> tail = get(ME_TAIL_ELEMENTS);
+        return (!tail.isEmpty()) ? get(ME_TAIL_ELEMENTS).get(0) : getMe();
     }
 }
