@@ -224,7 +224,8 @@ public class YourSolver implements Solver<Board> {
 
     private boolean isSafeStep(Point point, Direction direction) {
         Point p = direction.change(point);
-        return board.isSafe(p) && canEatStone(p) && canAttack(p);
+        return board.isSafe(p) &&
+                ( canFly() || (canEatStone(p) && canAttack(p)) );
     }
 
     private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
@@ -255,6 +256,10 @@ public class YourSolver implements Solver<Board> {
 
     private boolean canEatStone(Point p) {
         return !board.isAt(p, STONE) || (board.getMySize() > 4) || (fury && pillCounter < 9);
+    }
+
+    private boolean canFly() {
+        return fly && (pillCounter < 9);
     }
 
     private void checkPills(Point point) {
