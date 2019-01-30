@@ -185,7 +185,7 @@ public class YourSolver implements Solver<Board> {
 
 
     private String act(Direction direction) {
-        if (/*enemyCloseToTail() &&*/ (stoneCounter > 1) ) {
+        if (enemyCloseToTail() && (stoneCounter > 1) ) {
             System.out.println("ACT");
             stoneCounter--;
             return "(" + direction.toString() + ", ACT)";
