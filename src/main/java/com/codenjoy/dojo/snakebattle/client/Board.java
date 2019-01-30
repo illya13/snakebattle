@@ -101,6 +101,10 @@ public class Board extends AbstractBoard<Elements> {
     }
 
 
+    public Optional<Direction> bfs(Point start, int max, Elements[] barrier, Elements... elements) {
+        return BFS.bfs(this, start, barrier, elements, max);
+    }
+
     private static final int SAFE_TRACE_ROUNDS = 3;
     private boolean[][] safe;
 
@@ -130,7 +134,7 @@ public class Board extends AbstractBoard<Elements> {
                 }
             }
         }
-
+/*
         for(int y = size()-1; y >= 0; --y) {
             for (int x = 0; x < size(); ++x) {
                 if (!safe[x][y]) {
@@ -141,6 +145,7 @@ public class Board extends AbstractBoard<Elements> {
             }
             System.out.println();
         }
+*/
     }
 
     public boolean isSafe(Point point) {
@@ -180,13 +185,11 @@ public class Board extends AbstractBoard<Elements> {
     private int mySize;
     private int enemySnakes;
     private int enemySize;
-    private int enemyFury;
 
     public void traceSnakes() {
         mySize = 0;
         enemySnakes = 0;
         enemySize = 0;
-        enemyFury = 0;
 
         for (int x = 0; x < size(); ++x) {
             for (int y = 0; y < size(); ++y) {
@@ -196,8 +199,6 @@ public class Board extends AbstractBoard<Elements> {
                     enemySize++;
                 if (isAt(x, y, ENEMY_HEAD_ELEMENTS))
                     enemySnakes++;
-                if (isAt(x, y, ENEMY_HEAD_EVIL))
-                    enemyFury++;
             }
         }
     }
@@ -212,10 +213,6 @@ public class Board extends AbstractBoard<Elements> {
 
     public int getEnemySize() {
         return enemySize;
-    }
-
-    public boolean iAmTheBoss() {
-        return (enemyFury == 0) && (mySize > enemySize);
     }
 
     public Point getMe() {
@@ -235,10 +232,6 @@ public class Board extends AbstractBoard<Elements> {
     }
 
     private List<Point> getMyTail() {
-        return get(ME_HEAD_ELEMENTS);
-    }
-
-    public Optional<Direction> bfs(Point start, int max, Elements[] barrier, Elements... elements) {
-        return BFS.bfs(this, start, barrier, elements, max);
+        return get(ME_TAIL_ELEMENTS);
     }
 }

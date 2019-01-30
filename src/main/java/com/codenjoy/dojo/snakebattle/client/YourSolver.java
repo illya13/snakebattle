@@ -87,11 +87,14 @@ public class YourSolver implements Solver<Board> {
 
         go = safeStepTarget(point, FLYING_PILL, priority);
         if (go.isPresent()) {
+            System.out.println("=> FLYING_PILL");
             pillCounter = 0;
+            return go;
         }
 
         go = safeStepTarget(point, FURY_PILL, priority);
         if (go.isPresent()) {
+            System.out.println("=> FURY_PILL");
             pillCounter = 0;
             return go;
         }
@@ -99,18 +102,23 @@ public class YourSolver implements Solver<Board> {
         if (board.getMySize() > 4  && !fly) {
             go = safeStepTarget(point, STONE, priority);
             if (go.isPresent()) {
+                System.out.println("=> STONE");
                 stoneCounter++;
                 return go;
             }
         }
 
         go = safeStepTarget(point, GOLD, priority);
-        if (go.isPresent())
+        if (go.isPresent()) {
+            System.out.println("=> GOLD");
             return go;
+        }
 
         go = safeStepTarget(point, APPLE, priority);
-        if (go.isPresent())
+        if (go.isPresent()) {
+            System.out.println("=> APPLE");
             return go;
+        }
 
         return go;
     }
@@ -121,27 +129,27 @@ public class YourSolver implements Solver<Board> {
 
         go = board.bfs(point, board.size() / 5, BARRIER_NORMAL, FURY_PILL, FLYING_PILL);
         if (go.isPresent()) {
-            System.out.println("=> PILL");
+            System.out.println("=> BFS: PILL");
             return go;
         }
 
         if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
             go = board.bfs(point, board.size() / 3, BARRIER_NORMAL, STONE);
             if (go.isPresent()) {
-                System.out.println("=> STONE");
+                System.out.println("=> BFS: STONE");
                 return go;
             }
         }
 
         go = board.bfs(point, board.size() / 2, BARRIER_NORMAL, GOLD, APPLE);
         if (go.isPresent()) {
-            System.out.println("=> GOLD, APPLE");
+            System.out.println("=> BFS: GOLD, APPLE");
             return go;
         }
 
         go = board.bfs(point, board.size() * 2, BARRIER_NORMAL, GOLD, APPLE, FURY_PILL, FLYING_PILL);
         if (go.isPresent()) {
-            System.out.println("=> GOLD, APPLE, FURY_PILL, FLYING_PILL");
+            System.out.println("=> BFS: GOLD, APPLE, FURY_PILL, FLYING_PILL");
         }
         return go;
     }
@@ -179,7 +187,7 @@ public class YourSolver implements Solver<Board> {
         }
 
         board.traceSnakes();
-        System.out.println("me [" + board.getMySize() + "], enemies [" + board.getEnemySnakes()+ "]: " + board.getEnemySize());
+        System.out.println("me: " + board.getMySize() + ", enemies[" + board.getEnemySnakes()+ "]: " + board.getEnemySize());
 
         board.traceSafe();
 
@@ -239,7 +247,14 @@ public class YourSolver implements Solver<Board> {
             fly = false;
             pillCounter = 0;
         }
-        System.out.println("stones[" + stoneCounter + "], pill[" + pillCounter + "]: " + pill + ", fury: " + fury + ", fly: " + fly);
+        System.out.print("stones: " + stoneCounter);
+        if (fury) {
+            System.out.println(", fury[" + pillCounter + "]");
+        } else if (fly) {
+            System.out.println(", fly[" + pillCounter + "]");
+        } else {
+            System.out.println();
+        }
     }
 
     public static void main(String[] args) {
