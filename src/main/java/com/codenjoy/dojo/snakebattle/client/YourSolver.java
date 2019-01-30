@@ -185,7 +185,7 @@ public class YourSolver implements Solver<Board> {
 
 
     private String act(Direction direction) {
-        if (stoneCounter > 1) {
+        if (enemyCloseToTail() && (stoneCounter > 1) ) {
             System.out.println("ACT");
             stoneCounter--;
             return "(" + direction.toString() + ", ACT)";
@@ -218,7 +218,8 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> safeStepTarget(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
-            if (board.isAt(point, elements) && isSafeStep(point, direction))
+            Point p = direction.change(point);
+            if (board.isAt(p, elements) && isSafeStep(point, direction))
                 return Optional.of(direction);
         }
         return Optional.empty();
@@ -262,6 +263,10 @@ public class YourSolver implements Solver<Board> {
 
     private boolean canFly() {
         return fly && (pillCounter < 9);
+    }
+
+    private boolean enemyCloseToTail() {
+        return board.countNear(board.getMyTail(), 1, ENEMY_HEAD_ELEMENTS) > 0;
     }
 
     private void checkPills(Point point) {
