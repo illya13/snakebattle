@@ -183,6 +183,10 @@ public class YourSolver implements Solver<Board> {
 
 
     private String act(Direction direction) {
+        if (stoneCounter > 0) {
+            stoneCounter--;
+            return "(" + direction.toString() + ", ACT)";
+        }
         return direction.toString();
     }
 
