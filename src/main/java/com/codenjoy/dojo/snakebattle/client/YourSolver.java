@@ -56,11 +56,9 @@ public class YourSolver implements Solver<Board> {
     private int pillCounter;
     private int stoneCounter = 0;
 
-    private static final Elements[] BARRIER_ENEMY = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
-    private static final Elements[] BARRIER = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_ELEMENTS);
-    private static final Elements[] NORMAL = join(BARRIER_ELEMENTS, ME_ELEMENTS, ENEMY_TAIL_ELEMENTS);
-    private static final Elements[] CUT_MYSELF = join(BARRIER_ELEMENTS, ENEMY_TAIL_ELEMENTS);
-    private static final Elements[] NO_WAY = join(ENEMY_TAIL_ELEMENTS);
+    private static final Elements[] BARRIER_NORMAL = join(BARRIER_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
+    private static final Elements[] BARRIER_CUT_MYSELF = join(BARRIER_ELEMENTS, ENEMY_TAIL_ELEMENTS);
+    private static final Elements[] BARRIER_NO_WAY = join(ENEMY_TAIL_ELEMENTS);
 
     YourSolver(Dice dice) {
         this.dice = dice;
@@ -102,6 +100,128 @@ public class YourSolver implements Solver<Board> {
         return lastCall(me);
     }
 
+
+    private Optional<Direction> realTime(Point point) {
+        Optional<Direction> go;
+
+        go = safeStepTarget(point, FLYING_PILL, priority);
+        if (go.isPresent()) {
+            pillCounter = 0;
+        }
+
+        go = safeStepTarget(point, FURY_PILL, priority);
+        if (go.isPresent()) {
+            pillCounter = 0;
+            return go;
+        }
+
+        if (board.getMySize() > 4  && !fly) {
+            go = safeStepTarget(point, STONE, priority);
+            if (go.isPresent()) {
+                stoneCounter++;
+                return go;
+            }
+        }
+
+        go = safeStepTarget(point, GOLD, priority);
+        if (go.isPresent())
+            return go;
+
+        go = safeStepTarget(point, APPLE, priority);
+        if (go.isPresent())
+            return go;
+
+        return go;
+    }
+
+    private Optional<Direction> midTerm(Point point) {
+        Optional<Direction> go;
+
+        go = board.bfs(point, board.size() / 5, BARRIER_NORMAL, FURY_PILL, FLYING_PILL);
+        if (go.isPresent()) {
+            System.out.println("=> PILL");
+            return go;
+        }
+
+        if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
+            go = board.bfs(point, board.size() / 3, BARRIER_NORMAL, STONE);
+            if (go.isPresent()) {
+                System.out.println("=> STONE");
+                return go;
+            }
+        }
+
+        go = board.bfs(point, board.size() / 2, BARRIER_NORMAL, GOLD, APPLE);
+        if (go.isPresent()) {
+            System.out.println("=> GOLD, APPLE");
+            return go;
+        }
+
+        go = board.bfs(point, board.size() * 2, BARRIER_NORMAL, GOLD, APPLE, FURY_PILL, FLYING_PILL);
+        if (go.isPresent()) {
+            System.out.println("=> GOLD, APPLE, FURY_PILL, FLYING_PILL");
+        }
+        return go;
+    }
+
+    private String lastCall(Point point) {
+        Optional<Direction> go = safeStepAvoid(point, BARRIER_NORMAL, priority);
+        if (go.isPresent())
+            return go.get().toString();
+
+        go = unsafeStepAvoid(point, BARRIER_NORMAL, priority);
+        if (go.isPresent())
+            return go.get().toString();
+
+        if (fly) {
+            return priority[0].toString();
+        }
+
+        go = unsafeStepAvoid(point, BARRIER_CUT_MYSELF, priority);
+        if (go.isPresent())
+            return go.get().toString();
+
+        go = unsafeStepAvoid(point, BARRIER_NO_WAY, priority);
+        if (go.isPresent())
+            return go.get().toString();
+
+        return priority[0].toString();
+    }
+
+    private Optional<Direction> safeStepTarget(Point point, Elements elements, Direction[] directions) {
+        return safeStepTarget(point, new Elements[]{elements}, directions);
+    }
+
+    private Optional<Direction> safeStepTarget(Point point, Elements[] elements, Direction[] directions) {
+        for (Direction direction: directions) {
+            Point p = direction.change(point);
+            if(board.isSafe(p) && board.isAt(p, elements)) {
+                return Optional.of(direction);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
+        for (Direction direction: directions) {
+            Point p = direction.change(point);
+            if(board.isSafe(p) && !board.isAt(p, elements)) {
+                return Optional.of(direction);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Direction> unsafeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
+        for (Direction direction: directions) {
+            Point p = direction.change(point);
+            if(!board.isAt(p, elements)) {
+                return Optional.of(direction);
+            }
+        }
+        return Optional.empty();
+    }
+
     private void checkPills(Point point) {
         if (board.isAt(point, HEAD_EVIL, HEAD_FLY)) {
             fury = board.isAt(point, HEAD_EVIL);
@@ -118,127 +238,6 @@ public class YourSolver implements Solver<Board> {
             pillCounter = 0;
         }
         System.out.println("stones[" + stoneCounter + "], pill[" + pillCounter + "]: " + pill + ", fury: " + fury + ", fly: " + fly);
-    }
-
-    private Optional<Direction> realTime(Point point) {
-        Optional<Direction> go;
-
-        go = tryToGo(point, FLYING_PILL, priority);
-        if (go.isPresent()) {
-            pillCounter = 0;
-        }
-
-        go = tryToGo(point, FURY_PILL, priority);
-        if (go.isPresent()) {
-            pillCounter = 0;
-            return go;
-        }
-
-        if (board.getMySize() > 4  && !fly) {
-            go = tryToGo(point, STONE, priority);
-            if (go.isPresent()) {
-                stoneCounter++;
-                return go;
-            }
-        }
-
-        go = tryToGo(point, GOLD, priority);
-        if (go.isPresent())
-            return go;
-
-        go = tryToGo(point, APPLE, priority);
-        if (go.isPresent())
-            return go;
-
-        return go;
-    }
-
-    private Optional<Direction> midTerm(Point point) {
-        Optional<Direction> go;
-
-        go = board.bfs(point, board.size() / 5, BARRIER_ENEMY, FURY_PILL, FLYING_PILL);
-        if (go.isPresent()) {
-            System.out.println("=> PILL");
-            return go;
-        }
-
-        if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
-            go = board.bfs(point, board.size() / 3, BARRIER_ENEMY, STONE);
-            if (go.isPresent()) {
-                System.out.println("=> STONE");
-                return go;
-            }
-        }
-
-        go = board.bfs(point, board.size() / 2, BARRIER_ENEMY, GOLD, APPLE);
-        if (go.isPresent()) {
-            System.out.println("=> GOLD, APPLE");
-            return go;
-        }
-
-        go = board.bfs(point, board.size() * 2, BARRIER_ENEMY, GOLD, APPLE, FURY_PILL, FLYING_PILL);
-        if (go.isPresent()) {
-            System.out.println("=> GOLD, APPLE, FURY_PILL, FLYING_PILL");
-        }
-        return go;
-    }
-
-    private String lastCall(Point point) {
-        Optional<Direction> go = avoid(point, priority);
-        if (go.isPresent())
-            return go.get().toString();
-
-        go = lastCall(point, NORMAL, priority);
-        if (go.isPresent())
-            return go.get().toString();
-
-        if (fly) {
-            return priority[0].toString();
-        }
-
-        go = lastCall(point, CUT_MYSELF, priority);
-        if (go.isPresent())
-            return go.get().toString();
-
-        go = lastCall(point, NO_WAY, priority);
-        if (go.isPresent())
-            return go.get().toString();
-
-        return priority[0].toString();
-    }
-
-    private Optional<Direction> tryToGo(Point point, Elements elements, Direction[] directions) {
-        return tryToGo(point, new Elements[]{elements}, directions);
-    }
-
-    private Optional<Direction> tryToGo(Point point, Elements[] elements, Direction[] directions) {
-        for (Direction direction: directions) {
-            Point p = direction.change(point);
-            if(board.isSafe(p) && board.isAt(p, elements)) {
-                return Optional.of(direction);
-            }
-        }
-        return Optional.empty();
-    }
-
-    private Optional<Direction> avoid(Point point, Direction[] directions) {
-        for (Direction direction: directions) {
-            Point p = direction.change(point);
-            if(board.isSafe(p) && !board.isAt(p, NORMAL)) {
-                return Optional.of(direction);
-            }
-        }
-        return Optional.empty();
-    }
-
-    private Optional<Direction> lastCall(Point point, Elements[] elements, Direction[] directions) {
-        for (Direction direction: directions) {
-            Point p = direction.change(point);
-            if(!board.isAt(p, elements)) {
-                return Optional.of(direction);
-            }
-        }
-        return Optional.empty();
     }
 
     public static void main(String[] args) {
