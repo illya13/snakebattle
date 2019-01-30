@@ -29,6 +29,7 @@ import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.*;
 import static com.codenjoy.dojo.services.Direction.*;
+import static com.codenjoy.dojo.snakebattle.model.Elements.NONE;
 
 
 public class BFS {
@@ -49,7 +50,7 @@ public class BFS {
             for (int x = 0; x < board.size(); ++x) {
                 Point p = PointImpl.pt(x, y);
                 if (!visited.containsKey(p)) {
-                    System.out.print(board.isSafe(p) ? "   " : board.getAllAt(x, y));
+                    System.out.print(board.isAt(p, NONE) ? "   " : board.getAllAt(x, y));
                 } else {
                     System.out.printf("%3d", visited.get(p).distance);
                 }
