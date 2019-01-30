@@ -99,7 +99,7 @@ public class YourSolver implements Solver<Board> {
             return go;
         }
 
-        if (board.getMySize() > 4  && !fly) {
+        if (!fly && ((board.getMySize() > 4) || (fury && pillCounter < 9)) ) {
             go = safeStepTarget(point, STONE, priority);
             if (go.isPresent()) {
                 System.out.println("=> STONE");
@@ -234,7 +234,7 @@ public class YourSolver implements Solver<Board> {
 
     private boolean checkEnemy(Point point) {
         return board.countNear(point, 1, ENEMY_HEAD_ELEMENTS) == 0 ||
-                ( fury && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
+                ((fury && pillCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ( board.getMySize() > board.getEnemySize() );
     }
 
