@@ -129,16 +129,24 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
+        if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
+            go = board.bfs(point, board.size() / 6, BARRIER_NORMAL, STONE);
+            if (go.isPresent() && isSafeStep(point, go.get())) {
+                System.out.println("=> BFS: STONE CLOSE");
+                return go;
+            }
+        }
+
         go = board.bfs(point, board.size() / 6, BARRIER_NORMAL_STONE, FURY_PILL, FLYING_PILL, GOLD, APPLE);
         if (go.isPresent() && isSafeStep(point, go.get())) {
             System.out.println("=> BFS: ANY CLOSE");
             return go;
         }
 
-        if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
-            go = board.bfs(point, board.size() / 3, BARRIER_NORMAL, STONE);
+        if (board.getMySize() > 4) {
+            go = board.bfs(point, board.size() / 2, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
-                System.out.println("=> BFS: STONE");
+                System.out.println("=> BFS: STONE FAR");
                 return go;
             }
         }
