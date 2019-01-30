@@ -47,6 +47,7 @@ public class YourSolver implements Solver<Board> {
 
     private Dice dice;
     private Board board;
+    private Point me;
     private Direction[] priority;
 
     private boolean fury;
@@ -67,29 +68,13 @@ public class YourSolver implements Solver<Board> {
     @Override
     public String get(Board board) {
         this.board = board;
+        if (board.isGameOver()) return "";
 
-        if (board.isGameOver()) {
-            stoneCounter = 0;
-            pill = false;
-            return "";
-        }
+        init(board);
 
-        if (board.isGameStart()) {
-            stoneCounter = 0;
-            pill = false;
-        }
+        Optional<Direction> go;
 
-        board.traceSnakes();
-        System.out.println("me [" + board.getMySize() + "], enemies [" + board.getEnemySnakes()+ "]: " + board.getEnemySize());
-
-        board.traceSafe();
-
-        Point me = board.getMe();
-        checkPills(me);
-
-        priority = board.getPriority(me);
-
-        Optional<Direction> go = realTime(me);
+        go = realTime(me);
         if (go.isPresent())
             return go.get().toString();
 
@@ -134,6 +119,7 @@ public class YourSolver implements Solver<Board> {
         return go;
     }
 
+
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
@@ -164,6 +150,7 @@ public class YourSolver implements Solver<Board> {
         return go;
     }
 
+
     private String lastCall(Point point) {
         Optional<Direction> go = safeStepAvoid(point, BARRIER_NORMAL, priority);
         if (go.isPresent())
@@ -187,6 +174,25 @@ public class YourSolver implements Solver<Board> {
 
         return priority[0].toString();
     }
+
+
+    private void init(Board board) {
+        if (board.isGameStart()) {
+            stoneCounter = 0;
+            pill = false;
+        }
+
+        board.traceSnakes();
+        System.out.println("me [" + board.getMySize() + "], enemies [" + board.getEnemySnakes()+ "]: " + board.getEnemySize());
+
+        board.traceSafe();
+
+        me = board.getMe();
+        checkPills(me);
+
+        priority = board.getPriority(me);
+    }
+
 
     private Optional<Direction> safeStepTarget(Point point, Elements elements, Direction[] directions) {
         return safeStepTarget(point, new Elements[]{elements}, directions);
