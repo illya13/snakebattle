@@ -152,8 +152,10 @@ public class YourSolver implements Solver<Board> {
         go = board.bfs(point, board.size() * 2, BARRIER_NORMAL, GOLD, APPLE, FURY_PILL, FLYING_PILL);
         if (go.isPresent() && isSafeStep(point, go.get())) {
             System.out.println("=> BFS: GOLD, APPLE, FURY_PILL, FLYING_PILL");
+            return go;
         }
-        return go;
+
+        return Optional.empty();
     }
 
 
@@ -231,7 +233,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if(board.isSafe(p) && !board.isAt(p, elements)) {
+            if(!board.isAt(p, elements) && isSafeStep(point, direction)) {
                 return Optional.of(direction);
             }
         }
