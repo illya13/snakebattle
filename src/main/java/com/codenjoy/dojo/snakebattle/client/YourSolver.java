@@ -129,7 +129,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
+        if ( (board.getMySize() > 4 || (fury && pillCounter < 5)) && (!fly || pillCounter > 5) ) {
             go = board.bfs(point, board.size() / 6, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: STONE CLOSE");
