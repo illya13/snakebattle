@@ -50,8 +50,7 @@ public class Board extends AbstractBoard<Elements> {
 
     public static final Elements[] ME_HEAD_ELEMENTS = new Elements[] {HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY};
 
-    public static final Elements[] ME_ELEMENTS = new Elements[] {TAIL_END_DOWN, TAIL_END_LEFT, TAIL_END_UP, TAIL_END_RIGHT, TAIL_INACTIVE,
-            BODY_HORIZONTAL, BODY_VERTICAL, BODY_LEFT_DOWN, BODY_LEFT_UP, BODY_RIGHT_DOWN, BODY_RIGHT_UP};
+    public static final Elements[] ME_TAIL_ELEMENTS = new Elements[] {TAIL_END_DOWN, TAIL_END_LEFT, TAIL_END_UP, TAIL_END_RIGHT, TAIL_INACTIVE};
 
     public static final Elements[] ME_BODY_ELEMENTS = new Elements[] {BODY_HORIZONTAL, BODY_VERTICAL, BODY_LEFT_DOWN, BODY_LEFT_UP, BODY_RIGHT_DOWN, BODY_RIGHT_UP};
 
@@ -66,9 +65,11 @@ public class Board extends AbstractBoard<Elements> {
             ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP};
 
 
+    public static final Elements[] ME_BODY_TAIL_ELEMENTS = join(ME_BODY_ELEMENTS, ME_TAIL_ELEMENTS);
+
     public static final Elements[] SAFE_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS);
 
-    public static final Elements[] BARRIER_NORMAL = join(BARRIER_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
+    public static final Elements[] BARRIER_NORMAL = join(BARRIER_ELEMENTS, ME_BODY_TAIL_ELEMENTS, ENEMY_ELEMENTS);
     public static final Elements[] BARRIER_CUT_MYSELF = join(BARRIER_ELEMENTS, ENEMY_TAIL_ELEMENTS);
     public static final Elements[] BARRIER_NO_WAY = join(ENEMY_TAIL_ELEMENTS);
 
@@ -189,7 +190,7 @@ public class Board extends AbstractBoard<Elements> {
 
         for (int x = 0; x < size(); ++x) {
             for (int y = 0; y < size(); ++y) {
-                if (isAt(x, y, join(ME_HEAD_ELEMENTS, ME_ELEMENTS)))
+                if (isAt(x, y, join(ME_HEAD_ELEMENTS, ME_BODY_TAIL_ELEMENTS)))
                     mySize++;
                 if (isAt(x, y, ENEMY_ELEMENTS))
                     enemySize++;
@@ -217,7 +218,6 @@ public class Board extends AbstractBoard<Elements> {
         return (enemyFury == 0) && (mySize > enemySize);
     }
 
-
     public Point getMe() {
         return getMyHead().get(0);
     }
@@ -231,6 +231,10 @@ public class Board extends AbstractBoard<Elements> {
     }
 
     private List<Point> getMyHead() {
+        return get(ME_HEAD_ELEMENTS);
+    }
+
+    private List<Point> getMyTail() {
         return get(ME_HEAD_ELEMENTS);
     }
 
