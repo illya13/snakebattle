@@ -57,10 +57,6 @@ public class YourSolver implements Solver<Board> {
     private int pillCounter;
     private int stoneCounter = 0;
 
-    private static final Elements[] BARRIER_NORMAL = join(BARRIER_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
-    private static final Elements[] BARRIER_CUT_MYSELF = join(BARRIER_ELEMENTS, ENEMY_TAIL_ELEMENTS);
-    private static final Elements[] BARRIER_NO_WAY = join(ENEMY_TAIL_ELEMENTS);
-
     YourSolver(Dice dice) {
         this.dice = dice;
     }
@@ -190,7 +186,7 @@ public class YourSolver implements Solver<Board> {
         me = board.getMe();
         checkPills(me);
 
-        priority = board.getPriority(me);
+        priority = board.getPriority(me, 1);
     }
 
 

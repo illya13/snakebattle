@@ -42,9 +42,11 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  */
 public class Board extends AbstractBoard<Elements> {
     public static final Elements[] STONE_ELEMENTS = new Elements[] {STONE};
+
     public static final Elements[] EMPTY_ELEMENTS = new Elements[] {NONE, APPLE, FLYING_PILL, FURY_PILL, GOLD};
 
     public static final Elements[] BARRIER_ELEMENTS = new Elements[] {WALL, START_FLOOR, ENEMY_HEAD_SLEEP, ENEMY_TAIL_INACTIVE};
+
 
     public static final Elements[] ME_HEAD_ELEMENTS = new Elements[] {HEAD_DOWN, HEAD_LEFT, HEAD_RIGHT, HEAD_UP, HEAD_SLEEP, HEAD_EVIL, HEAD_FLY};
 
@@ -52,6 +54,7 @@ public class Board extends AbstractBoard<Elements> {
             BODY_HORIZONTAL, BODY_VERTICAL, BODY_LEFT_DOWN, BODY_LEFT_UP, BODY_RIGHT_DOWN, BODY_RIGHT_UP};
 
     public static final Elements[] ME_BODY_ELEMENTS = new Elements[] {BODY_HORIZONTAL, BODY_VERTICAL, BODY_LEFT_DOWN, BODY_LEFT_UP, BODY_RIGHT_DOWN, BODY_RIGHT_UP};
+
 
     public static final Elements[] ENEMY_ELEMENTS = new Elements[] {ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP, ENEMY_HEAD_FLY, ENEMY_HEAD_EVIL,
             ENEMY_TAIL_END_DOWN, ENEMY_TAIL_END_LEFT, ENEMY_TAIL_END_UP, ENEMY_TAIL_END_RIGHT,
@@ -61,6 +64,13 @@ public class Board extends AbstractBoard<Elements> {
 
     public static final Elements[] ENEMY_TAIL_ELEMENTS = new Elements[] {ENEMY_TAIL_END_DOWN, ENEMY_TAIL_END_LEFT, ENEMY_TAIL_END_UP, ENEMY_TAIL_END_RIGHT, ENEMY_TAIL_INACTIVE,
             ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP};
+
+
+    public static final Elements[] SAFE_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS);
+
+    public static final Elements[] BARRIER_NORMAL = join(BARRIER_ELEMENTS, ME_ELEMENTS, ENEMY_ELEMENTS);
+    public static final Elements[] BARRIER_CUT_MYSELF = join(BARRIER_ELEMENTS, ENEMY_TAIL_ELEMENTS);
+    public static final Elements[] BARRIER_NO_WAY = join(ENEMY_TAIL_ELEMENTS);
 
 
     public static Elements[] join(Elements[]... arrays) {
@@ -89,11 +99,9 @@ public class Board extends AbstractBoard<Elements> {
         return size - 1 - y;
     }
 
+
     private static final int SAFE_TRACE_ROUNDS = 3;
-
     private boolean[][] safe;
-
-    private Elements[] SAFE_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS);
 
     public void traceSafe() {
         safe = new boolean[size()][size()];
@@ -138,11 +146,11 @@ public class Board extends AbstractBoard<Elements> {
         return safe[point.getX()][point.getY()];
     }
 
-    public Direction[] getPriority(Point point) {
+    public Direction[] getPriority(Point point, int radius) {
         Map<Direction, Integer> map = new HashMap<>();
         for (Direction direction:  new Direction[]{RIGHT, DOWN, LEFT, UP}) {
             Point p = direction.change(point);
-            int count = countNear(p, SAFE_TRACE_ROUNDS-1, SAFE_ELEMENTS);
+            int count = countNear(p, radius, SAFE_ELEMENTS);
             map.put(direction, count);
         }
 
