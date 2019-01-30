@@ -71,12 +71,14 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         go = realTime(me);
-        if (go.isPresent())
-            return go.get().toString();
+        if (go.isPresent()) {
+            return act(go.get());
+        }
 
         go = midTerm(me);
-        if (go.isPresent())
-            return go.get().toString();
+        if (go.isPresent()) {
+            return act(go.get());
+        }
 
         return lastCall(me);
     }
@@ -177,6 +179,11 @@ public class YourSolver implements Solver<Board> {
             return go.get().toString();
 
         return priority[0].toString();
+    }
+
+
+    private String act(Direction direction) {
+        return direction.toString();
     }
 
 
