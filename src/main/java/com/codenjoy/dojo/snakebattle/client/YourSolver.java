@@ -184,6 +184,7 @@ public class YourSolver implements Solver<Board> {
 
     private String act(Direction direction) {
         if (stoneCounter > 0) {
+            System.out.println("ACT");
             stoneCounter--;
             return "(" + direction.toString() + ", ACT)";
         }
