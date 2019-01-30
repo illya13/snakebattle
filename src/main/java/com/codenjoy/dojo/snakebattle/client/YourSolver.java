@@ -101,7 +101,7 @@ public class YourSolver implements Solver<Board> {
             return go;
         }
 
-        if (!fly && ((board.getMySize() > 4) || (fury && pillCounter < 9)) ) {
+        if (!fly) {
             go = safeStepTarget(point, STONE, priority);
             if (go.isPresent()) {
                 System.out.println("=> STONE");
@@ -130,27 +130,27 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         go = board.bfs(point, board.size() / 5, BARRIER_NORMAL, FURY_PILL, FLYING_PILL);
-        if (go.isPresent()) {
+        if (go.isPresent() && isSafeStep(point, go.get())) {
             System.out.println("=> BFS: PILL");
             return go;
         }
 
         if (board.getMySize() > 4 && (!fly || pillCounter > 5)) {
             go = board.bfs(point, board.size() / 3, BARRIER_NORMAL, STONE);
-            if (go.isPresent()) {
+            if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: STONE");
                 return go;
             }
         }
 
         go = board.bfs(point, board.size() / 2, BARRIER_NORMAL, GOLD, APPLE);
-        if (go.isPresent()) {
+        if (go.isPresent() && isSafeStep(point, go.get())) {
             System.out.println("=> BFS: GOLD, APPLE");
             return go;
         }
 
         go = board.bfs(point, board.size() * 2, BARRIER_NORMAL, GOLD, APPLE, FURY_PILL, FLYING_PILL);
-        if (go.isPresent()) {
+        if (go.isPresent() && isSafeStep(point, go.get())) {
             System.out.println("=> BFS: GOLD, APPLE, FURY_PILL, FLYING_PILL");
         }
         return go;
@@ -211,12 +211,15 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> safeStepTarget(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
-            Point p = direction.change(point);
-            if(board.isSafe(p) && board.isAt(p, elements) && canAttack(p)) {
+            if (board.isAt(point, elements) && isSafeStep(point, direction))
                 return Optional.of(direction);
-            }
         }
         return Optional.empty();
+    }
+
+    private boolean isSafeStep(Point point, Direction direction) {
+        Point p = direction.change(point);
+        return board.isSafe(p) && canEatStone(p) && canAttack(p);
     }
 
     private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
@@ -243,6 +246,10 @@ public class YourSolver implements Solver<Board> {
         return board.countNear(point, 1, ENEMY_HEAD_ELEMENTS) == 0 ||
                 ((fury && pillCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ( board.getMySize() > board.getEnemySize() );
+    }
+
+    private boolean canEatStone(Point p) {
+        return !board.isAt(p, STONE) || (board.getMySize() > 4) || (fury && pillCounter < 9);
     }
 
     private void checkPills(Point point) {
