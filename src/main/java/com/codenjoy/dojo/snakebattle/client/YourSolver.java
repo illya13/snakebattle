@@ -205,7 +205,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> safeStepTarget(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if(board.isSafe(p) && board.isAt(p, elements) && checkEnemy(p)) {
+            if(board.isSafe(p) && board.isAt(p, elements) && canAttack(p)) {
                 return Optional.of(direction);
             }
         }
@@ -232,7 +232,7 @@ public class YourSolver implements Solver<Board> {
         return Optional.empty();
     }
 
-    private boolean checkEnemy(Point point) {
+    private boolean canAttack(Point point) {
         return board.countNear(point, 1, ENEMY_HEAD_ELEMENTS) == 0 ||
                 ((fury && pillCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ( board.getMySize() > board.getEnemySize() );
