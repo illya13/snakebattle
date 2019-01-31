@@ -46,6 +46,7 @@ public class BFS {
 
         Point point = found.get();
 
+/*
         for(int y = board.size()-1; y >= 0; --y) {
             for (int x = 0; x < board.size(); ++x) {
                 Point p = PointImpl.pt(x, y);
@@ -57,6 +58,7 @@ public class BFS {
             }
             System.out.println();
         }
+*/
         while (!visited.get(point).getFrom().equals(start)) {
             point = visited.get(point).getFrom();
             if (point == null)
