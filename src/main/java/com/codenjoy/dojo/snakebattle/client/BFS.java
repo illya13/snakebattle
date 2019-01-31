@@ -33,19 +33,19 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.NONE;
 
 
 public class BFS {
-    public static Optional<Direction> bfs(Board board, Point start, Elements[] barrier, Elements[] target, int size) {
+    public static Optional<Direction> bfs(Board board, Point start, Elements[] barrier, Elements[] target, int size, boolean attack) {
         Queue<Point> queue = new LinkedList<>();
         queue.add(start);
 
         Map<Point, Path> visited = new HashMap<>(size*2);
         visited.put(start, new Path(null, null, 0));
 
-        Optional<Point> found = bfs(board, queue, visited, barrier, target, size);
+        Optional<Point> found = bfs(board, queue, visited, barrier, target, size, attack);
         if (!found.isPresent())
             return Optional.empty();
 
         Point point = found.get();
-/*
+
         for(int y = board.size()-1; y >= 0; --y) {
             for (int x = 0; x < board.size(); ++x) {
                 Point p = PointImpl.pt(x, y);
@@ -57,7 +57,6 @@ public class BFS {
             }
             System.out.println();
         }
-*/
         while (!visited.get(point).getFrom().equals(start)) {
             point = visited.get(point).getFrom();
             if (point == null)
@@ -66,7 +65,7 @@ public class BFS {
         return Optional.of(visited.get(point).getDirection());
     }
 
-    private static Optional<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements[] barrier, Elements[] target, int max) {
+    private static Optional<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements[] barrier, Elements[] target, int max, boolean attack) {
         while (!queue.isEmpty()) {
             Point point = queue.poll();
 
@@ -80,8 +79,13 @@ public class BFS {
                     if (distance > max)
                         continue;
 
-                    if (!board.isSafe(p))
-                        continue;
+                    if (attack) {
+                        if (!board.isSafeAttack(p))
+                            continue;
+                    } else {
+                        if (!board.isSafe(p))
+                            continue;
+                    }
 
                     queue.add(p);
                     visited.put(p, new Path(point, direction,distance+1));

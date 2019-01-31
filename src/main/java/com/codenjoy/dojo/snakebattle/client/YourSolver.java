@@ -139,8 +139,8 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         if (isAttackMode()) {
-            go = board.bfs(point, board.size() / 2, BARRIER_ATTACK, ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
-            if (go.isPresent() && isSafeStep(point, go.get())) {
+            go = board.bfsAttack(point, board.size() / 2, BARRIER_ATTACK, ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
+            if (go.isPresent() && isSafeAttack(point, go.get())) {
                 System.out.println("=> BFS: ATTACK");
                 return go;
             }
@@ -257,6 +257,11 @@ public class YourSolver implements Solver<Board> {
         Point p = direction.change(point);
         return board.isSafe(p) &&
                 ( canFly() || (canEatStoneAt(p) && canAttack(p)) );
+    }
+
+    private boolean isSafeAttack(Point point, Direction direction) {
+        Point p = direction.change(point);
+        return board.isSafe(p);
     }
 
     private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
