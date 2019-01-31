@@ -94,14 +94,14 @@ public class YourSolver implements Solver<Board> {
         go = safeStepTarget(point, FLYING_PILL, priority);
         if (go.isPresent()) {
             System.out.println("=> FLYING_PILL");
-            pillCounter = 0;
+            pillCounter = (fly) ? pillCounter-10 : 0;
             return go;
         }
 
         go = safeStepTarget(point, FURY_PILL, priority);
         if (go.isPresent()) {
             System.out.println("=> FURY_PILL");
-            pillCounter = 0;
+            pillCounter = (fury) ? pillCounter-10 : 0;
             return go;
         }
 
@@ -146,7 +146,7 @@ public class YourSolver implements Solver<Board> {
             }
         }
 
-        if ( canEatStoneSoon() && (!fly || pillCounter > 5) ) {
+        if ( canEatStoneSoon() && (!fly || pillCounter > 6) ) {
             go = board.bfs(point, board.size() / 6, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: STONE CLOSE");
@@ -302,7 +302,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean canEatStoneSoon() {
-        return (board.getMySize() > 4) || (fury && pillCounter < 5);
+        return (board.getMySize() > 4) || (fury && pillCounter < 7);
     }
 
     private boolean canFly() {
