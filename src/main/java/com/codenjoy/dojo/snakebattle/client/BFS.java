@@ -29,23 +29,21 @@ import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.*;
 import static com.codenjoy.dojo.services.Direction.*;
-import static com.codenjoy.dojo.snakebattle.model.Elements.NONE;
 
 
 public class BFS {
-    public static Optional<Direction> bfs(Board board, Point start, Elements[] barrier, Elements[] target, int size, boolean attack) {
+    public static Optional<Direction> bfs(Board board, Point start, Elements[] barrier, Elements[] target, int size, MODE mode) {
         Queue<Point> queue = new LinkedList<>();
         queue.add(start);
 
         Map<Point, Path> visited = new HashMap<>(size*2);
         visited.put(start, new Path(null, null, 0));
 
-        Optional<Point> found = bfs(board, queue, visited, barrier, target, size, attack);
+        Optional<Point> found = bfs(board, queue, visited, barrier, target, size, mode);
         if (!found.isPresent())
             return Optional.empty();
 
         Point point = found.get();
-
 /*
         for(int y = board.size()-1; y >= 0; --y) {
             for (int x = 0; x < board.size(); ++x) {
@@ -67,7 +65,7 @@ public class BFS {
         return Optional.of(visited.get(point).getDirection());
     }
 
-    private static Optional<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements[] barrier, Elements[] target, int max, boolean attack) {
+    private static Optional<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements[] barrier, Elements[] target, int max, MODE mode) {
         while (!queue.isEmpty()) {
             Point point = queue.poll();
 
@@ -81,12 +79,8 @@ public class BFS {
                     if (distance > max)
                         continue;
 
-                    if (attack) {
-                        if (!board.isSafeAttack(p))
-                            continue;
-                    } else {
-                        if (!board.isSafe(p))
-                            continue;
+                    if (!isSafe(board, p, mode)) {
+                        continue;
                     }
 
                     queue.add(p);
@@ -95,6 +89,14 @@ public class BFS {
             }
         }
         return Optional.empty();
+    }
+
+    private static boolean isSafe(Board board, Point p, MODE mode) {
+        switch (mode) {
+            case NORMAL: return board.isSafe(p);
+            case ATTACK: return board.isSafeAttack(p);
+        }
+        return true;
     }
 
     private static class Path {
@@ -119,6 +121,10 @@ public class BFS {
         public int getDistance() {
             return distance;
         }
+    }
+
+    public enum MODE {
+        NORMAL, FLY, ATTACK
     }
 
 }

@@ -71,6 +71,7 @@ public class Board extends AbstractBoard<Elements> {
     public static final Elements[] SAFE_ATTACK_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS, ME_TAIL_ELEMENTS, ENEMY_HEAD_ELEMENTS);
 
     public static final Elements[] BARRIER_NORMAL = join(BARRIER_ELEMENTS, ME_BODY_TAIL_ELEMENTS, ENEMY_ELEMENTS);
+    public static final Elements[] BARRIER_FLY = join(ME_BODY_TAIL_ELEMENTS);
     public static final Elements[] BARRIER_ATTACK = join(BARRIER_ELEMENTS, ME_BODY_TAIL_ELEMENTS, ENEMY_TAIL_ELEMENTS);     //FIXME: remove enemy
     public static final Elements[] BARRIER_NORMAL_STONE = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_BODY_TAIL_ELEMENTS, ENEMY_ELEMENTS);
     public static final Elements[] BARRIER_CUT_MYSELF = join(BARRIER_ELEMENTS, ENEMY_TAIL_ELEMENTS);
@@ -105,11 +106,15 @@ public class Board extends AbstractBoard<Elements> {
 
 
     public Optional<Direction> bfs(Point start, int max, Elements[] barrier, Elements... elements) {
-        return BFS.bfs(this, start, barrier, elements, max, false);
+        return BFS.bfs(this, start, barrier, elements, max, BFS.MODE.NORMAL);
     }
 
     public Optional<Direction> bfsAttack(Point start, int max, Elements[] barrier, Elements... elements) {
-        return BFS.bfs(this, start, barrier, elements, max, true);
+        return BFS.bfs(this, start, barrier, elements, max, BFS.MODE.ATTACK);
+    }
+
+    public Optional<Direction> bfsFly(Point start, int max, Elements[] barrier, Elements... elements) {
+        return BFS.bfs(this, start, barrier, elements, max, BFS.MODE.FLY);
     }
 
     private static final int SAFE_TRACE_ROUNDS = 3;
