@@ -174,7 +174,7 @@ public class Board extends AbstractBoard<Elements> {
             }
             System.out.println();
         }
-*/
+
         for(int y = size()-1; y >= 0; --y) {
             for (int x = 0; x < size(); ++x) {
                 if (!safeFly[x][y]) {
@@ -185,7 +185,7 @@ public class Board extends AbstractBoard<Elements> {
             }
             System.out.println();
         }
-/*
+
         for(int y = size()-1; y >= 0; --y) {
             for (int x = 0; x < size(); ++x) {
                 if (!safeAttack[x][y]) {
