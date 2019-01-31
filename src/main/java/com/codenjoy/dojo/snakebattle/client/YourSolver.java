@@ -242,7 +242,7 @@ public class YourSolver implements Solver<Board> {
         me = board.getMe();
         checkPills(me);
 
-        priority = board.getPriority(me, 1);
+        priority = board.getPriority(me);
     }
 
 
@@ -308,7 +308,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean canAttack(Point point) {
-        return board.countNear(point, 1, ENEMY_HEAD_ELEMENTS) == 0 ||
+        return board.countNear(point, ENEMY_HEAD_ELEMENTS) == 0 ||
                 ((fury && pillCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ( board.getMySize() > board.getEnemySize() );
     }
@@ -330,7 +330,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean enemyCloseToTail() {
-        return board.countNear(board.getMyTail(), 1, ENEMY_HEAD_ELEMENTS) > 0;
+        return board.countNear(board.getMyTail(), ENEMY_HEAD_ELEMENTS) > 0;
     }
 
     private void checkPills(Point point) {

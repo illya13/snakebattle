@@ -211,11 +211,11 @@ public class Board extends AbstractBoard<Elements> {
         return safeAttack[point.getX()][point.getY()];
     }
 
-    public Direction[] getPriority(Point point, int radius) {
+    public Direction[] getPriority(Point point) {
         Map<Direction, Integer> map = new HashMap<>();
         for (Direction direction:  new Direction[]{RIGHT, DOWN, LEFT, UP}) {
             Point p = direction.change(point);
-            int count = countNear(p, radius, SAFE_ELEMENTS);
+            int count = countNear(p, SAFE_ELEMENTS);
             map.put(direction, count);
         }
 
@@ -227,13 +227,15 @@ public class Board extends AbstractBoard<Elements> {
         return sorted.keySet().toArray(new Direction[4]);
     }
 
-    public int countNear(Point point, int radius, Elements[] elements) {
+    public int countNear(Point point, Elements[] elements) {
         int result = 0;
-        for(int dx = -radius; dx <= radius; ++dx) {
-            for(int dy = -radius; dy <= radius; ++dy) {
-                if (!PointImpl.pt(point.getX() + dx, point.getY() + dy).isOutOf(this.size) && (dx != 0 || dy != 0) && (!this.withoutCorners() || dx == 0 || dy == 0)) {
-                    if (isAt(point.getX() + dx, point.getY() + dy, elements)) {
-                        result++;
+        for(int dx = -1; dx <= 1; ++dx) {
+            for(int dy = -1; dy <= 1; ++dy) {
+                if (Math.abs(dx) + Math.abs(dy) == 1) {
+                    if (!PointImpl.pt(point.getX() + dx, point.getY() + dy).isOutOf(this.size)) {
+                        if (isAt(point.getX() + dx, point.getY() + dy, elements)) {
+                            result++;
+                        }
                     }
                 }
             }
