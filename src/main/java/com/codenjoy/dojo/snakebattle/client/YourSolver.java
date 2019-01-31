@@ -180,7 +180,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean isAttackMode() {
-        return (board.getEnemySnakes()) == 1 && (step > ATTACK_STEPS);
+        return (board.getEnemySnakes() == 1) && (step > ATTACK_STEPS);
     }
 
 
