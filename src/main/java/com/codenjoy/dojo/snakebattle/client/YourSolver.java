@@ -282,7 +282,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> unsafeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if(!board.isAt(p, elements)) {
+            if(!board.isAt(p, elements) && !isStepBack(direction)) {
                 return Optional.of(direction);
             }
         }
