@@ -74,7 +74,7 @@ public class YourSolver implements Solver<Board> {
 
         Optional<Direction> go;
 
-        go = realTime(me);
+        go = isAttackMode() ? attack(me) : realTime(me);
         if (go.isPresent()) {
             return act(go.get());
         }
@@ -129,11 +129,16 @@ public class YourSolver implements Solver<Board> {
         return go;
     }
 
+    private Optional<Direction> attack(Point point) {
+        // TODO: implement
+        return realTime(point);
+    }
+
 
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if (step > ATTACK_STEPS) {
+        if (isAttackMode()) {
             go = board.bfs(point, board.size() / 2, BARRIER_ATTACK, ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: ATTACK");
@@ -172,6 +177,10 @@ public class YourSolver implements Solver<Board> {
         }
 
         return Optional.empty();
+    }
+
+    private boolean isAttackMode() {
+        return step > ATTACK_STEPS;
     }
 
 
