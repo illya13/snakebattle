@@ -47,6 +47,7 @@ public class YourSolver implements Solver<Board> {
 
     private static final int ATTACK_STEPS = 300;
     private Dice dice;
+    private Direction prev;
 
     private Board board;
     private Point me;
@@ -72,17 +73,22 @@ public class YourSolver implements Solver<Board> {
 
         init();
 
-        Optional<Direction> go;
+        prev = nextStep();
+        return act(prev);
+    }
 
-        go = isAttackMode() ? attack(me) : realTime(me);
-        if (go.isPresent()) {
-            return act(go.get());
-        }
+
+    private Direction nextStep() {
+        Optional<Direction> go = isAttackMode()
+                ? attack(me)
+                : realTime(me);
+
+        if (go.isPresent())
+            return go.get();
 
         go = midTerm(me);
-        if (go.isPresent()) {
-            return act(go.get());
-        }
+        if (go.isPresent())
+            return go.get();
 
         return lastCall(me);
     }
@@ -188,24 +194,24 @@ public class YourSolver implements Solver<Board> {
     }
 
 
-    private String lastCall(Point point) {
+    private Direction lastCall(Point point) {
         Optional<Direction> go = safeStepAvoid(point, BARRIER_NORMAL, priority);
         if (go.isPresent())
-            return go.get().toString();
+            return go.get();
 
         go = unsafeStepAvoid(point, BARRIER_NORMAL, priority);
         if (go.isPresent())
-            return go.get().toString();
+            return go.get();
 
         go = unsafeStepAvoid(point, BARRIER_CUT_MYSELF, priority);
         if (go.isPresent())
-            return go.get().toString();
+            return go.get();
 
         go = unsafeStepAvoid(point, BARRIER_NO_WAY, priority);
         if (go.isPresent())
-            return go.get().toString();
+            return go.get();
 
-        return priority[0].toString();
+        return priority[0];
     }
 
 
@@ -261,6 +267,18 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean isStepBack(Direction direction) {
+        if (prev != null) {
+            switch (prev) {
+                case UP:
+                    return direction.equals(Direction.DOWN);
+                case DOWN:
+                    return direction.equals(Direction.UP);
+                case RIGHT:
+                    return direction.equals(Direction.LEFT);
+                case LEFT:
+                    return direction.equals(Direction.RIGHT);
+            }
+        }
         return false;
     }
 
