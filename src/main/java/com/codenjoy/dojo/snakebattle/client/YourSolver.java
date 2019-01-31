@@ -49,13 +49,15 @@ public class YourSolver implements Solver<Board> {
     private Board board;
     private Point me;
     private Direction[] priority;
+    private int step;
+    private boolean closeAction;
 
     private boolean fury;
     private boolean fly;
 
     private boolean pill;
     private int pillCounter;
-    private int stoneCounter = 0;
+    private int stoneCounter;
 
     YourSolver(Dice dice) {
         this.dice = dice;
@@ -66,7 +68,7 @@ public class YourSolver implements Solver<Board> {
         this.board = board;
         if (board.isGameOver()) return "";
 
-        init(board);
+        init();
 
         Optional<Direction> go;
 
@@ -129,7 +131,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if ( (board.getMySize() > 4 || (fury && pillCounter < 5)) && (!fly || pillCounter > 5) ) {
+        if ( canEatStoneSoon() && (!fly || pillCounter > 5) ) {
             go = board.bfs(point, board.size() / 6, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: STONE CLOSE");
@@ -146,6 +148,7 @@ public class YourSolver implements Solver<Board> {
         if (board.getMySize() > 4) {
             go = board.bfs(point, board.size() / 2, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
+                closeAction = false;
                 System.out.println("=> BFS: STONE FAR");
                 return go;
             }
@@ -153,6 +156,7 @@ public class YourSolver implements Solver<Board> {
 
         go = board.bfs(point, board.size() * 2, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
         if (go.isPresent() && isSafeStep(point, go.get())) {
+            closeAction = false;
             System.out.println("=> BFS: ANY FAR");
             return go;
         }
@@ -187,7 +191,7 @@ public class YourSolver implements Solver<Board> {
 
 
     private String act(Direction direction) {
-        if (enemyCloseToTail() && (stoneCounter > 0) ) {
+        if ( (enemyCloseToTail() || (!closeAction && canEatStoneSoon())) && (stoneCounter > 0) ) {
             System.out.println("ACT");
             stoneCounter--;
             return "(" + direction.toString() + ", ACT)";
@@ -196,14 +200,17 @@ public class YourSolver implements Solver<Board> {
     }
 
 
-    private void init(Board board) {
+    private void init() {
         if (board.isGameStart()) {
+            step = 0;
             stoneCounter = 0;
             pill = false;
         }
+        step++;
+        closeAction = true;
 
         board.traceSnakes();
-        System.out.println("me: " + board.getMySize() + ", enemies[" + board.getEnemySnakes()+ "]: " + board.getEnemySize());
+        System.out.println("[" + step + "] me: " + board.getMySize() + ", enemies[" + board.getEnemySnakes()+ "]: " + board.getEnemySize());
 
         board.traceSafe();
 
@@ -230,7 +237,7 @@ public class YourSolver implements Solver<Board> {
     private boolean isSafeStep(Point point, Direction direction) {
         Point p = direction.change(point);
         return board.isSafe(p) &&
-                ( canFly() || (canEatStone(p) && canAttack(p)) );
+                ( canFly() || (canEatStoneAt(p) && canAttack(p)) );
     }
 
     private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
@@ -259,8 +266,16 @@ public class YourSolver implements Solver<Board> {
                 ( board.getMySize() > board.getEnemySize() );
     }
 
-    private boolean canEatStone(Point p) {
-        return !board.isAt(p, STONE) || (board.getMySize() > 4) || (fury && pillCounter < 9);
+    private boolean canEatStoneAt(Point p) {
+        return !board.isAt(p, STONE) || canEatStoneNow();
+    }
+
+    private boolean canEatStoneNow() {
+        return (board.getMySize() > 4) || (fury && pillCounter < 9);
+    }
+
+    private boolean canEatStoneSoon() {
+        return (board.getMySize() > 4) || (fury && pillCounter < 5);
     }
 
     private boolean canFly() {
