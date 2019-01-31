@@ -260,8 +260,8 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean isSafeAttack(Point point, Direction direction) {
-        Point p = direction.change(point);
-        return board.isSafe(p);
+        // TODO: implement
+        return isSafeStep(point, direction);
     }
 
     private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
