@@ -68,10 +68,11 @@ public class Board extends AbstractBoard<Elements> {
     public static final Elements[] ME_BODY_TAIL_ELEMENTS = join(ME_BODY_ELEMENTS, ME_TAIL_ELEMENTS);
 
     public static final Elements[] SAFE_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS, ME_TAIL_ELEMENTS);
+    public static final Elements[] SAFE_FLY_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS, ME_TAIL_ELEMENTS, ENEMY_ELEMENTS);
     public static final Elements[] SAFE_ATTACK_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS, ME_TAIL_ELEMENTS, ENEMY_HEAD_ELEMENTS);
 
     public static final Elements[] BARRIER_NORMAL = join(BARRIER_ELEMENTS, ME_BODY_TAIL_ELEMENTS, ENEMY_ELEMENTS);
-    public static final Elements[] BARRIER_FLY = join(ME_BODY_TAIL_ELEMENTS);
+    public static final Elements[] BARRIER_FLY = join(BARRIER_ELEMENTS);
     public static final Elements[] BARRIER_ATTACK = join(BARRIER_ELEMENTS, ME_BODY_TAIL_ELEMENTS, ENEMY_TAIL_ELEMENTS);     //FIXME: remove enemy
     public static final Elements[] BARRIER_NORMAL_STONE = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_BODY_TAIL_ELEMENTS, ENEMY_ELEMENTS);
     public static final Elements[] BARRIER_CUT_MYSELF = join(BARRIER_ELEMENTS, ENEMY_TAIL_ELEMENTS);
@@ -119,15 +120,18 @@ public class Board extends AbstractBoard<Elements> {
 
     private static final int SAFE_TRACE_ROUNDS = 3;
     private boolean[][] safeGo;
+    private boolean[][] safeFly;
     private boolean[][] safeAttack;
 
     public void traceSafe() {
         safeGo = new boolean[size()][size()];
+        safeFly = new boolean[size()][size()];
         safeAttack = new boolean[size()][size()];
 
         for(int x = 0; x < size(); ++x) {
             for(int y = 0; y < size(); ++y) {
                 safeGo[x][y] = isAt(x, y, SAFE_ELEMENTS);
+                safeFly[x][y] = isAt(x, y, SAFE_FLY_ELEMENTS);
                 safeAttack[x][y] = isAt(x, y, SAFE_ATTACK_ELEMENTS);
             }
         }
@@ -136,6 +140,7 @@ public class Board extends AbstractBoard<Elements> {
             for (int x = 0; x < size(); ++x) {
                 for (int y = 0; y < size(); ++y) {
                     int goCount = 0;
+                    int flyCount = 0;
                     int attackCount = 0;
                     for (Direction direction: new Direction[]{UP, RIGHT, DOWN, LEFT}) {
                         Point p = direction.change(PointImpl.pt(x, y));
@@ -145,11 +150,15 @@ public class Board extends AbstractBoard<Elements> {
                         if (safeGo[p.getX()][p.getY()] && isAt(p, SAFE_ELEMENTS)) {
                             goCount++;
                         }
+                        if (safeFly[p.getX()][p.getY()] && isAt(p, SAFE_FLY_ELEMENTS)) {
+                            flyCount++;
+                        }
                         if (safeAttack[p.getX()][p.getY()] && isAt(p, SAFE_ATTACK_ELEMENTS)) {
                             attackCount++;
                         }
                     }
                     safeGo[x][y] = safeGo[x][y] && (goCount > 1);
+                    safeFly[x][y] = safeFly[x][y] && (flyCount > 1);
                     safeAttack[x][y] = safeAttack[x][y] && (attackCount > 1);
                 }
             }
@@ -165,6 +174,18 @@ public class Board extends AbstractBoard<Elements> {
             }
             System.out.println();
         }
+*/
+        for(int y = size()-1; y >= 0; --y) {
+            for (int x = 0; x < size(); ++x) {
+                if (!safeFly[x][y]) {
+                    System.out.print(getAllAt(x, y));
+                } else {
+                    System.out.print("   ");
+                }
+            }
+            System.out.println();
+        }
+/*
         for(int y = size()-1; y >= 0; --y) {
             for (int x = 0; x < size(); ++x) {
                 if (!safeAttack[x][y]) {
@@ -179,6 +200,10 @@ public class Board extends AbstractBoard<Elements> {
     }
 
     public boolean isSafe(Point point) {
+        return safeGo[point.getX()][point.getY()];
+    }
+
+    public boolean isSafeFly(Point point) {
         return safeGo[point.getX()][point.getY()];
     }
 

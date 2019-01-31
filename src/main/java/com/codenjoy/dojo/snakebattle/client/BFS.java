@@ -95,6 +95,7 @@ public class BFS {
     private static boolean isSafe(Board board, Point p, MODE mode) {
         switch (mode) {
             case NORMAL: return board.isSafe(p);
+            case FLY: return board.isSafeFly(p);
             case ATTACK: return board.isSafeAttack(p);
         }
         return true;

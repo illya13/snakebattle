@@ -197,10 +197,6 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent())
             return go.get().toString();
 
-        if (fly) {
-            return priority[0].toString();
-        }
-
         go = unsafeStepAvoid(point, BARRIER_CUT_MYSELF, priority);
         if (go.isPresent())
             return go.get().toString();
@@ -259,7 +255,9 @@ public class YourSolver implements Solver<Board> {
 
     private boolean isSafeStep(Point point, Direction direction) {
         Point p = direction.change(point);
-        return canFly() || (board.isSafe(p) && canEatStoneAt(p) && canAttack(p));
+
+        return ( canFly() ? board.isSafeFly(p) : board.isSafe(p) ) &&
+                canEatStoneAt(p) && canAttack(p);
     }
 
     private boolean isSafeAttack(Point point, Direction direction) {
