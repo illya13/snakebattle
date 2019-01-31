@@ -154,7 +154,9 @@ public class YourSolver implements Solver<Board> {
             }
         }
 
-        go = board.bfs(point, board.size() / 6, BARRIER_NORMAL_STONE, FURY_PILL, FLYING_PILL, GOLD, APPLE);
+        go = (canFly())
+                ? board.bfsFly(point, board.size() / 6, BARRIER_FLY, FURY_PILL, FLYING_PILL, GOLD, APPLE)
+                : board.bfs(point, board.size() / 6, BARRIER_NORMAL_STONE, FURY_PILL, FLYING_PILL, GOLD, APPLE);
         if (go.isPresent() && isSafeStep(point, go.get())) {
             System.out.println("=> BFS: ANY CLOSE");
             return go;
@@ -169,7 +171,9 @@ public class YourSolver implements Solver<Board> {
             }
         }
 
-        go = board.bfs(point, board.size() * 2, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
+        go = (canFly())
+                ? board.bfsFly(point, board.size() * 2, BARRIER_FLY, GOLD, APPLE, FURY_PILL, FLYING_PILL)
+                : board.bfs(point, board.size() * 2, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
         if (go.isPresent() && isSafeStep(point, go.get())) {
             closeAction = false;
             System.out.println("=> BFS: ANY FAR");
@@ -255,8 +259,7 @@ public class YourSolver implements Solver<Board> {
 
     private boolean isSafeStep(Point point, Direction direction) {
         Point p = direction.change(point);
-        return board.isSafe(p) &&
-                ( canFly() || (canEatStoneAt(p) && canAttack(p)) );
+        return canFly() || (board.isSafe(p) && canEatStoneAt(p) && canAttack(p));
     }
 
     private boolean isSafeAttack(Point point, Direction direction) {
