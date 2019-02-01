@@ -62,6 +62,8 @@ public class YourSolver implements Solver<Board> {
     private int pillCounter;
     private int stoneCounter;
 
+    private boolean stoneOnPrevStep;        // FIXME: remove
+
     YourSolver(Dice dice) {
         this.dice = dice;
     }
@@ -119,9 +121,11 @@ public class YourSolver implements Solver<Board> {
             if (go.isPresent()) {
                 System.out.println("=> STONE");
                 stoneCounter++;
+                stoneOnPrevStep = true;
                 return go;
             }
         }
+        stoneOnPrevStep = false;
 
         go = safeStepTarget(point, GOLD, priority);
         if (go.isPresent()) {
@@ -193,7 +197,7 @@ public class YourSolver implements Solver<Board> {
 
 
     private Direction lastCall(Point point) {
-        Optional<Direction> go = safeStepAvoid(point, BARRIER_NORMAL, priority);
+        Optional<Direction> go = safeStepAvoid(point, BARRIER_NORMAL_STONE, priority);
         if (go.isPresent())
             return go.get();
 
@@ -228,6 +232,7 @@ public class YourSolver implements Solver<Board> {
             step = 0;
             stoneCounter = 0;
             pill = false;
+            stoneOnPrevStep = false;
         }
         step++;
         closeAction = true;
@@ -319,7 +324,8 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean canEatStoneNow() {
-        return (board.getMySize() > 4) || (fury && pillCounter < 9);
+        return ( (stoneOnPrevStep) ? (board.getMySize() > 7) : (board.getMySize() > 4) )
+                || (fury && pillCounter < 9);
     }
 
     private boolean canEatStoneSoon() {
