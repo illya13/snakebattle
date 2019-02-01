@@ -169,11 +169,16 @@ public class YourSolver implements Solver<Board> {
             }
         }
 
-        go = (canFly())
-                ? board.bfsFly(point, board.size() / 6, false, BARRIER_FLY, FURY_PILL, FLYING_PILL, GOLD, APPLE)
-                : board.bfs(point, board.size() / 6, false, BARRIER_NORMAL_STONE, FURY_PILL, FLYING_PILL, GOLD, APPLE);
+        go = getBFSDirection(point, board.size() / 6, false);
         if (go.isPresent() && isSafeStep(point, go.get())) {
             System.out.println("=> BFS: ANY CLOSE");
+            return go;
+        }
+
+        go = getBFSDirection(point, board.size() / 2, true);
+        if (go.isPresent() && isSafeStep(point, go.get())) {
+            closeAction = false;
+            System.out.println("=> BFS: ANY MEDIUM");
             return go;
         }
 
@@ -181,14 +186,12 @@ public class YourSolver implements Solver<Board> {
             go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 closeAction = false;
-                System.out.println("=> BFS: STONE FAR");
+                System.out.println("=> BFS: STONE MEDIUM");
                 return go;
             }
         }
 
-        go = (canFly())
-                ? board.bfsFly(point, board.size() * 2, true, BARRIER_FLY, GOLD, APPLE, FURY_PILL, FLYING_PILL)
-                : board.bfs(point, board.size() * 2, true, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
+        go = getBFSDirection(point, board.size() * 2, true);
         if (go.isPresent() && isSafeStep(point, go.get())) {
             closeAction = false;
             System.out.println("=> BFS: ANY FAR");
@@ -196,6 +199,12 @@ public class YourSolver implements Solver<Board> {
         }
 
         return Optional.empty();
+    }
+
+    private Optional<Direction> getBFSDirection(Point point, int max, boolean weight) {
+        return (canFly())
+                ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE, FURY_PILL, FLYING_PILL)
+                : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
     }
 
     private boolean isAttackMode() {
