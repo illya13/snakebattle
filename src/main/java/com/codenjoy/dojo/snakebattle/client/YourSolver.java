@@ -100,10 +100,12 @@ public class YourSolver implements Solver<Board> {
             return Optional.of(priority[3]);
         }
 
-        go = safeAttackTarget(point, ENEMY_TAIL_ELEMENTS, priority);
-        if (go.isPresent()) {
-            System.out.println("=> ATTACK");
-            return go;
+        if (fury) {
+            go = safeAttackTarget(point, ENEMY_ELEMENTS, priority);
+            if (go.isPresent()) {
+                System.out.println("=> ATTACK");
+                return go;
+            }
         }
 
         go = safeStepTarget(point, FLYING_PILL, priority);
@@ -148,12 +150,15 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        go = board.bfsAttack(point, board.size() / 6, false,
-                BARRIER_ATTACK,
-                ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
-        if (go.isPresent() && isSafeAttack(point, go.get())) {
-            System.out.println("=> BFS: ATTACK");
-            return go;
+        if (fury && pillCounter < 8) {
+            go = board.bfsAttack(point, board.size() / 6, false,
+                    BARRIER_ATTACK,
+                    ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
+                    ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
+            if (go.isPresent() && isSafeAttack(point, go.get())) {
+                System.out.println("=> BFS: ATTACK");
+                return go;
+            }
         }
 
         if ( canEatStoneSoon() && (!fly || pillCounter > 6) ) {
