@@ -151,7 +151,9 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         if (isAttackMode()) {
-            go = board.bfsAttack(point, board.size() / 6, BARRIER_ATTACK, ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
+            go = board.bfsAttack(point, board.size() / 6, false,
+                    BARRIER_ATTACK,
+                    ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
             if (go.isPresent() && isSafeAttack(point, go.get())) {
                 System.out.println("=> BFS: ATTACK");
                 return go;
@@ -159,7 +161,7 @@ public class YourSolver implements Solver<Board> {
         }
 
         if ( canEatStoneSoon() && (!fly || pillCounter > 6) ) {
-            go = board.bfs(point, board.size() / 6, BARRIER_NORMAL, STONE);
+            go = board.bfs(point, board.size() / 6, false, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: STONE CLOSE");
                 stoneOnThisStep = true;
@@ -168,15 +170,15 @@ public class YourSolver implements Solver<Board> {
         }
 
         go = (canFly())
-                ? board.bfsFly(point, board.size() / 6, BARRIER_FLY, FURY_PILL, FLYING_PILL, GOLD, APPLE)
-                : board.bfs(point, board.size() / 6, BARRIER_NORMAL_STONE, FURY_PILL, FLYING_PILL, GOLD, APPLE);
+                ? board.bfsFly(point, board.size() / 6, false, BARRIER_FLY, FURY_PILL, FLYING_PILL, GOLD, APPLE)
+                : board.bfs(point, board.size() / 6, false, BARRIER_NORMAL_STONE, FURY_PILL, FLYING_PILL, GOLD, APPLE);
         if (go.isPresent() && isSafeStep(point, go.get())) {
             System.out.println("=> BFS: ANY CLOSE");
             return go;
         }
 
         if (board.getMySize() > 4) {
-            go = board.bfs(point, board.size() / 2, BARRIER_NORMAL, STONE);
+            go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 closeAction = false;
                 System.out.println("=> BFS: STONE FAR");
@@ -185,8 +187,8 @@ public class YourSolver implements Solver<Board> {
         }
 
         go = (canFly())
-                ? board.bfsFly(point, board.size() * 2, BARRIER_FLY, GOLD, APPLE, FURY_PILL, FLYING_PILL)
-                : board.bfs(point, board.size() * 2, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
+                ? board.bfsFly(point, board.size() * 2, true, BARRIER_FLY, GOLD, APPLE, FURY_PILL, FLYING_PILL)
+                : board.bfs(point, board.size() * 2, true, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
         if (go.isPresent() && isSafeStep(point, go.get())) {
             closeAction = false;
             System.out.println("=> BFS: ANY FAR");

@@ -28,23 +28,23 @@ import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import static com.codenjoy.dojo.services.Direction.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.NONE;
 
 
 public class BFS {
-    public static Optional<Direction> bfs(Board board, Point start, Elements[] barrier, Elements[] target, int size, MODE mode) {
+    public static Optional<Direction> bfs(Board board, Point start, boolean weight, Elements[] barrier, Elements[] target, int size, MODE mode) {
         Queue<Point> queue = new LinkedList<>();
         queue.add(start);
 
         Map<Point, Path> visited = new HashMap<>(size*2);
         visited.put(start, new Path(null, null, 0));
 
-        Optional<Point> found = bfs(board, queue, visited, barrier, target, size, mode);
-        if (!found.isPresent())
+        LinkedHashSet<Point> found = bfs(board, queue, visited, barrier, target, size, mode, weight);
+        if (found.isEmpty())
             return Optional.empty();
-
-        Point point = found.get();
 /*
         for(int y = board.size()-1; y >= 0; --y) {
             for (int x = 0; x < board.size(); ++x) {
@@ -58,20 +58,56 @@ public class BFS {
             System.out.println();
         }
 */
-        while (!visited.get(point).getFrom().equals(start)) {
-            point = visited.get(point).getFrom();
-            if (point == null)
-                return Optional.empty();
+        if (!weight) {
+            return Optional.of(traceBack(start, found.iterator().next(), visited));
         }
-        return Optional.of(visited.get(point).getDirection());
+
+        Map<Direction, Double> weightMap = new HashMap<>();
+        for (Point point: found) {
+            Direction direction = traceBack(start, point, visited);
+            double points = POINTS.getPoints(board.getAllAt(point));
+
+            Double value = weightMap.get(direction);
+            if (value == null)
+                value = 0d;
+            value += points / visited.get(point).distance;
+
+            System.out.println( direction + " " +
+                    board.getAllAt(point) + " "  +
+                    + points + " " + visited.get(point).distance + " " + points / visited.get(point).distance
+            );
+
+            weightMap.put(direction, value);
+        }
+
+        List<Direction> sorted = weightMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .map(e -> e.getKey())
+                .collect(Collectors.toList());
+
+        System.out.println(weightMap);
+        // System.out.println(sorted);
+        return Optional.of(sorted.get(0));
     }
 
-    private static Optional<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements[] barrier, Elements[] target, int max, MODE mode) {
+    private static Direction traceBack(Point start, Point point, Map<Point, Path> visited ) {
+        while (!visited.get(point).getFrom().equals(start)) {
+            point = visited.get(point).getFrom();
+        }
+        return visited.get(point).getDirection();
+    }
+
+    private static LinkedHashSet<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements[] barrier, Elements[] target, int max, MODE mode, boolean all) {
+        LinkedHashSet<Point> found = new LinkedHashSet<>();
         while (!queue.isEmpty()) {
             Point point = queue.poll();
 
-            if (board.isAt(point, target))
-                return Optional.of(point);
+            if (board.isAt(point, target)) {
+                found.add(point);
+                if (!all) {
+                    break;
+                }
+            }
 
             for (Direction direction: new Direction[]{RIGHT, DOWN, LEFT, UP}) {
                 Point p = direction.change(point);
@@ -89,7 +125,7 @@ public class BFS {
                 }
             }
         }
-        return Optional.empty();
+        return found;
     }
 
     private static boolean isSafe(Board board, Point p, MODE mode) {
@@ -129,4 +165,32 @@ public class BFS {
         NORMAL, FLY, ATTACK
     }
 
+    public enum POINTS {
+        APPLE(Elements.APPLE, 1), GOLD(Elements.GOLD, 5), STONE(Elements.STONE, 10), FURY(Elements.FURY_PILL, 20);
+
+        private Elements elements;
+        private int points;
+
+        POINTS(Elements elements, int points) {
+            this.elements = elements;
+            this.points = points;
+        }
+
+        public static int getPoints(List<Elements> elements) {
+            int sum = 0;
+            for(Elements e: elements) {
+                sum += getPoints(e);
+            }
+            return sum;
+        }
+
+        public static int getPoints(Elements elements) {
+            for (POINTS p: values()) {
+                if (p.elements.equals(elements)) {
+                    return p.points;
+                }
+            }
+            return 0;
+        }
+    }
 }

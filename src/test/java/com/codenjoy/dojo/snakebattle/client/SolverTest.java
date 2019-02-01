@@ -58,7 +58,7 @@ public class SolverTest {
     }
 
     @Test
-    public void should() {
+    public void should1() {
         asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
                 "☼#                      $    ☼\n" +
@@ -89,7 +89,10 @@ public class SolverTest {
                 "☼☼                           ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
+    }
 
+    @Test
+    public void should2() {
         asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
                 "☼#                      $    ☼\n" +
@@ -120,7 +123,10 @@ public class SolverTest {
                 "☼☼                           ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
+    }
 
+    @Test
+    public void should3() {
         asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                  ○        ☼\n" +
                 "☼#                           ☼\n" +
@@ -152,6 +158,10 @@ public class SolverTest {
                 "☼☼           └────────┘      ☼\n" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.LEFT);
 
+    }
+
+    @Test
+    public void should4() {
         asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
                 "☼#      ●                    ☼\n" +
@@ -182,6 +192,40 @@ public class SolverTest {
                 "☼☼                   ●       ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
+    }
+
+    @Test
+    public void should5() {
+        asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼     ☼☼☼☼☼                 ☼\n" +
+                "☼☼     ☼                     ☼\n" +
+                "☼#     ☼☼☼     ○  ☼☼☼☼#╔►    ☼\n" +
+                "☼☼     ☼          ☼   ☼╙     ☼\n" +
+                "☼☼     ☼☼☼☼#      ☼☼☼☼#      ☼\n" +
+                "☼☼                ☼          ☼\n" +
+                "☼☼     ○          ☼     ●   $☼\n" +
+                "☼☼ ○  ●                      ☼\n" +
+                "☼#                    ○      ☼\n" +
+                "☼☼                        ○  ☼\n" +
+                "☼☼        ☼☼☼                ☼\n" +
+                "☼☼       ☼  ☼                ☼\n" +
+                "☼☼      ☼☼☼☼#     ☼☼   ☼#    ☼\n" +
+                "☼☼      ☼   ☼     ☼ ☼ ☼ ☼ ○  ☼\n" +
+                "☼#      ☼   ☼     ☼  ☼  ☼    ☼\n" +
+                "☼☼ ○        ©     ☼    ˄☼    ☼\n" +
+                "☼☼     ●          ☼    │☼   ●☼\n" +
+                "☼☼                     └─┐   ☼\n" +
+                "☼☼                       ¤   ☼\n" +
+                "☼☼ ○    ○      ●             ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼                         $ ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
     }
 
     private void asertAI(String board, Direction expected) {

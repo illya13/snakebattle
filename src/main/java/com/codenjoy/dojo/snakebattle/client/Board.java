@@ -106,16 +106,16 @@ public class Board extends AbstractBoard<Elements> {
     }
 
 
-    public Optional<Direction> bfs(Point start, int max, Elements[] barrier, Elements... elements) {
-        return BFS.bfs(this, start, barrier, elements, max, BFS.MODE.NORMAL);
+    public Optional<Direction> bfs(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
+        return BFS.bfs(this, start, weight, barrier, elements, max, BFS.MODE.NORMAL);
     }
 
-    public Optional<Direction> bfsAttack(Point start, int max, Elements[] barrier, Elements... elements) {
-        return BFS.bfs(this, start, barrier, elements, max, BFS.MODE.ATTACK);
+    public Optional<Direction> bfsAttack(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
+        return BFS.bfs(this, start, weight, barrier, elements, max, BFS.MODE.ATTACK);
     }
 
-    public Optional<Direction> bfsFly(Point start, int max, Elements[] barrier, Elements... elements) {
-        return BFS.bfs(this, start, barrier, elements, max, BFS.MODE.FLY);
+    public Optional<Direction> bfsFly(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
+        return BFS.bfs(this, start, weight, barrier, elements, max, BFS.MODE.FLY);
     }
 
     private static final int SAFE_TRACE_ROUNDS = 3;
@@ -219,12 +219,13 @@ public class Board extends AbstractBoard<Elements> {
             map.put(direction, count);
         }
 
-        Map<Direction, Integer> sorted = map.entrySet().stream()
+        List<Direction> sorted = map.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                .map(e -> e.getKey())
+                .collect(Collectors.toList());
 
         System.out.println("priority: " + sorted);
-        return sorted.keySet().toArray(new Direction[4]);
+        return sorted.toArray(new Direction[4]);
     }
 
     public int countNear(Point point, Elements[] elements) {
