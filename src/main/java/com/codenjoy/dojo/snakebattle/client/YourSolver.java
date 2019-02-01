@@ -64,7 +64,6 @@ public class YourSolver implements Solver<Board> {
     private int stoneCounter;
 
     private boolean stoneOnPrevStep;        // FIXME: remove
-    private boolean stoneOnThisStep;        // FIXME: remove
 
     YourSolver(Dice dice) {
         this.dice = dice;
@@ -77,9 +76,8 @@ public class YourSolver implements Solver<Board> {
 
         init();
 
-        stoneOnThisStep = false;
         prev = nextStep();
-        stoneOnPrevStep = stoneOnThisStep;
+        stoneOnPrevStep = stoneOnThisStep(me, prev);
 
         return act(prev);
     }
@@ -130,7 +128,6 @@ public class YourSolver implements Solver<Board> {
             if (go.isPresent()) {
                 System.out.println("=> STONE");
                 stoneCounter++;
-                stoneOnThisStep = true;
                 return go;
             }
         }
@@ -168,7 +165,6 @@ public class YourSolver implements Solver<Board> {
             go = board.bfs(point, board.size() / 6, false, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: STONE CLOSE");
-                stoneOnThisStep = true;
                 return go;
             }
         }
@@ -341,6 +337,11 @@ public class YourSolver implements Solver<Board> {
     private boolean canEatStoneNow() {
         return ( (stoneOnPrevStep) ? (board.getMySize() > 7) : (board.getMySize() > 4) )
                 || (fury && pillCounter < 9);
+    }
+
+    private boolean stoneOnThisStep(Point point, Direction direction) {
+        Point p = direction.change(point);
+        return board.isAt(p, STONE);
     }
 
     private boolean canEatStoneSoon() {
