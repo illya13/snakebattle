@@ -63,6 +63,7 @@ public class YourSolver implements Solver<Board> {
     private int stoneCounter;
 
     private boolean stoneOnPrevStep;        // FIXME: remove
+    private boolean stoneOnThisStep;        // FIXME: remove
 
     YourSolver(Dice dice) {
         this.dice = dice;
@@ -83,6 +84,8 @@ public class YourSolver implements Solver<Board> {
     private Direction nextStep() {
         Optional<Direction> go;
 
+        stoneOnThisStep = false;
+
         go = realTime(me);
         if (go.isPresent())
             return go.get();
@@ -90,6 +93,8 @@ public class YourSolver implements Solver<Board> {
         go = midTerm(me);
         if (go.isPresent())
             return go.get();
+
+        stoneOnPrevStep = stoneOnThisStep;
 
         return lastCall(me);
     }
@@ -121,11 +126,10 @@ public class YourSolver implements Solver<Board> {
             if (go.isPresent()) {
                 System.out.println("=> STONE");
                 stoneCounter++;
-                stoneOnPrevStep = true;
+                stoneOnThisStep = true;
                 return go;
             }
         }
-        stoneOnPrevStep = false;
 
         go = safeStepTarget(point, GOLD, priority);
         if (go.isPresent()) {
@@ -158,6 +162,7 @@ public class YourSolver implements Solver<Board> {
             go = board.bfs(point, board.size() / 6, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: STONE CLOSE");
+                stoneOnThisStep = true;
                 return go;
             }
         }
