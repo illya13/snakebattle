@@ -45,7 +45,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  */
 public class YourSolver implements Solver<Board> {
 
-    private static final int ATTACK_STEPS = 200;
+    private static final int ATTACK_STEPS = 100;
     private Dice dice;
     private Direction prev;
 
@@ -147,7 +147,7 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         if (isAttackMode()) {
-            go = board.bfsAttack(point, board.size() / 2, BARRIER_ATTACK, ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
+            go = board.bfsAttack(point, board.size() / 6, BARRIER_ATTACK, ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
             if (go.isPresent() && isSafeAttack(point, go.get())) {
                 System.out.println("=> BFS: ATTACK");
                 return go;
