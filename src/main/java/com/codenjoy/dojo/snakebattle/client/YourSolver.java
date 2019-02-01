@@ -102,7 +102,7 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         if (isSelfDestructMode()) {
-            return Optional.of(priority[3]);
+            return Optional.of(Direction.RIGHT);    // FIXME: better self destruct
         }
 
         if (isAttackMode()) {
@@ -221,11 +221,6 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent())
             return go.get();
 
-        if (prev != null) {
-            System.out.println("TURN AROUND");
-            return turnAround(prev);
-        }
-/*
         go = unsafeStepAvoid(point, BARRIER_NORMAL, priority);
         if (go.isPresent())
             return go.get();
@@ -237,8 +232,7 @@ public class YourSolver implements Solver<Board> {
         go = unsafeStepAvoid(point, BARRIER_NO_WAY, priority);
         if (go.isPresent())
             return go.get();
-*/
-        System.out.println("NO WAY");
+
         return priority[0];
     }
 
@@ -335,7 +329,6 @@ public class YourSolver implements Solver<Board> {
         return Optional.empty();
     }
 
-/*
     private Optional<Direction> unsafeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
@@ -345,7 +338,6 @@ public class YourSolver implements Solver<Board> {
         }
         return Optional.empty();
     }
-*/
 
     private boolean canAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS) == 0 ||
