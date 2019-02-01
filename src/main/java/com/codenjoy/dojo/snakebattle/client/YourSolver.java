@@ -102,7 +102,7 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         if (isSelfDestructMode()) {
-            return Optional.of(Direction.RIGHT);
+            return Optional.of(prev);
         }
 
         if (isAttackMode()) {
