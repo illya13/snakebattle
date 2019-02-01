@@ -219,13 +219,12 @@ public class Board extends AbstractBoard<Elements> {
             map.put(direction, count);
         }
 
-        List<Direction> sorted = map.entrySet().stream()
+        Map<Direction, Integer> sorted = map.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .map(e -> e.getKey())
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
         System.out.println("priority: " + sorted);
-        return sorted.toArray(new Direction[4]);
+        return sorted.keySet().toArray(new Direction[4]);
     }
 
     public int countNear(Point point, Elements[] elements) {
