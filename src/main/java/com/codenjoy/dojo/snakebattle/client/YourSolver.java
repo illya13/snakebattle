@@ -102,7 +102,7 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         if (isSelfDestructMode()) {
-            return Optional.of(prev);
+            return Optional.of(priority[3]);
         }
 
         if (isAttackMode()) {
@@ -221,6 +221,11 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent())
             return go.get();
 
+        if (prev != null) {
+            System.out.println("TURN AROUND");
+            return turnAround(prev);
+        }
+/*
         go = unsafeStepAvoid(point, BARRIER_NORMAL, priority);
         if (go.isPresent())
             return go.get();
@@ -232,7 +237,8 @@ public class YourSolver implements Solver<Board> {
         go = unsafeStepAvoid(point, BARRIER_NO_WAY, priority);
         if (go.isPresent())
             return go.get();
-
+*/
+        System.out.println("NO WAY");
         return priority[0];
     }
 
@@ -291,19 +297,25 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean isStepBack(Direction direction) {
-        if (prev != null) {
-            switch (prev) {
-                case UP:
-                    return direction.equals(Direction.DOWN);
-                case DOWN:
-                    return direction.equals(Direction.UP);
-                case RIGHT:
-                    return direction.equals(Direction.LEFT);
-                case LEFT:
-                    return direction.equals(Direction.RIGHT);
-            }
+        return direction.equals(turnAround(prev));
+    }
+
+    private Direction turnAround(Direction direction) {
+        if (direction == null)
+            return null;
+
+        switch (direction) {
+            case UP:
+                return Direction.DOWN;
+            case DOWN:
+                return Direction.UP;
+            case RIGHT:
+                return Direction.LEFT;
+            case LEFT:
+                return Direction.RIGHT;
+            default:
+                return null;
         }
-        return false;
     }
 
     private boolean isSafeAttack(Point point, Direction direction) {
@@ -323,6 +335,7 @@ public class YourSolver implements Solver<Board> {
         return Optional.empty();
     }
 
+/*
     private Optional<Direction> unsafeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
@@ -332,6 +345,7 @@ public class YourSolver implements Solver<Board> {
         }
         return Optional.empty();
     }
+*/
 
     private boolean canAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS) == 0 ||
