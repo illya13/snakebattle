@@ -329,7 +329,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean canEatStoneSoon() {
-        return (board.getMySize() > 4) || (fury && pillCounter < 7);
+        return (board.getMySize() > 4) || (fury && pillCounter < 8);
     }
 
     private boolean canFly() {
