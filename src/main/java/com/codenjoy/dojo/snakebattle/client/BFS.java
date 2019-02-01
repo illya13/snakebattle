@@ -66,15 +66,15 @@ public class BFS {
         for (Point point: found) {
             Direction direction = traceBack(start, point, visited);
             double points = POINTS.getPoints(board.getAllAt(point));
+            double dx = points / visited.get(point).distance;
 
             Double value = weightMap.get(direction);
             if (value == null)
                 value = 0d;
-            value += points / visited.get(point).distance;
+            value += dx;
 
             System.out.printf("\t%s %s %3.0f %d %.3f\n", direction, board.getAllAt(point), points,
-                    visited.get(point).distance, points / visited.get(point).distance
-            );
+                    visited.get(point).distance, dx);
 
             weightMap.put(direction, value);
         }
