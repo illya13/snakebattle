@@ -45,7 +45,6 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  */
 public class YourSolver implements Solver<Board> {
 
-    private static final int ATTACK_STEPS = 100;
     private static final int SELF_DESTRUCT_STEPS = 200;
     private Dice dice;
     private Direction prev;
@@ -63,8 +62,6 @@ public class YourSolver implements Solver<Board> {
     private int pillCounter;
     private int stoneCounter;
 
-    private boolean stoneOnPrevStep;        // FIXME: remove
-
     YourSolver(Dice dice) {
         this.dice = dice;
     }
@@ -77,8 +74,6 @@ public class YourSolver implements Solver<Board> {
         init();
 
         prev = nextStep();
-        stoneOnPrevStep = stoneOnThisStep(me, prev);
-
         return act(prev);
     }
 
@@ -105,8 +100,10 @@ public class YourSolver implements Solver<Board> {
             return Optional.of(priority[3]);
         }
 
-        if (isAttackMode()) {
-            // TODO: implement
+        go = safeAttackTarget(point, ENEMY_TAIL_ELEMENTS, priority);
+        if (go.isPresent()) {
+            System.out.println("=> ATTACK");
+            return go;
         }
 
         go = safeStepTarget(point, FLYING_PILL, priority);
@@ -151,14 +148,12 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if (isAttackMode()) {
-            go = board.bfsAttack(point, board.size() / 6, false,
-                    BARRIER_ATTACK,
-                    ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
-            if (go.isPresent() && isSafeAttack(point, go.get())) {
-                System.out.println("=> BFS: ATTACK");
-                return go;
-            }
+        go = board.bfsAttack(point, board.size() / 6, false,
+                BARRIER_ATTACK,
+                ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
+        if (go.isPresent() && isSafeAttack(point, go.get())) {
+            System.out.println("=> BFS: ATTACK");
+            return go;
         }
 
         if ( canEatStoneSoon() && (!fly || pillCounter > 6) ) {
@@ -205,10 +200,6 @@ public class YourSolver implements Solver<Board> {
         return (canFly())
                 ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE, FURY_PILL, FLYING_PILL)
                 : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
-    }
-
-    private boolean isAttackMode() {
-        return /*(board.getEnemySnakes() == 1) && */ (step > ATTACK_STEPS);
     }
 
     private boolean isSelfDestructMode() {
@@ -258,7 +249,6 @@ public class YourSolver implements Solver<Board> {
             step = 0;
             stoneCounter = 0;
             pill = false;
-            stoneOnPrevStep = false;
         }
         step++;
         closeAction = true;
@@ -282,8 +272,16 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> safeStepTarget(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if (board.isAt(p, elements) &&
-                    (isAttackMode() ? isSafeAttack(point, direction) : isSafeStep(point, direction)) )
+            if (board.isAt(p, elements) && isSafeStep(point, direction) )
+                return Optional.of(direction);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Direction> safeAttackTarget(Point point, Elements[] elements, Direction[] directions) {
+        for (Direction direction: directions) {
+            Point p = direction.change(point);
+            if (board.isAt(p, elements) && isSafeAttack(point, direction) )
                 return Optional.of(direction);
         }
         return Optional.empty();
@@ -296,33 +294,11 @@ public class YourSolver implements Solver<Board> {
                 !isStepBack(direction) && canEatStoneAt(p) && canAttack(p);
     }
 
-    private boolean isStepBack(Direction direction) {
-        return direction.equals(turnAround(prev));
-    }
-
-    private Direction turnAround(Direction direction) {
-        if (direction == null)
-            return null;
-
-        switch (direction) {
-            case UP:
-                return Direction.DOWN;
-            case DOWN:
-                return Direction.UP;
-            case RIGHT:
-                return Direction.LEFT;
-            case LEFT:
-                return Direction.RIGHT;
-            default:
-                return null;
-        }
-    }
-
     private boolean isSafeAttack(Point point, Direction direction) {
         Point p = direction.change(point);
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafeAttack(p) ) &&
-                !isStepBack(direction) && canEatStoneAt(p) && canAttack(p);
+                !isStepBack(direction);
     }
 
     private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
@@ -358,13 +334,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean canEatStoneNow() {
-        return ( (stoneOnPrevStep) ? (board.getMySize() > 7) : (board.getMySize() > 4) )
-                || (fury && pillCounter < 9);
-    }
-
-    private boolean stoneOnThisStep(Point point, Direction direction) {
-        Point p = direction.change(point);
-        return board.isAt(p, STONE);
+        return (board.getMySize() > 4) || (fury && pillCounter < 9);
     }
 
     private boolean canEatStoneSoon() {
@@ -377,6 +347,28 @@ public class YourSolver implements Solver<Board> {
 
     private boolean enemyCloseToTail() {
         return board.countNear(board.getMyTail(), ENEMY_HEAD_ELEMENTS) > 0;
+    }
+
+    private boolean isStepBack(Direction direction) {
+        return direction.equals(turnAround(prev));
+    }
+
+    private Direction turnAround(Direction direction) {
+        if (direction == null)
+            return null;
+
+        switch (direction) {
+            case UP:
+                return Direction.DOWN;
+            case DOWN:
+                return Direction.UP;
+            case RIGHT:
+                return Direction.LEFT;
+            case LEFT:
+                return Direction.RIGHT;
+            default:
+                return null;
+        }
     }
 
     private void checkPills(Point point) {
@@ -395,9 +387,6 @@ public class YourSolver implements Solver<Board> {
             pillCounter = 0;
         }
         System.out.print("stones: " + stoneCounter);
-        if (stoneOnPrevStep) {
-            System.out.print("+");
-        }
         if (fury) {
             System.out.println(", fury[" + pillCounter + "]");
         } else if (fly) {
@@ -410,7 +399,7 @@ public class YourSolver implements Solver<Board> {
     public static void main(String[] args) {
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
-                "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/illya.havsiyevych@gmail.com?code=1617935781189693616",
+                "https://game3.epam-bot-challenge.com.ua/codenjoy-contest/board/player/illya.havsiyevych@gmail.com?code=1617935781189693616",
                 new YourSolver(new RandomDice()),
                 new Board());
     }
