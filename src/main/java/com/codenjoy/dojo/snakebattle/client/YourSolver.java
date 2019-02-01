@@ -77,15 +77,16 @@ public class YourSolver implements Solver<Board> {
 
         init();
 
+        stoneOnThisStep = false;
         prev = nextStep();
+        stoneOnPrevStep = stoneOnThisStep;
+
         return act(prev);
     }
 
 
     private Direction nextStep() {
         Optional<Direction> go;
-
-        stoneOnThisStep = false;
 
         go = realTime(me);
         if (go.isPresent())
@@ -94,8 +95,6 @@ public class YourSolver implements Solver<Board> {
         go = midTerm(me);
         if (go.isPresent())
             return go.get();
-
-        stoneOnPrevStep = stoneOnThisStep;
 
         return lastCall(me);
     }
