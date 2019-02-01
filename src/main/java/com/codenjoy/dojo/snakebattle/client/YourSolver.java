@@ -45,7 +45,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  */
 public class YourSolver implements Solver<Board> {
 
-    private static final int ATTACK_STEPS = 300;
+    private static final int ATTACK_STEPS = 200;
     private Dice dice;
     private Direction prev;
 
@@ -79,10 +79,9 @@ public class YourSolver implements Solver<Board> {
 
 
     private Direction nextStep() {
-        Optional<Direction> go = isAttackMode()
-                ? attack(me)
-                : realTime(me);
+        Optional<Direction> go;
 
+        go = realTime(me);
         if (go.isPresent())
             return go.get();
 
@@ -96,6 +95,10 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
+
+        if (isAttackMode()) {
+            // TODO: implement
+        }
 
         go = safeStepTarget(point, FLYING_PILL, priority);
         if (go.isPresent()) {
@@ -133,11 +136,6 @@ public class YourSolver implements Solver<Board> {
         }
 
         return go;
-    }
-
-    private Optional<Direction> attack(Point point) {
-        // TODO: implement
-        return realTime(point);
     }
 
 
@@ -253,7 +251,8 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> safeStepTarget(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if (board.isAt(p, elements) && isSafeStep(point, direction))
+            if (board.isAt(p, elements) &&
+                    (isAttackMode() ? isSafeAttack(point, direction) : isSafeStep(point, direction)) )
                 return Optional.of(direction);
         }
         return Optional.empty();
@@ -283,8 +282,10 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean isSafeAttack(Point point, Direction direction) {
-        // TODO: implement
-        return isSafeStep(point, direction);
+        Point p = direction.change(point);
+
+        return ( canFly() ? board.isSafeFly(p) : board.isSafeAttack(p) ) &&
+                !isStepBack(direction) && canEatStoneAt(p) && canAttack(p);
     }
 
     private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
