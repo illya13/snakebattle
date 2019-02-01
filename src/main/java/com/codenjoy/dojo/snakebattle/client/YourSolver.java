@@ -46,6 +46,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 public class YourSolver implements Solver<Board> {
 
     private static final int ATTACK_STEPS = 100;
+    private static final int SELF_DESTRUCT_STEPS = 200;
     private Dice dice;
     private Direction prev;
 
@@ -102,6 +103,10 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
+
+        if (isSelfDestructMode()) {
+            return Optional.of(Direction.RIGHT);
+        }
 
         if (isAttackMode()) {
             // TODO: implement
@@ -200,6 +205,10 @@ public class YourSolver implements Solver<Board> {
 
     private boolean isAttackMode() {
         return /*(board.getEnemySnakes() == 1) && */ (step > ATTACK_STEPS);
+    }
+
+    private boolean isSelfDestructMode() {
+        return step > SELF_DESTRUCT_STEPS;
     }
 
 
