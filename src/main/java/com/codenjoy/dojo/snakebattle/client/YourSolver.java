@@ -356,6 +356,9 @@ public class YourSolver implements Solver<Board> {
             pillCounter = 0;
         }
         System.out.print("stones: " + stoneCounter);
+        if (stoneOnPrevStep) {
+            System.out.print("+");
+        }
         if (fury) {
             System.out.println(", fury[" + pillCounter + "]");
         } else if (fly) {
