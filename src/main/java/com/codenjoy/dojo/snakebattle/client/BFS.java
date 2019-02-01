@@ -72,9 +72,8 @@ public class BFS {
                 value = 0d;
             value += points / visited.get(point).distance;
 
-            System.out.println( direction + " " +
-                    board.getAllAt(point) + " "  +
-                    + points + " " + visited.get(point).distance + " " + points / visited.get(point).distance
+            System.out.printf("\t%s %s %3.0f %d %.3f\n", direction, board.getAllAt(point), points,
+                    visited.get(point).distance, points / visited.get(point).distance
             );
 
             weightMap.put(direction, value);
