@@ -59,56 +59,14 @@ public class BFS {
         LinkedHashSet<Point> found = bfs(queue, visited, size);
         if (found.isEmpty())
             return Optional.empty();
-/*
-        for(int y = board.size()-1; y >= 0; --y) {
-            for (int x = 0; x < board.size(); ++x) {
-                Point p = PointImpl.pt(x, y);
-                if (!visited.containsKey(p)) {
-                    System.out.print(board.isAt(p, NONE) ? "   " : board.getAllAt(x, y));
-                } else {
-                    System.out.printf("%3d", visited.get(p).distance);
-                }
-            }
-            System.out.println();
-        }
-*/
-        if (!weight) {
-            return Optional.of(traceBack(start, found.iterator().next(), visited));
-        }
 
-        Map<Direction, Double> weightMap = new HashMap<>();
-        for (Point point: found) {
-            Direction direction = traceBack(start, point, visited);
-            double points = POINTS.getPoints(board.getAllAt(point));
-            double dx = points / visited.get(point).distance;
+        // debug(visited);
 
-            Double value = weightMap.get(direction);
-            if (value == null)
-                value = 0d;
-            value += dx;
-
-            System.out.printf("\t%s %s %3.0f %d %.3f\n", direction, board.getAllAt(point), points,
-                    visited.get(point).distance, dx);
-
-            weightMap.put(direction, value);
-        }
-
-        List<Direction> sorted = weightMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .map(e -> e.getKey())
-                .collect(Collectors.toList());
-
-        System.out.println(weightMap);
-        // System.out.println(sorted);
-        return Optional.of(sorted.get(0));
+        return (weight)
+                ? calcWeights(visited, found)
+                : Optional.of(traceBack(start, found.iterator().next(), visited));
     }
 
-    private Direction traceBack(Point start, Point point, Map<Point, Path> visited ) {
-        while (!visited.get(point).getFrom().equals(start)) {
-            point = visited.get(point).getFrom();
-        }
-        return visited.get(point).getDirection();
-    }
 
     private LinkedHashSet<Point> bfs(Queue<Point> queue, Map<Point, Path> visited, int max) {
         LinkedHashSet<Point> found = new LinkedHashSet<>();
@@ -140,6 +98,59 @@ public class BFS {
         }
         return found;
     }
+
+
+    private Optional<Direction> calcWeights(Map<Point, Path> visited, LinkedHashSet<Point> found) {
+        Map<Direction, Double> weightMap = new HashMap<>();
+        for (Point point: found) {
+            Direction direction = traceBack(start, point, visited);
+            double points = POINTS.getPoints(board.getAllAt(point));
+            double dx = points / visited.get(point).distance;
+
+            Double value = weightMap.get(direction);
+            if (value == null)
+                value = 0d;
+            value += dx;
+
+            System.out.printf("\t%s %s %3.0f %d %.3f\n", direction, board.getAllAt(point), points,
+                    visited.get(point).distance, dx);
+
+            weightMap.put(direction, value);
+        }
+
+        List<Direction> sorted = weightMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .map(e -> e.getKey())
+                .collect(Collectors.toList());
+
+        System.out.println(weightMap);
+        // System.out.println(sorted);
+        return Optional.of(sorted.get(0));
+    }
+
+
+    private Direction traceBack(Point start, Point point, Map<Point, Path> visited ) {
+        while (!visited.get(point).getFrom().equals(start)) {
+            point = visited.get(point).getFrom();
+        }
+        return visited.get(point).getDirection();
+    }
+
+
+    private void debug(Map<Point, Path> visited) {
+        for(int y = board.size()-1; y >= 0; --y) {
+            for (int x = 0; x < board.size(); ++x) {
+                Point p = PointImpl.pt(x, y);
+                if (!visited.containsKey(p)) {
+                    System.out.print(board.isAt(p, NONE) ? "   " : board.getAllAt(x, y));
+                } else {
+                    System.out.printf("%3d", visited.get(p).distance);
+                }
+            }
+            System.out.println();
+        }
+    }
+
 
     private boolean isSafe(Point point) {
         switch (mode) {
