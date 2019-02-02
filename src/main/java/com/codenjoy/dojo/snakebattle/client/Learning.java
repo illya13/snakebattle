@@ -79,6 +79,7 @@ public class Learning {
         }
 
         public void init() {
+            features.clear();
             for(FEATURE feature: weights.keySet()) {
                 int rnd = dice.next(100);
                 System.out.printf("%s %d", feature, rnd);

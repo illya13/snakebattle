@@ -67,7 +67,6 @@ public class YourSolver implements Solver<Board> {
         learning = Learning.Builder.newLearning()
                 .withStrategy(new Learning.DefaultStrategy(dice))
                 .build();
-
         learning.init();
     }
 
@@ -269,6 +268,7 @@ public class YourSolver implements Solver<Board> {
 
     private void init() {
         if (board.isGameStart()) {
+            learning.init();
             step = 0;
             stoneCounter = 0;
             pill = false;
