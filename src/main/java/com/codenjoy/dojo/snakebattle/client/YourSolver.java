@@ -200,8 +200,8 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> getBFSDirection(Point point, int max, boolean weight) {
         return (canFly())
-                ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE, FURY_PILL, FLYING_PILL)
-                : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
+                ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/)
+                : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/);
     }
 
     private boolean isSelfDestructMode() {
@@ -214,11 +214,6 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent())
             return go.get();
 
-        if (prev != null) {
-            System.out.println("TURN AROUND");
-            return turnAround(prev);
-        }
-/*
         go = unsafeStepAvoid(point, BARRIER_NORMAL, priority);
         if (go.isPresent())
             return go.get();
@@ -230,8 +225,7 @@ public class YourSolver implements Solver<Board> {
         go = unsafeStepAvoid(point, BARRIER_NO_WAY, priority);
         if (go.isPresent())
             return go.get();
-*/
-        System.out.println("NO WAY");
+
         return priority[0];
     }
 
@@ -274,7 +268,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> safeStepTarget(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if (board.isAt(p, elements) && isSafeStep(point, direction) )
+            if (board.isAt(p, elements) && isSafeStep(point, direction))
                 return Optional.of(direction);
         }
         return Optional.empty();
@@ -283,7 +277,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> safeAttackTarget(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if (board.isAt(p, elements) && isSafeAttack(point, direction) )
+            if (board.isAt(p, elements) && isSafeAttack(point, direction))
                 return Optional.of(direction);
         }
         return Optional.empty();
@@ -313,7 +307,6 @@ public class YourSolver implements Solver<Board> {
         return Optional.empty();
     }
 
-/*
     private Optional<Direction> unsafeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
@@ -323,7 +316,6 @@ public class YourSolver implements Solver<Board> {
         }
         return Optional.empty();
     }
-*/
 
     private boolean canAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS) == 0 ||
