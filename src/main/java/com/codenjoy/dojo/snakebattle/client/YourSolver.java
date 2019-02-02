@@ -72,6 +72,7 @@ public class YourSolver implements Solver<Board> {
         if (board.isGameOver()) return "";
 
         init();
+        if (isSelfDestructMode()) return "ACT(0)";
 
         prev = nextStep();
         return act(prev);
@@ -95,10 +96,6 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
-
-        if (isSelfDestructMode()) {
-            return Optional.of(priority[3]);
-        }
 
         if (fury) {
             go = safeAttackTarget(point, ENEMY_ELEMENTS, priority);
