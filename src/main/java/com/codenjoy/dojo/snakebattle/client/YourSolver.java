@@ -44,7 +44,35 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  * фреймворк для тебя.
  */
 public class YourSolver implements Solver<Board> {
+    enum STRATEGY {
+        NORMAL(5), NO_STONES(3), NO_ATTACK(1), NO_SELF_DESTRUCT(1);
 
+        private int weight;
+
+        STRATEGY(int weight) {
+            this.weight = weight;
+        }
+
+        public static STRATEGY getStrategy(Dice dice) {
+            int sum = 0;
+            for (STRATEGY s: values()) {
+                sum += s.weight;
+            }
+
+            int rnd = dice.next(sum);
+            System.out.printf("STRATEGY %d of %d\n", rnd, sum);
+
+            sum = 0;
+            for (STRATEGY s: values()) {
+                sum += s.weight;
+                if (sum >= rnd)
+                    return s;
+            }
+            return NORMAL;
+        }
+    }
+
+    private STRATEGY strategy = STRATEGY.NORMAL;
     private static final int SELF_DESTRUCT_STEPS = 200;
     private Dice dice;
     private Direction prev;
@@ -101,7 +129,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
 
-        if (fury) {
+        if (isAttackMode()) {
             go = safeAttackTarget(point, ENEMY_ELEMENTS, priority);
             if (go.isPresent()) {
                 System.out.println("=> ATTACK");
@@ -123,7 +151,7 @@ public class YourSolver implements Solver<Board> {
             return go;
         }
 
-        if (!fly) {
+        if (isStoneMode()) {
             go = safeStepTarget(point, STONE, priority);
             if (go.isPresent()) {
                 System.out.println("=> STONE");
@@ -151,7 +179,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if (fury && pillCounter < 8) {
+        if (isAttackMode() && pillCounter < 8) {
             go = board.bfsAttack(point, board.size() / 6, false,
                     BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
@@ -162,7 +190,7 @@ public class YourSolver implements Solver<Board> {
             }
         }
 
-        if ( canEatStoneSoon() && (!fly || pillCounter > 6) ) {
+        if (isStoneMode() && canEatStoneSoon()) {
             go = board.bfs(point, board.size() / 6, false, BARRIER_NORMAL, STONE);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: STONE CLOSE");
@@ -208,8 +236,16 @@ public class YourSolver implements Solver<Board> {
                 : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/);
     }
 
+    private boolean isAttackMode() {
+        return fury && (strategy != STRATEGY.NO_ATTACK);
+    }
+
+    private boolean isStoneMode() {
+        return !fly && (strategy != STRATEGY.NO_STONES);
+    }
+
     private boolean isSelfDestructMode() {
-        return step > SELF_DESTRUCT_STEPS;
+        return (step > SELF_DESTRUCT_STEPS) && (strategy != STRATEGY.NO_SELF_DESTRUCT);
     }
 
 
@@ -246,6 +282,7 @@ public class YourSolver implements Solver<Board> {
 
     private void init() {
         if (board.isGameStart()) {
+            strategy = STRATEGY.getStrategy(dice);
             step = 0;
             stoneCounter = 0;
             pill = false;
@@ -255,7 +292,8 @@ public class YourSolver implements Solver<Board> {
         closeAction = true;
 
         board.traceSnakes();
-        System.out.println("[" + step + "] me: " + board.getMySize() + ", enemies[" + board.getEnemySnakes()+ "]: " + board.getEnemySize());
+        System.out.printf("%s, me[%d]: %d, enemies[%d]: %d\n",
+                strategy, step, board.getMySize(), board.getEnemySnakes(), board.getEnemySize());
 
         board.traceSafe();
 
@@ -337,13 +375,13 @@ public class YourSolver implements Solver<Board> {
                 || (fury && pillCounter < 9);
     }
 
+    private boolean canEatStoneSoon() {
+        return ((board.getMySize() > 4) && (!fly || pillCounter > 7)) || (fury && pillCounter < 8);
+    }
+
     private boolean stoneOnThisStep(Point point, Direction direction) {
         Point p = direction.change(point);
         return board.isAt(p, STONE);
-    }
-
-    private boolean canEatStoneSoon() {
-        return (board.getMySize() > 4) || (fury && pillCounter < 8);
     }
 
     private boolean canFly() {
