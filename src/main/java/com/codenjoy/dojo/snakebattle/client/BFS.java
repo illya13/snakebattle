@@ -35,6 +35,10 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.NONE;
 
 
 public class BFS {
+    public enum MODE {
+        NORMAL, FLY, ATTACK
+    }
+
     private Board board;
     private Point start;
     private boolean weight;
@@ -161,6 +165,7 @@ public class BFS {
         return true;
     }
 
+
     public static class Builder {
         private BFS bfs;
 
@@ -200,6 +205,7 @@ public class BFS {
         }
     }
 
+
     private static class Path {
         private Point from;
         private Direction direction;
@@ -224,9 +230,6 @@ public class BFS {
         }
     }
 
-    public enum MODE {
-        NORMAL, FLY, ATTACK
-    }
 
     public enum POINTS {
         APPLE(Elements.APPLE, 1), GOLD(Elements.GOLD, 5), STONE(Elements.STONE, 10), FURY(Elements.FURY_PILL, 20);
