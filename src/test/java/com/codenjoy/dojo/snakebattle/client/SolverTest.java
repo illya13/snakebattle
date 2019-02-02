@@ -50,6 +50,7 @@ public class SolverTest {
     @Before
     public void setup() {
         dice = mock(Dice.class);
+        when(dice.next(anyInt())).thenReturn(50);
         ai = new YourSolver(dice);
     }
 
@@ -156,7 +157,7 @@ public class SolverTest {
                 "☼#        ●●┌┐        │● ♥   ☼\n" +
                 "☼☼         ×┘│        │  ╚═╕ ☼\n" +
                 "☼☼           └────────┘      ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.LEFT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
 
     }
 
@@ -299,9 +300,5 @@ public class SolverTest {
     private void asertAI(String board, Direction expected) {
         String actual = ai.get(board(board));
         assertEquals(expected.toString(), actual);
-    }
-
-    private void dice(Direction direction) {
-        when(dice.next(anyInt())).thenReturn(direction.value());
     }
 }

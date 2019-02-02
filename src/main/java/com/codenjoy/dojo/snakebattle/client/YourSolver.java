@@ -44,44 +44,15 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  * фреймворк для тебя.
  */
 public class YourSolver implements Solver<Board> {
-    enum STRATEGY {
-        NORMAL(5), NO_STONES(3), NO_ATTACK(1), NO_SELF_DESTRUCT(1);
-
-        private int weight;
-
-        STRATEGY(int weight) {
-            this.weight = weight;
-        }
-
-        public static STRATEGY getStrategy(Dice dice) {
-            int sum = 0;
-            for (STRATEGY s: values()) {
-                sum += s.weight;
-            }
-
-            int rnd = dice.next(sum);
-            System.out.printf("STRATEGY %d of %d\n", rnd, sum);
-
-            sum = 0;
-            for (STRATEGY s: values()) {
-                sum += s.weight;
-                if (sum >= rnd)
-                    return s;
-            }
-            return NORMAL;
-        }
-    }
-
-    private STRATEGY strategy = STRATEGY.NORMAL;
+    private Learning learning;
     private static final int SELF_DESTRUCT_STEPS = 200;
-    private Dice dice;
     private Direction prev;
 
     private Board board;
     private Point me;
     private Direction[] priority;
     private int step;
-    private boolean closeAction;
+    private boolean shortAction;
 
     private boolean fury;
     private boolean fly;
@@ -93,7 +64,11 @@ public class YourSolver implements Solver<Board> {
     private boolean stoneOnPrevStep;        // FIXME: remove
 
     YourSolver(Dice dice) {
-        this.dice = dice;
+        learning = Learning.Builder.newLearning()
+                .withStrategy(new Learning.DefaultStrategy(dice))
+                .build();
+
+        learning.init();
     }
 
     @Override
@@ -190,40 +165,44 @@ public class YourSolver implements Solver<Board> {
             }
         }
 
-        if (isStoneMode() && canEatStoneSoon()) {
-            go = board.bfs(point, board.size() / 6, false, BARRIER_NORMAL, STONE);
+        if (isShortMode()) {
+            if (isStoneMode() && canEatStoneSoon()) {
+                go = board.bfs(point, board.size() / 6, false, BARRIER_NORMAL, STONE);
+                if (go.isPresent() && isSafeStep(point, go.get())) {
+                    System.out.println("=> BFS: STONE SHORT");
+                    return go;
+                }
+            }
+
+            go = getBFSDirection(point, board.size() / 6, false);
             if (go.isPresent() && isSafeStep(point, go.get())) {
-                System.out.println("=> BFS: STONE CLOSE");
+                System.out.println("=> BFS: ANY SHORT");
                 return go;
             }
         }
 
-        go = getBFSDirection(point, board.size() / 6, false);
-        if (go.isPresent() && isSafeStep(point, go.get())) {
-            System.out.println("=> BFS: ANY CLOSE");
-            return go;
-        }
-
-        go = getBFSDirection(point, board.size() / 2, true);
-        if (go.isPresent() && isSafeStep(point, go.get())) {
-            closeAction = false;
-            System.out.println("=> BFS: ANY MEDIUM");
-            return go;
-        }
-
-        if (board.getMySize() > 4) {
-            go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL, STONE);
+        if (isMediumMode()) {
+            go = getBFSDirection(point, board.size() / 2, true);
             if (go.isPresent() && isSafeStep(point, go.get())) {
-                closeAction = false;
-                System.out.println("=> BFS: STONE MEDIUM");
+                shortAction = false;
+                System.out.println("=> BFS: ANY MEDIUM");
                 return go;
+            }
+
+            if (board.getMySize() > 4) {
+                go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL, STONE);
+                if (go.isPresent() && isSafeStep(point, go.get())) {
+                    shortAction = false;
+                    System.out.println("=> BFS: STONE MEDIUM");
+                    return go;
+                }
             }
         }
 
         go = getBFSDirection(point, board.size() * 2, true);
         if (go.isPresent() && isSafeStep(point, go.get())) {
-            closeAction = false;
-            System.out.println("=> BFS: ANY FAR");
+            shortAction = false;
+            System.out.println("=> BFS: ANY LONG");
             return go;
         }
 
@@ -236,16 +215,24 @@ public class YourSolver implements Solver<Board> {
                 : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/);
     }
 
+    private boolean isShortMode() {
+        return learning.getStrategy().hasFeature(Learning.FEATURE.SHORT);
+    }
+
+    private boolean isMediumMode() {
+        return learning.getStrategy().hasFeature(Learning.FEATURE.MEDIUM);
+    }
+
     private boolean isAttackMode() {
-        return fury && (strategy != STRATEGY.NO_ATTACK);
+        return fury && learning.getStrategy().hasFeature(Learning.FEATURE.ATTACK);
     }
 
     private boolean isStoneMode() {
-        return !fly && (strategy != STRATEGY.NO_STONES);
+        return !fly && learning.getStrategy().hasFeature(Learning.FEATURE.STONES);
     }
 
     private boolean isSelfDestructMode() {
-        return (step > SELF_DESTRUCT_STEPS) && (strategy != STRATEGY.NO_SELF_DESTRUCT);
+        return (step > SELF_DESTRUCT_STEPS) && learning.getStrategy().hasFeature(Learning.FEATURE.DESTRUCT);
     }
 
 
@@ -271,7 +258,7 @@ public class YourSolver implements Solver<Board> {
 
 
     private String act(Direction direction) {
-        if ( (enemyCloseToTail() || (!closeAction && canEatStoneSoon())) && (stoneCounter > 0) ) {
+        if ( (enemyCloseToTail() || (!shortAction && canEatStoneSoon())) && (stoneCounter > 0) ) {
             System.out.println("ACT");
             stoneCounter--;
             return "(" + direction.toString() + ", ACT)";
@@ -282,18 +269,18 @@ public class YourSolver implements Solver<Board> {
 
     private void init() {
         if (board.isGameStart()) {
-            strategy = STRATEGY.getStrategy(dice);
             step = 0;
             stoneCounter = 0;
             pill = false;
             stoneOnPrevStep = false;
         }
         step++;
-        closeAction = true;
+        shortAction = true;
 
         board.traceSnakes();
-        System.out.printf("%s, me[%d]: %d, enemies[%d]: %d\n",
-                strategy, step, board.getMySize(), board.getEnemySnakes(), board.getEnemySize());
+        System.out.printf("%s = me[%d]: %d, enemies[%d]: %d\n",
+                learning.getStrategy(),
+                step, board.getMySize(), board.getEnemySnakes(), board.getEnemySize());
 
         board.traceSafe();
 
