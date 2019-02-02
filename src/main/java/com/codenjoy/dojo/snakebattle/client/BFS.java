@@ -84,7 +84,7 @@ public class BFS {
                 }
             }
 
-            for (Direction direction: new Direction[]{RIGHT, DOWN, LEFT, UP}) {
+            for (Direction direction: board.getPriority(point, false)) {
                 Point p = direction.change(point);
                 if (!visited.containsKey(p) && !board.isAt(p, barrier) && !p.isOutOf(board.size())) {
                     int distance = visited.get(point).getDistance();

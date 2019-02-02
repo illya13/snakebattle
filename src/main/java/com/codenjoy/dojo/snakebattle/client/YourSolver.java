@@ -300,7 +300,7 @@ public class YourSolver implements Solver<Board> {
         me = board.getMe();
         checkPills(me);
 
-        priority = board.getPriority(me);
+        priority = board.getPriority(me, true);
     }
 
 

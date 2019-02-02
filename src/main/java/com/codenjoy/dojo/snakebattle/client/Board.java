@@ -220,7 +220,7 @@ public class Board extends AbstractBoard<Elements> {
         return safeAttack[point.getX()][point.getY()];
     }
 
-    public Direction[] getPriority(Point point) {
+    public Direction[] getPriority(Point point, boolean debug) {
         Map<Direction, Integer> map = new HashMap<>();
         for (Direction direction:  new Direction[]{RIGHT, DOWN, LEFT, UP}) {
             Point p = direction.change(point);
@@ -232,7 +232,7 @@ public class Board extends AbstractBoard<Elements> {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-        System.out.println("priority: " + sorted);
+        if (debug) System.out.println("priority: " + sorted);
         return sorted.keySet().toArray(new Direction[4]);
     }
 
