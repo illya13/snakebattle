@@ -172,7 +172,13 @@ public class Board extends AbstractBoard<Elements> {
                 }
             }
         }
-/*
+
+        // debugSafe(safeGo);
+        // debugSafe(safeFly);
+        // debugSafe(safeAttack);
+    }
+
+    private void debugSafe(boolean[][] safeGo) {
         for(int y = size()-1; y >= 0; --y) {
             for (int x = 0; x < size(); ++x) {
                 if (!safeGo[x][y]) {
@@ -183,29 +189,6 @@ public class Board extends AbstractBoard<Elements> {
             }
             System.out.println();
         }
-
-        for(int y = size()-1; y >= 0; --y) {
-            for (int x = 0; x < size(); ++x) {
-                if (!safeFly[x][y]) {
-                    System.out.print(getAllAt(x, y));
-                } else {
-                    System.out.print("   ");
-                }
-            }
-            System.out.println();
-        }
-
-        for(int y = size()-1; y >= 0; --y) {
-            for (int x = 0; x < size(); ++x) {
-                if (!safeAttack[x][y]) {
-                    System.out.print(getAllAt(x, y));
-                } else {
-                    System.out.print("   ");
-                }
-            }
-            System.out.println();
-        }
-*/
     }
 
     public boolean isSafe(Point point) {
