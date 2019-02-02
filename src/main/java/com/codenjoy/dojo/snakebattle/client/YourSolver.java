@@ -204,8 +204,8 @@ public class YourSolver implements Solver<Board> {
 
     private Optional<Direction> getBFSDirection(Point point, int max, boolean weight) {
         return (canFly())
-                ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE, FURY_PILL, FLYING_PILL)
-                : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
+                ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/)
+                : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/);
     }
 
     private boolean isSelfDestructMode() {
