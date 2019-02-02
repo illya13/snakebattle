@@ -61,8 +61,6 @@ public class YourSolver implements Solver<Board> {
     private int pillCounter;
     private int stoneCounter;
 
-    private boolean stoneOnPrevStep;        // FIXME: remove
-
     YourSolver(Dice dice) {
         learning = Learning.Builder.newLearning()
                 .withStrategy(new Learning.DefaultStrategy(dice))
@@ -76,11 +74,9 @@ public class YourSolver implements Solver<Board> {
         if (board.isGameOver()) return "";
 
         init();
-        if (isSelfDestructMode()) return Direction.RIGHT.toString();    // FIXME: ACT(0)
+        if (isSelfDestructMode()) return "ACT(0)";
 
         prev = nextStep();
-        stoneOnPrevStep = stoneOnThisStep(me, prev);
-
         return act(prev);
     }
 
@@ -272,7 +268,6 @@ public class YourSolver implements Solver<Board> {
             step = 0;
             stoneCounter = 0;
             pill = false;
-            stoneOnPrevStep = false;
         }
         step++;
         shortAction = true;
@@ -358,17 +353,11 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean canEatStoneNow() {
-        return ( (stoneOnPrevStep) ? (board.getMySize() > 7) : (board.getMySize() > 4) )
-                || (fury && pillCounter < 9);
+        return (board.getMySize() > 4) || (fury && pillCounter < 9);
     }
 
     private boolean canEatStoneSoon() {
         return ((board.getMySize() > 4) && (!fly || pillCounter > 7)) || (fury && pillCounter < 8);
-    }
-
-    private boolean stoneOnThisStep(Point point, Direction direction) {
-        Point p = direction.change(point);
-        return board.isAt(p, STONE);
     }
 
     private boolean canFly() {
@@ -417,9 +406,6 @@ public class YourSolver implements Solver<Board> {
             pillCounter = 0;
         }
         System.out.print("stones: " + stoneCounter);
-        if (stoneOnPrevStep) {
-            System.out.print("+");
-        }
         if (fury) {
             System.out.println(", fury[" + pillCounter + "]");
         } else if (fly) {
