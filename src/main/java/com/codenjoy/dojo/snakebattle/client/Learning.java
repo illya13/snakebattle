@@ -82,7 +82,7 @@ public class Learning {
             features.clear();
             for(FEATURE feature: weights.keySet()) {
                 int rnd = dice.next(100);
-                System.out.printf("%s %d", feature, rnd);
+                System.out.printf("%s %d < %.2f", feature, rnd, weights.get(feature));
                 if (rnd < weights.get(feature)) {
                     System.out.printf(" ... adding\n");
                 } else {
