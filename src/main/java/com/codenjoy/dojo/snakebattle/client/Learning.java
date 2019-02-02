@@ -84,6 +84,7 @@ public class Learning {
                 int rnd = dice.next(100);
                 System.out.printf("%s %d < %.2f", feature, rnd, weights.get(feature));
                 if (rnd < weights.get(feature)) {
+                    features.add(feature);
                     System.out.printf(" ... adding\n");
                 } else {
                     System.out.printf(" ... skipping\n");
