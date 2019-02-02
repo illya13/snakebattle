@@ -45,7 +45,6 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  */
 public class YourSolver implements Solver<Board> {
 
-    private static final int ATTACK_STEPS = 100;
     private static final int SELF_DESTRUCT_STEPS = 200;
     private Dice dice;
     private Direction prev;
@@ -75,6 +74,7 @@ public class YourSolver implements Solver<Board> {
         if (board.isGameOver()) return "";
 
         init();
+        if (isSelfDestructMode()) return Direction.RIGHT.toString();    // FIXME: ACT(0)
 
         prev = nextStep();
         stoneOnPrevStep = stoneOnThisStep(me, prev);
@@ -101,12 +101,12 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> realTime(Point point) {
         Optional<Direction> go;
 
-        if (isSelfDestructMode()) {
-            return Optional.of(Direction.RIGHT);    // FIXME: better self destruct
-        }
-
-        if (isAttackMode()) {
-            // TODO: implement
+        if (fury) {
+            go = safeAttackTarget(point, ENEMY_ELEMENTS, priority);
+            if (go.isPresent()) {
+                System.out.println("=> ATTACK");
+                return go;
+            }
         }
 
         go = safeStepTarget(point, FLYING_PILL, priority);
@@ -151,10 +151,11 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if (isAttackMode()) {
+        if (fury && pillCounter < 8) {
             go = board.bfsAttack(point, board.size() / 6, false,
                     BARRIER_ATTACK,
-                    ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
+                    ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
+                    ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
             if (go.isPresent() && isSafeAttack(point, go.get())) {
                 System.out.println("=> BFS: ATTACK");
                 return go;
@@ -205,10 +206,6 @@ public class YourSolver implements Solver<Board> {
         return (canFly())
                 ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE, FURY_PILL, FLYING_PILL)
                 : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL, FLYING_PILL);
-    }
-
-    private boolean isAttackMode() {
-        return /*(board.getEnemySnakes() == 1) && */ (step > ATTACK_STEPS);
     }
 
     private boolean isSelfDestructMode() {
@@ -276,8 +273,16 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> safeStepTarget(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
-            if (board.isAt(p, elements) &&
-                    (isAttackMode() ? isSafeAttack(point, direction) : isSafeStep(point, direction)) )
+            if (board.isAt(p, elements) && isSafeStep(point, direction))
+                return Optional.of(direction);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Direction> safeAttackTarget(Point point, Elements[] elements, Direction[] directions) {
+        for (Direction direction: directions) {
+            Point p = direction.change(point);
+            if (board.isAt(p, elements) && isSafeAttack(point, direction))
                 return Optional.of(direction);
         }
         return Optional.empty();
@@ -290,33 +295,11 @@ public class YourSolver implements Solver<Board> {
                 !isStepBack(direction) && canEatStoneAt(p) && canAttack(p);
     }
 
-    private boolean isStepBack(Direction direction) {
-        return direction.equals(turnAround(prev));
-    }
-
-    private Direction turnAround(Direction direction) {
-        if (direction == null)
-            return null;
-
-        switch (direction) {
-            case UP:
-                return Direction.DOWN;
-            case DOWN:
-                return Direction.UP;
-            case RIGHT:
-                return Direction.LEFT;
-            case LEFT:
-                return Direction.RIGHT;
-            default:
-                return null;
-        }
-    }
-
     private boolean isSafeAttack(Point point, Direction direction) {
         Point p = direction.change(point);
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafeAttack(p) ) &&
-                !isStepBack(direction) && canEatStoneAt(p) && canAttack(p);
+                !isStepBack(direction);
     }
 
     private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
@@ -369,6 +352,28 @@ public class YourSolver implements Solver<Board> {
 
     private boolean enemyCloseToTail() {
         return board.countNear(board.getMyTail(), ENEMY_HEAD_ELEMENTS) > 0;
+    }
+
+    private boolean isStepBack(Direction direction) {
+        return direction.equals(turnAround(prev));
+    }
+
+    private Direction turnAround(Direction direction) {
+        if (direction == null)
+            return null;
+
+        switch (direction) {
+            case UP:
+                return Direction.DOWN;
+            case DOWN:
+                return Direction.UP;
+            case RIGHT:
+                return Direction.LEFT;
+            case LEFT:
+                return Direction.RIGHT;
+            default:
+                return null;
+        }
     }
 
     private void checkPills(Point point) {
