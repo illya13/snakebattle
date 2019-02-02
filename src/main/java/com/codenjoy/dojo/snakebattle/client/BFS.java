@@ -35,33 +35,76 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.NONE;
 
 
 public class BFS {
-    public static Optional<Direction> bfs(Board board, Point start, boolean weight, Elements[] barrier, Elements[] target, int size, MODE mode) {
+    public enum MODE {
+        NORMAL, FLY, ATTACK
+    }
+
+    private Board board;
+    private Point start;
+    private boolean weight;
+    private MODE mode;
+    private Elements[] barrier;
+    private Elements[] target;
+
+    private BFS(Board board, Point start) {
+        this.board = board;
+        this.start = start;
+        weight = false;
+        mode = MODE.NORMAL;
+    }
+
+    public Optional<Direction> bfs(int size) {
         Queue<Point> queue = new LinkedList<>();
         queue.add(start);
 
         Map<Point, Path> visited = new HashMap<>(size*2);
         visited.put(start, new Path(null, null, 0));
 
-        LinkedHashSet<Point> found = bfs(board, queue, visited, barrier, target, size, mode, weight);
+        LinkedHashSet<Point> found = bfs(queue, visited, size);
         if (found.isEmpty())
             return Optional.empty();
-/*
-        for(int y = board.size()-1; y >= 0; --y) {
-            for (int x = 0; x < board.size(); ++x) {
-                Point p = PointImpl.pt(x, y);
-                if (!visited.containsKey(p)) {
-                    System.out.print(board.isAt(p, NONE) ? "   " : board.getAllAt(x, y));
-                } else {
-                    System.out.printf("%3d", visited.get(p).distance);
+
+        // debug(visited);
+
+        return (weight)
+                ? calcWeights(visited, found)
+                : Optional.of(traceBack(start, found.iterator().next(), visited));
+    }
+
+
+    private LinkedHashSet<Point> bfs(Queue<Point> queue, Map<Point, Path> visited, int max) {
+        LinkedHashSet<Point> found = new LinkedHashSet<>();
+        while (!queue.isEmpty()) {
+            Point point = queue.poll();
+
+            if (board.isAt(point, target)) {
+                found.add(point);
+                if (!weight) {
+                    break;
                 }
             }
-            System.out.println();
-        }
-*/
-        if (!weight) {
-            return Optional.of(traceBack(start, found.iterator().next(), visited));
-        }
 
+            for (Direction direction: new Direction[]{RIGHT, DOWN, LEFT, UP}) {
+                Point p = direction.change(point);
+                if (!visited.containsKey(p) && !board.isAt(p, barrier) && !p.isOutOf(board.size())) {
+                    int distance = visited.get(point).getDistance();
+                    if (distance > max)
+                        continue;
+
+                    if (!isSafe(p)) {
+                        continue;
+                    }
+
+                    queue.add(p);
+                    visited.put(p, new Path(point, direction,distance+1));
+                }
+            }
+        }
+        return found;
+    }
+
+
+    private Optional<Direction> calcWeights(Map<Point, Path> visited, LinkedHashSet<Point> found) {
         Map<Direction, Double> weightMap = new HashMap<>();
         for (Point point: found) {
             Direction direction = traceBack(start, point, visited);
@@ -89,52 +132,79 @@ public class BFS {
         return Optional.of(sorted.get(0));
     }
 
-    private static Direction traceBack(Point start, Point point, Map<Point, Path> visited ) {
+
+    private Direction traceBack(Point start, Point point, Map<Point, Path> visited ) {
         while (!visited.get(point).getFrom().equals(start)) {
             point = visited.get(point).getFrom();
         }
         return visited.get(point).getDirection();
     }
 
-    private static LinkedHashSet<Point> bfs(Board board, Queue<Point> queue, Map<Point, Path> visited, Elements[] barrier, Elements[] target, int max, MODE mode, boolean all) {
-        LinkedHashSet<Point> found = new LinkedHashSet<>();
-        while (!queue.isEmpty()) {
-            Point point = queue.poll();
 
-            if (board.isAt(point, target)) {
-                found.add(point);
-                if (!all) {
-                    break;
+    private void debug(Map<Point, Path> visited) {
+        for(int y = board.size()-1; y >= 0; --y) {
+            for (int x = 0; x < board.size(); ++x) {
+                Point p = PointImpl.pt(x, y);
+                if (!visited.containsKey(p)) {
+                    System.out.print(board.isAt(p, NONE) ? "   " : board.getAllAt(x, y));
+                } else {
+                    System.out.printf("%3d", visited.get(p).distance);
                 }
             }
-
-            for (Direction direction: new Direction[]{RIGHT, DOWN, LEFT, UP}) {
-                Point p = direction.change(point);
-                if (!visited.containsKey(p) && !board.isAt(p, barrier) && !p.isOutOf(board.size())) {
-                    int distance = visited.get(point).getDistance();
-                    if (distance > max)
-                        continue;
-
-                    if (!isSafe(board, p, mode)) {
-                        continue;
-                    }
-
-                    queue.add(p);
-                    visited.put(p, new Path(point, direction,distance+1));
-                }
-            }
+            System.out.println();
         }
-        return found;
     }
 
-    private static boolean isSafe(Board board, Point p, MODE mode) {
+
+    private boolean isSafe(Point point) {
         switch (mode) {
-            case NORMAL: return board.isSafe(p);
-            case FLY: return board.isSafeFly(p);
-            case ATTACK: return board.isSafeAttack(p);
+            case NORMAL: return board.isSafe(point);
+            case FLY: return board.isSafeFly(point);
+            case ATTACK: return board.isSafeAttack(point);
         }
         return true;
     }
+
+
+    public static class Builder {
+        private BFS bfs;
+
+        public static Builder newBFS(Board board, Point start) {
+            Builder builder = new Builder();
+            builder.bfs = new BFS(board, start);
+            return builder;
+        }
+
+        public Builder fly() {
+            bfs.mode = MODE.FLY;
+            return this;
+        }
+
+        public Builder attack() {
+            bfs.mode = MODE.ATTACK;
+            return this;
+        }
+
+        public Builder barrier(Elements[] barrier) {
+            bfs.barrier = barrier;
+            return this;
+        }
+
+        public Builder target(Elements[] target) {
+            bfs.target = target;
+            return this;
+        }
+
+        public Builder weight(boolean weight) {
+            bfs.weight = weight;
+            return this;
+        }
+
+        public BFS build() {
+            return bfs;
+        }
+    }
+
 
     private static class Path {
         private Point from;
@@ -160,9 +230,6 @@ public class BFS {
         }
     }
 
-    public enum MODE {
-        NORMAL, FLY, ATTACK
-    }
 
     public enum POINTS {
         APPLE(Elements.APPLE, 1), GOLD(Elements.GOLD, 5), STONE(Elements.STONE, 10), FURY(Elements.FURY_PILL, 20);
