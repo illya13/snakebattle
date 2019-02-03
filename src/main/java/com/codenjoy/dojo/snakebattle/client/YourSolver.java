@@ -270,6 +270,7 @@ public class YourSolver implements Solver<Board> {
         }
 
         if (!initialized) {
+            initialized = true;
             learning.init();
             step = 0;
             stoneCounter = 0;
