@@ -282,6 +282,8 @@ public class YourSolver implements Solver<Board> {
 
 
     private void prepare() {
+        System.out.printf(" => %s\n", learning.getStrategy());
+
         step++;
         shortAction = true;
 
@@ -293,7 +295,6 @@ public class YourSolver implements Solver<Board> {
 
         checkPills(me);
 
-        System.out.printf(" => %s\n", learning.getStrategy());
         System.out.printf("me[%d]: %d, enemies[%d]: %d\n",
                 step, board.getMySize(), board.getEnemySnakes(), board.getEnemySize());
 
