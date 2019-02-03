@@ -60,6 +60,7 @@ public class YourSolver implements Solver<Board> {
     private boolean pill;
     private int pillCounter;
     private int stoneCounter;
+    private boolean initialized = false;
 
     YourSolver(Dice dice) {
         learning = Learning.Builder.newLearning()
@@ -264,11 +265,17 @@ public class YourSolver implements Solver<Board> {
 
     private void init() {
         if (board.isGameStart()) {
+            initialized = false;
+            return;
+        }
+
+        if (!initialized) {
             learning.init();
             step = 0;
             stoneCounter = 0;
             pill = false;
         }
+
         step++;
         shortAction = true;
 
