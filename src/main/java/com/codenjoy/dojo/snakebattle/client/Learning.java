@@ -71,9 +71,9 @@ public class Learning {
             features = new HashSet<>();
             weights = new HashMap<>();
 
-            weights.put(FEATURE.STONES, 90d);
-            weights.put(FEATURE.ATTACK, 30d);
-            weights.put(FEATURE.DESTRUCT, 70d);
+            weights.put(FEATURE.STONES, 95d);
+            weights.put(FEATURE.ATTACK, 95d);
+            weights.put(FEATURE.DESTRUCT, 80d);
             weights.put(FEATURE.SHORT, 70d);
             weights.put(FEATURE.MEDIUM, 80d);
         }
