@@ -295,6 +295,15 @@ public class YourSolver implements Solver<Board> {
         System.out.printf("%s = me[%d]: %d, enemies[%d]: %d\n",
                 learning.getStrategy(),
                 step, board.getMySize(), board.getEnemySnakes(), board.getEnemySize());
+
+        System.out.print("stones: " + stoneCounter);
+        if (fury) {
+            System.out.println(", fury[" + pillCounter + "]");
+        } else if (fly) {
+            System.out.println(", fly[" + pillCounter + "]");
+        } else {
+            System.out.println();
+        }
     }
 
 
@@ -416,14 +425,6 @@ public class YourSolver implements Solver<Board> {
             fury = false;
             fly = false;
             pillCounter = 0;
-        }
-        System.out.print("stones: " + stoneCounter);
-        if (fury) {
-            System.out.println(", fury[" + pillCounter + "]");
-        } else if (fly) {
-            System.out.println(", fly[" + pillCounter + "]");
-        } else {
-            System.out.println();
         }
     }
 
