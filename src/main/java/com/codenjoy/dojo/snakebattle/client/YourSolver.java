@@ -222,32 +222,6 @@ public class YourSolver implements Solver<Board> {
         return Optional.empty();
     }
 
-    private Optional<Direction> getBFSDirection(Point point, int max, boolean weight) {
-        return (canFly())
-                ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/)
-                : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/);
-    }
-
-    private boolean isShortMode() {
-        return learning.getStrategy().hasFeature(Learning.FEATURE.SHORT);
-    }
-
-    private boolean isMediumMode() {
-        return learning.getStrategy().hasFeature(Learning.FEATURE.MEDIUM);
-    }
-
-    private boolean isAttackMode() {
-        return fury && learning.getStrategy().hasFeature(Learning.FEATURE.ATTACK);
-    }
-
-    private boolean isStoneMode() {
-        return !fly && learning.getStrategy().hasFeature(Learning.FEATURE.STONES);
-    }
-
-    private boolean isSelfDestructMode() {
-        return (step > SELF_DESTRUCT_STEPS) && learning.getStrategy().hasFeature(Learning.FEATURE.DESTRUCT);
-    }
-
 
     private Direction lastCall(Point point) {
         Optional<Direction> go = safeStepAvoid(point, BARRIER_NORMAL_STONE, priority);
@@ -277,6 +251,33 @@ public class YourSolver implements Solver<Board> {
             return "(" + direction.toString() + ", ACT)";
         }
         return direction.toString();
+    }
+
+
+    private Optional<Direction> getBFSDirection(Point point, int max, boolean weight) {
+        return (canFly())
+                ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/)
+                : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/);
+    }
+
+    private boolean isShortMode() {
+        return learning.getStrategy().hasFeature(Learning.FEATURE.SHORT);
+    }
+
+    private boolean isMediumMode() {
+        return learning.getStrategy().hasFeature(Learning.FEATURE.MEDIUM);
+    }
+
+    private boolean isAttackMode() {
+        return fury && learning.getStrategy().hasFeature(Learning.FEATURE.ATTACK);
+    }
+
+    private boolean isStoneMode() {
+        return !fly && learning.getStrategy().hasFeature(Learning.FEATURE.STONES);
+    }
+
+    private boolean isSelfDestructMode() {
+        return (step > SELF_DESTRUCT_STEPS) && learning.getStrategy().hasFeature(Learning.FEATURE.DESTRUCT);
     }
 
 
