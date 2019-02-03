@@ -292,8 +292,8 @@ public class YourSolver implements Solver<Board> {
 
         checkPills(me);
 
-        System.out.printf("%s = me[%d]: %d, enemies[%d]: %d\n",
-                learning.getStrategy(),
+        System.out.printf(" => %s\n", learning.getStrategy());
+        System.out.printf("me[%d]: %d, enemies[%d]: %d\n",
                 step, board.getMySize(), board.getEnemySnakes(), board.getEnemySize());
 
         System.out.print("stones: " + stoneCounter);
