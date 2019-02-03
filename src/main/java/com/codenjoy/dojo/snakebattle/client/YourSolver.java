@@ -74,11 +74,28 @@ public class YourSolver implements Solver<Board> {
         this.board = board;
         if (board.isGameOver()) return "";
 
-        init();
+        if (board.isGameStart()) {
+            initialized = false;
+            return "";
+        }
+
+        if (!initialized) {
+            initialized = true;
+            init();
+        }
+        prepare();
+
         if (isSelfDestructMode()) return "ACT(0)";
 
         prev = nextStep();
         return act(prev);
+    }
+
+    private void init() {
+        learning.init();
+        step = 0;
+        stoneCounter = 0;
+        pill = false;
     }
 
 
@@ -263,34 +280,21 @@ public class YourSolver implements Solver<Board> {
     }
 
 
-    private void init() {
-        if (board.isGameStart()) {
-            initialized = false;
-            return;
-        }
-
-        if (!initialized) {
-            initialized = true;
-            learning.init();
-            step = 0;
-            stoneCounter = 0;
-            pill = false;
-        }
-
+    private void prepare() {
         step++;
         shortAction = true;
 
+        me = board.getMe();
+        priority = board.getPriority(me, true);
+
         board.traceSnakes();
+        board.traceSafe();
+
+        checkPills(me);
+
         System.out.printf("%s = me[%d]: %d, enemies[%d]: %d\n",
                 learning.getStrategy(),
                 step, board.getMySize(), board.getEnemySnakes(), board.getEnemySize());
-
-        board.traceSafe();
-
-        me = board.getMe();
-        checkPills(me);
-
-        priority = board.getPriority(me, true);
     }
 
 
