@@ -61,6 +61,7 @@ public class YourSolver implements Solver<Board> {
     private int pillCounter;
     private int stoneCounter;
     private boolean initialized = false;
+    private boolean cleared = false;
 
     YourSolver(Dice dice) {
         learning = Learning.Builder.newLearning()
@@ -72,16 +73,24 @@ public class YourSolver implements Solver<Board> {
     @Override
     public String get(Board board) {
         this.board = board;
-        if (board.isGameOver()) return "";
+        if (board.isGameOver()) {
+            if (!cleared) {
+                cleared = true;
+                learning.stat();
+            }
+            return "";
+        }
 
         if (board.isGameStart()) {
             initialized = false;
+            cleared = false;
             return "";
         }
 
         if (!initialized) {
             initialized = true;
             init();
+            learning.stat();
         }
         prepare();
 
