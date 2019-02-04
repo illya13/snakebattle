@@ -224,7 +224,7 @@ public class Learning {
             features.clear();
             for(String feature: weights.keySet()) {
                 int rnd = dice.next(100);
-                System.out.printf("%s %d < %.3f", feature, rnd, weights.get(feature));
+                System.out.printf("\t%s %d < %.3f", feature, rnd, weights.get(feature));
                 if (rnd < weights.get(feature)) {
                     features.add(FEATURE.valueOf(feature));
                     System.out.printf(" ... adding\n");
@@ -240,7 +240,7 @@ public class Learning {
                 // TODO: update more features
                 if ( (feature == FEATURE.SHORT) || (feature == FEATURE.MEDIUM) ) {
                     weights.put(feature.name(), current+delta);
-                    System.out.printf("%s %.3f %.3f %.3f\n",
+                    System.out.printf("\t%s %.3f %.3f %.3f\n",
                             feature.name(), current, delta, current+delta);
                 }
             }
