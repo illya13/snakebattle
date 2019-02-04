@@ -30,7 +30,6 @@ import com.codenjoy.dojo.snakebattle.model.Elements;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.codenjoy.dojo.services.Direction.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.NONE;
 
 

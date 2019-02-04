@@ -94,7 +94,7 @@ public class Learning {
                 int before = Integer.valueOf(prev.get().get("score"));
                 int now = Integer.valueOf(stat.get().get("score"));
                 double delta = (now - before);
-                System.out.printf(" == %s before: %d, now: %d, delta: %.0f, steps: %d => %.5f\n",
+                System.out.printf(" == %s before: %d, now: %d, delta: %.0f, steps: %d => %.3f\n",
                         strategy.toString(), before, now, delta, steps, delta/steps);
 
                 strategy.update(delta/steps - 1);
@@ -224,7 +224,7 @@ public class Learning {
             features.clear();
             for(String feature: weights.keySet()) {
                 int rnd = dice.next(100);
-                System.out.printf("%s %d < %.2f", feature, rnd, weights.get(feature));
+                System.out.printf("%s %d < %.3f", feature, rnd, weights.get(feature));
                 if (rnd < weights.get(feature)) {
                     features.add(FEATURE.valueOf(feature));
                     System.out.printf(" ... adding\n");
@@ -237,9 +237,10 @@ public class Learning {
         public void update(double delta) {
             for(FEATURE feature: features) {
                 double current  = weights.get(feature.name());
-                if ((feature == FEATURE.SHORT) || (feature == FEATURE.MEDIUM)) {
+                // TODO: update more features
+                if ( (feature == FEATURE.SHORT) || (feature == FEATURE.MEDIUM) ) {
                     weights.put(feature.name(), current+delta);
-                    System.out.printf("%s %.5f %.5f %.5f\n",
+                    System.out.printf("%s %.3f %.3f %.3f\n",
                             feature.name(), current, delta, current+delta);
                 }
             }
