@@ -74,7 +74,7 @@ public class YourSolver implements Solver<Board> {
                 .withStrategy(new Learning.DefaultStrategy(dice))
                 .withPlayer(PLAYER_HASH)
                 .build();
-        learning.reset();
+        learning.reset(0);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private void initRound() {
-        learning.reset();
+        learning.reset(step);
         step = 0;
         stoneCounter = 0;
         pill = false;

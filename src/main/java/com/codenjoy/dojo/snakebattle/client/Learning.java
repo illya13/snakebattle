@@ -78,12 +78,12 @@ public class Learning {
         return strategy;
     }
 
-    public void reset(){
+    public void reset(int steps){
         Optional<Map<String, String>> stat = getStat(true);
         if (prev.isPresent() && stat.isPresent()) {
             int before = Integer.valueOf(stat.get().get("score"));
             int now = Integer.valueOf(stat.get().get("score"));
-            System.out.printf(" == %s %d %d %d\n", strategy.toString(), before, now, now - before);
+            System.out.printf(" == %s before: %d, now: %d, delta: %d, steps: %d\n", strategy.toString(), before, now, now - before, steps);
         }
         prev = stat;
         strategy.init();
