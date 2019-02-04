@@ -244,6 +244,7 @@ public class Learning {
                             feature.name(), current, delta, current+delta);
                 }
             }
+            System.out.println();
             writeFeatures();
         }
 
