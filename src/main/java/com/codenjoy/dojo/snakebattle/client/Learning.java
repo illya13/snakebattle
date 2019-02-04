@@ -23,6 +23,9 @@ package com.codenjoy.dojo.snakebattle.client;
  */
 
 import com.codenjoy.dojo.services.Dice;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.net.ssl.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -31,8 +34,9 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Learning {
@@ -57,9 +61,15 @@ public class Learning {
         public abstract void init();
     }
 
+    private static final String URL = "https://epam-bot-challenge.com.ua/codenjoy-balancer/rest/score/day/";
+
     private Strategy strategy;
+    private String date;
 
     public Learning() {
+        LocalDate localDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        date = localDate.format(formatter);
     }
 
     public Strategy getStrategy() {
@@ -72,20 +82,31 @@ public class Learning {
 
     public void stat() {
         Optional<Client> client = newClient();
-
         if (client.isPresent()) {
-            WebTarget webTarget
-                    = client.get().target("https://epam-bot-challenge.com.ua/codenjoy-balancer/rest/score/day/2019-02-03");
-
-            Invocation.Builder invocationBuilder
-                    = webTarget.request(MediaType.APPLICATION_JSON);
-
-            Response response
-                    = invocationBuilder.get();
-
-            System.out.println(response);
+            List<Map<String, String>> table = getStandings(client.get());
+            for (Map<String, String> map: table) {
+                if (map.get("id").equals("bppowg4adbpirr4fm3yirto4krg1cwnwkjeo6gonbixy")) {
+                    System.out.println(map);
+                }
+            }
         }
     }
+
+    private List<Map<String, String>> getStandings(Client client) {
+        WebTarget webTarget = client.target(URL + date);
+        Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.get();
+        String stringResponse = response.readEntity(String.class);
+
+        try {
+            TypeReference<List<Map<String,String>>> typeRef = new TypeReference<List<Map<String,String>>>(){};
+            ObjectMapper mapper  = new ObjectMapper();
+            return mapper.readValue(stringResponse, typeRef);
+        } catch (Exception ignored) {
+        }
+        return Collections.emptyList();
+    }
+
 
     private static TrustManager[] getTrustManager() {
         return new TrustManager[] { new X509TrustManager() {
@@ -95,14 +116,12 @@ public class Learning {
             }
 
             @Override
-            public void checkServerTrusted(X509Certificate[] chain, String authType)
-                    throws CertificateException {
+            public void checkServerTrusted(X509Certificate[] chain, String authType) {
                 // Trust all servers
             }
 
             @Override
-            public void checkClientTrusted(X509Certificate[] chain, String authType)
-                    throws CertificateException {
+            public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 // Trust all clients
             }
         } };
@@ -113,12 +132,7 @@ public class Learning {
             SSLContext ctx = SSLContext.getInstance("TLS");
             ctx.init(null, getTrustManager(), new SecureRandom());
 
-            HostnameVerifier verifier = new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostName, SSLSession sslSession) {
-                    return true;
-                }
-            };
+            HostnameVerifier verifier = (hostName, sslSession) -> true;
 
             return Optional.of(
                     ClientBuilder.newBuilder()
@@ -126,11 +140,11 @@ public class Learning {
                             .hostnameVerifier(verifier)
                             .build()
             );
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
         return Optional.empty();
     }
+
 
     public static class DefaultStrategy extends Strategy {
         public DefaultStrategy(Dice dice) {
@@ -165,6 +179,7 @@ public class Learning {
             return features.toString();
         }
     }
+
 
     public static class Builder {
         private Learning learning;
