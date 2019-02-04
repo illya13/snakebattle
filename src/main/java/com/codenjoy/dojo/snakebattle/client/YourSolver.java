@@ -58,7 +58,8 @@ public class YourSolver implements Solver<Board> {
     private boolean fly;
 
     private boolean pill;
-    private int pillCounter;
+    private int flyCounter;
+    private int furyCounter;
     private int stoneCounter;
     private boolean initialized = false;
     private boolean cleared = false;
@@ -137,14 +138,14 @@ public class YourSolver implements Solver<Board> {
         go = safeStepTarget(point, FLYING_PILL, priority);
         if (go.isPresent()) {
             System.out.println("=> FLYING_PILL");
-            pillCounter = (fly) ? pillCounter-10 : 0;
+            flyCounter = (fly) ? flyCounter-10 : 0;
             return go;
         }
 
         go = safeStepTarget(point, FURY_PILL, priority);
         if (go.isPresent()) {
             System.out.println("=> FURY_PILL");
-            pillCounter = (fury) ? pillCounter-10 : 0;
+            furyCounter = (fury) ? furyCounter-10 : 0;
             return go;
         }
 
@@ -176,7 +177,7 @@ public class YourSolver implements Solver<Board> {
     private Optional<Direction> midTerm(Point point) {
         Optional<Direction> go;
 
-        if (isAttackMode() && pillCounter < 8) {
+        if (isAttackMode()) {
             go = board.bfsAttack(point, board.size() / 6, false,
                     BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
@@ -278,7 +279,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean isAttackMode() {
-        return fury && learning.getStrategy().hasFeature(Learning.FEATURE.ATTACK);
+        return fury && (furyCounter < 9) && learning.getStrategy().hasFeature(Learning.FEATURE.ATTACK);
     }
 
     private boolean isStoneMode() {
@@ -308,13 +309,9 @@ public class YourSolver implements Solver<Board> {
                 step, board.getMySize(), board.getEnemySnakes(), board.getEnemySize());
 
         System.out.print("stones: " + stoneCounter);
-        if (fury) {
-            System.out.println(", fury[" + pillCounter + "]");
-        } else if (fly) {
-            System.out.println(", fly[" + pillCounter + "]");
-        } else {
-            System.out.println();
-        }
+        if (fury) System.out.print(", fury[" + furyCounter + "]");
+        if (fly) System.out.print(", fly[" + flyCounter + "]");
+        System.out.println();
     }
 
 
@@ -376,7 +373,7 @@ public class YourSolver implements Solver<Board> {
 
     private boolean canAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS) == 0 ||
-                ((fury && pillCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
+                ((fury && furyCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ( board.getMySize() > board.getEnemySize() );
     }
 
@@ -385,15 +382,15 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean canEatStoneNow() {
-        return (board.getMySize() > 4) || (fury && pillCounter < 9);
+        return (board.getMySize() > 4) || (fury && furyCounter < 9);
     }
 
     private boolean canEatStoneSoon() {
-        return ((board.getMySize() > 4) && (!fly || pillCounter > 7)) || (fury && pillCounter < 8);
+        return ((board.getMySize() > 4) && (!fly || flyCounter > 7)) || (fury && furyCounter < 9);
     }
 
     private boolean canFly() {
-        return fly && (pillCounter < 9);
+        return fly && (flyCounter < 9);
     }
 
     private boolean enemyCloseToTail() {
@@ -429,13 +426,15 @@ public class YourSolver implements Solver<Board> {
             if (!pill) {
                 pill = true;
             } else {
-                ++pillCounter;
+                flyCounter++;
+                furyCounter++;
             }
         } else {
             pill = false;
             fury = false;
             fly = false;
-            pillCounter = 0;
+            flyCounter = 0;
+            furyCounter = 0;
         }
     }
 
