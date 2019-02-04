@@ -71,7 +71,7 @@ public class YourSolver implements Solver<Board> {
 
     YourSolver(Dice dice) {
         learning = Learning.Builder.newLearning()
-                .withStrategy(new Learning.DefaultStrategy(dice))
+                .withStrategy(new Learning.DefaultStrategy(dice, "./features.json"))
                 .withPlayer(PLAYER_HASH)
                 .build();
         learning.reset(null,0);
