@@ -44,8 +44,14 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  * фреймворк для тебя.
  */
 public class YourSolver implements Solver<Board> {
-    private Learning learning;
+    private static final String BASE_URL = "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/";
+    private static final String PLAYER_EMAIL = "illya.havsiyevych@gmail.com";
+    private static final String PLAYER_CODE = "?code=1617935781189693616";
+    private static final String PLAYER_HASH = "bppowg4adbpirr4fm3yirto4krg1cwnwkjeo6gonbixy";
+
     private static final int SELF_DESTRUCT_STEPS = 300;
+
+    private Learning learning;
     private Direction prev;
 
     private Board board;
@@ -67,6 +73,7 @@ public class YourSolver implements Solver<Board> {
     YourSolver(Dice dice) {
         learning = Learning.Builder.newLearning()
                 .withStrategy(new Learning.DefaultStrategy(dice))
+                .withPlayer(PLAYER_HASH)
                 .build();
         learning.init();
     }
@@ -77,7 +84,7 @@ public class YourSolver implements Solver<Board> {
         if (board.isGameOver()) {
             if (!cleared) {
                 cleared = true;
-                learning.stat();
+                learning.getStat(true);
             }
             return "";
         }
@@ -91,7 +98,7 @@ public class YourSolver implements Solver<Board> {
         if (!initialized) {
             initialized = true;
             init();
-            learning.stat();
+            learning.getStat(true);
         }
         prepare();
 
@@ -444,7 +451,7 @@ public class YourSolver implements Solver<Board> {
     public static void main(String[] args) {
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
-                "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/illya.havsiyevych@gmail.com?code=1617935781189693616",
+                BASE_URL + PLAYER_EMAIL + PLAYER_CODE,
                 new YourSolver(new RandomDice()),
                 new Board());
     }

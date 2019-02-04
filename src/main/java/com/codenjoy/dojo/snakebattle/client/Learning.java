@@ -65,6 +65,7 @@ public class Learning {
 
     private Strategy strategy;
     private String date;
+    private String player;
 
     public Learning() {
         LocalDate localDate = LocalDate.now();
@@ -80,16 +81,18 @@ public class Learning {
         strategy.init();
     }
 
-    public void stat() {
+    public Optional<Map<String, String>> getStat(boolean debug) {
         Optional<Client> client = newClient();
         if (client.isPresent()) {
             List<Map<String, String>> table = getStandings(client.get());
             for (Map<String, String> map: table) {
-                if (map.get("id").equals("bppowg4adbpirr4fm3yirto4krg1cwnwkjeo6gonbixy")) {
-                    System.out.println(map);
+                if (map.get("id").equals(player)) {
+                    if (debug) System.out.println(map);
+                    return Optional.of(map);
                 }
             }
         }
+        return Optional.empty();
     }
 
     private List<Map<String, String>> getStandings(Client client) {
@@ -194,6 +197,11 @@ public class Learning {
 
         public Builder withStrategy(Strategy strategy) {
             learning.strategy = strategy;
+            return this;
+        }
+
+        public Builder withPlayer(String player) {
+            learning.player = player;
             return this;
         }
 
