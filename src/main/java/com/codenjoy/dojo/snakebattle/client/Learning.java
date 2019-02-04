@@ -93,11 +93,11 @@ public class Learning {
             } else {
                 int before = Integer.valueOf(prev.get().get("score"));
                 int now = Integer.valueOf(stat.get().get("score"));
-                double weight = (now - before) / steps;
-                System.out.printf(" == %s before: %d, now: %d, delta: %d, steps: %d => %.5f\n",
-                        strategy.toString(), before, now, now - before, steps, weight);
+                double delta = (now - before);
+                System.out.printf(" == %s before: %d, now: %d, delta: %.0f, steps: %d => %.5f\n",
+                        strategy.toString(), before, now, delta, steps, delta/steps);
 
-                strategy.update(weight);
+                strategy.update(delta/steps - 1);
             }
         }
         prev = stat;
@@ -234,10 +234,14 @@ public class Learning {
             }
         }
 
-        public void update(double weight) {
+        public void update(double delta) {
             for(FEATURE feature: features) {
-                System.out.printf("%s %.5f %.5f\n",
-                        feature.name(), weights.get(feature.name()), weight);
+                double current  = weights.get(feature.name());
+                if ((feature == FEATURE.SHORT) || (feature == FEATURE.MEDIUM)) {
+                    weights.put(feature.name(), current+delta);
+                    System.out.printf("%s %.5f %.5f %.5f\n",
+                            feature.name(), current, delta, current+delta);
+                }
             }
             writeFeatures();
         }
