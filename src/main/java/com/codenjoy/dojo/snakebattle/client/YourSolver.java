@@ -137,6 +137,7 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent()) {
             System.out.println("=> FLYING_PILL");
             flyCounter = (fly) ? flyCounter-10 : 0;
+            if (!fly) fly = true;
             return go;
         }
 
@@ -144,6 +145,7 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent()) {
             System.out.println("=> FURY_PILL");
             furyCounter = (fury) ? furyCounter-10 : 0;
+            if (!fury) fury = true;
             return go;
         }
 
