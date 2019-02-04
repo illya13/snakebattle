@@ -23,8 +23,6 @@ package com.codenjoy.dojo.snakebattle.client;
  */
 
 import com.codenjoy.dojo.services.Dice;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-
 import javax.net.ssl.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
