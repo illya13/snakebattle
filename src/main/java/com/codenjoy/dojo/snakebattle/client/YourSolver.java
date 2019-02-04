@@ -68,39 +68,30 @@ public class YourSolver implements Solver<Board> {
     private int furyCounter;
     private int stoneCounter;
     private boolean initialized = false;
-    private boolean cleared = false;
 
     YourSolver(Dice dice) {
         learning = Learning.Builder.newLearning()
                 .withStrategy(new Learning.DefaultStrategy(dice))
                 .withPlayer(PLAYER_HASH)
                 .build();
-        learning.init();
+        learning.reset();
     }
 
     @Override
     public String get(Board board) {
         this.board = board;
-        if (board.isGameOver()) {
-            if (!cleared) {
-                cleared = true;
-                learning.getStat(true);
-            }
-            return "";
-        }
+        if (board.isGameOver()) return "";
 
         if (board.isGameStart()) {
             initialized = false;
-            cleared = false;
             return "";
         }
 
         if (!initialized) {
             initialized = true;
-            init();
-            learning.getStat(true);
+            initRound();
         }
-        prepare();
+        initStep();
 
         if (isSelfDestructMode()) return "ACT(0)";
 
@@ -108,8 +99,8 @@ public class YourSolver implements Solver<Board> {
         return act(prev);
     }
 
-    private void init() {
-        learning.init();
+    private void initRound() {
+        learning.reset();
         step = 0;
         stoneCounter = 0;
         pill = false;
@@ -298,7 +289,7 @@ public class YourSolver implements Solver<Board> {
     }
 
 
-    private void prepare() {
+    private void initStep() {
         System.out.printf(" => %s\n", learning.getStrategy());
 
         step++;

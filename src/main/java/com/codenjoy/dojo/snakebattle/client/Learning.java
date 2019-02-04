@@ -66,6 +66,7 @@ public class Learning {
     private Strategy strategy;
     private String date;
     private String player;
+    private Optional<Map<String, String>> prev = Optional.empty();
 
     public Learning() {
         LocalDate localDate = LocalDate.now();
@@ -77,7 +78,14 @@ public class Learning {
         return strategy;
     }
 
-    public void init(){
+    public void reset(){
+        Optional<Map<String, String>> stat = getStat(true);
+        if (prev.isPresent() && stat.isPresent()) {
+            int before = Integer.valueOf(stat.get().get("score"));
+            int now = Integer.valueOf(stat.get().get("score"));
+            System.out.printf(" == %s %d %d %d\n", strategy.toString(), before, now, now - before);
+        }
+        prev = stat;
         strategy.init();
     }
 
