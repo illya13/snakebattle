@@ -63,6 +63,7 @@ public class Learning {
 
     private static final String URL = "https://epam-bot-challenge.com.ua/codenjoy-balancer/rest/score/day/";
 
+    private Board board;
     private Strategy strategy;
     private String date;
     private String player;
@@ -78,12 +79,19 @@ public class Learning {
         return strategy;
     }
 
-    public void reset(int steps){
+    public void reset(Board board, int steps){
+        this.board = board;
+
         Optional<Map<String, String>> stat = getStat(true);
-        if (prev.isPresent() && stat.isPresent()) {
-            int before = Integer.valueOf(stat.get().get("score"));
-            int now = Integer.valueOf(stat.get().get("score"));
-            System.out.printf(" == %s before: %d, now: %d, delta: %d, steps: %d\n", strategy.toString(), before, now, now - before, steps);
+        if ((board != null) && prev.isPresent() && stat.isPresent()) {
+            if (steps < board.size()) {
+                System.out.println("dead bots");
+            } else {
+                int before = Integer.valueOf(prev.get().get("score"));
+                int now = Integer.valueOf(stat.get().get("score"));
+                System.out.printf(" == %s before: %d, now: %d, delta: %d, steps: %d\n",
+                        strategy.toString(), before, now, now - before, steps);
+            }
         }
         prev = stat;
         strategy.init();
