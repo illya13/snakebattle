@@ -241,9 +241,11 @@ public class Learning {
                 double current  = weights.get(feature.name());
                 // TODO: update more features
                 if ( (feature == FEATURE.SHORT) || (feature == FEATURE.MEDIUM) ) {
-                    weights.put(feature.name(), current+delta);
-                    System.out.printf("\t%s %.3f %.3f %.3f\n",
-                            feature.name(), current, delta, current+delta);
+                    if ((current+delta > 30) && (current+delta < 100)) {
+                        weights.put(feature.name(), current + delta);
+                        System.out.printf("\t%s %.3f %.3f %.3f\n",
+                                feature.name(), current, delta, current + delta);
+                    }
                 }
             }
             System.out.println();
