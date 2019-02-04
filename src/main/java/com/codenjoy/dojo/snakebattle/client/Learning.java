@@ -222,6 +222,7 @@ public class Learning {
 
         public void init() {
             features.clear();
+            System.out.println("init features...");
             for(String feature: weights.keySet()) {
                 int rnd = dice.next(100);
                 System.out.printf("\t%s %d < %.3f", feature, rnd, weights.get(feature));
@@ -235,6 +236,7 @@ public class Learning {
         }
 
         public void update(double delta) {
+            System.out.println("updating features...");
             for(FEATURE feature: features) {
                 double current  = weights.get(feature.name());
                 // TODO: update more features
