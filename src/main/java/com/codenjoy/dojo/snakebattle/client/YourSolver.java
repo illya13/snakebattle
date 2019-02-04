@@ -45,7 +45,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  */
 public class YourSolver implements Solver<Board> {
     private Learning learning;
-    private static final int SELF_DESTRUCT_STEPS = 200;
+    private static final int SELF_DESTRUCT_STEPS = 300;
     private Direction prev;
 
     private Board board;
