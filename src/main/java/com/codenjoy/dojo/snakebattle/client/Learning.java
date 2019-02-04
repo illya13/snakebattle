@@ -23,16 +23,19 @@ package com.codenjoy.dojo.snakebattle.client;
  */
 
 import com.codenjoy.dojo.services.Dice;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+
+import javax.net.ssl.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.*;
 
 public class Learning {
     enum FEATURE {
@@ -70,17 +73,65 @@ public class Learning {
     }
 
     public void stat() {
-        Client client = ClientBuilder.newClient();
-        WebTarget webTarget
-                = client.target("https://epam-bot-challenge.com.ua/codenjoy-balancer/rest/score/day/2019-02-03");
+        Optional<Client> client = newClient();
 
-        Invocation.Builder invocationBuilder
-                = webTarget.request(MediaType.APPLICATION_JSON);
+        if (client.isPresent()) {
+            WebTarget webTarget
+                    = client.get().target("https://epam-bot-challenge.com.ua/codenjoy-balancer/rest/score/day/2019-02-03");
 
-        Response response
-                = invocationBuilder.get();
+            Invocation.Builder invocationBuilder
+                    = webTarget.request(MediaType.APPLICATION_JSON);
 
-        System.out.println(response);
+            Response response
+                    = invocationBuilder.get();
+
+            System.out.println(response);
+        }
+    }
+
+    private static TrustManager[] getTrustManager() {
+        return new TrustManager[] { new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType)
+                    throws CertificateException {
+                // Trust all servers
+            }
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType)
+                    throws CertificateException {
+                // Trust all clients
+            }
+        } };
+    }
+
+    public static Optional<Client> newClient() {
+        try {
+            SSLContext ctx = SSLContext.getInstance("TLS");
+            ctx.init(null, getTrustManager(), new SecureRandom());
+
+            HostnameVerifier verifier = new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostName, SSLSession sslSession) {
+                    return true;
+                }
+            };
+
+            return Optional.of(
+                    ClientBuilder.newBuilder()
+                            .sslContext(ctx)
+                            .hostnameVerifier(verifier)
+                            .build()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
     public static class DefaultStrategy extends Strategy {
