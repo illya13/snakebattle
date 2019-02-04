@@ -421,13 +421,16 @@ public class YourSolver implements Solver<Board> {
 
     private void checkPills(Point point) {
         if (board.isAt(point, HEAD_EVIL, HEAD_FLY)) {
-            fury = board.isAt(point, HEAD_EVIL);
-            fly = board.isAt(point, HEAD_FLY);
+            fury = fury || board.isAt(point, HEAD_EVIL);
+            fly = fly || board.isAt(point, HEAD_FLY);
             if (!pill) {
                 pill = true;
             } else {
                 flyCounter++;
+                if (flyCounter == 10) fly = false;
+
                 furyCounter++;
+                if (furyCounter == 10) fury = false;
             }
         } else {
             pill = false;
