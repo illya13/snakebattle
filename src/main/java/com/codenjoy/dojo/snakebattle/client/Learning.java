@@ -173,15 +173,17 @@ public class Learning {
 
 
     public static class DefaultStrategy extends Strategy {
-        private String path;
+        private String featuresPath;
+        private String averagePath;
+        private Map<String, Double> average;
 
-        public DefaultStrategy(Dice dice, String path) {
+        public DefaultStrategy(Dice dice, String featuresPath, String averagePath) {
             super(dice);
-            this.path = path;
+            this.featuresPath = featuresPath;
+            this.averagePath = averagePath;
 
             features = new HashSet<>();
-
-            readFeatures();
+            weights = readJson(featuresPath);
             if (weights == null || weights.isEmpty()) {
                 weights = new HashMap<>();
 
@@ -193,30 +195,31 @@ public class Learning {
                 weights.put(FEATURE.FLY.name(), 30d);
                 weights.put(FEATURE.FOLLOW.name(), 30d);
             }
-            writeFeatures();
+            writeJson(weights, featuresPath);
         }
 
         public String read(String path) throws Exception {
             return new String(Files.readAllBytes(Paths.get(path)));
         }
 
-        public void readFeatures() {
+        public Map<String, Double> readJson(String path) {
             try {
                 String json = read(path);
                 TypeReference<Map<String, Double>> typeRef = new TypeReference<Map<String, Double>>() {};
                 ObjectMapper mapper = new ObjectMapper();
-                weights = mapper.readValue(json, typeRef);
+                return mapper.readValue(json, typeRef);
             } catch (Exception ignored) {
             }
+            return null;
         }
 
         public void write(String path, String content) throws Exception {
             Files.write(Paths.get(path), content.getBytes());
         }
 
-        public void writeFeatures() {
+        public void writeJson(Map<String, Double> map, String path) {
             try{
-                String json = new ObjectMapper().writeValueAsString(weights);
+                String json = new ObjectMapper().writeValueAsString(map);
                 write(path, json);
             } catch (Exception ignored) {
             }
@@ -238,6 +241,11 @@ public class Learning {
         }
 
         public void update(double delta) {
+            updateAverage(delta);
+            updateFeatures(delta);
+        }
+
+        private void updateFeatures(double delta) {
             System.out.println("updating features...");
             for(FEATURE feature: features) {
                 double current  = weights.get(feature.name());
@@ -245,7 +253,25 @@ public class Learning {
                         feature.name(), current, delta, current + delta);
             }
             System.out.println();
-            writeFeatures();
+            writeJson(weights, featuresPath);
+        }
+
+        private void updateAverage(double delta) {
+            average = readJson(averagePath);
+            if (average == null) {
+                average = new HashMap<>();
+            }
+
+            Double sum = average.get("sum");
+            if (sum == null) sum = 0d;
+            sum += delta;
+            average.put("cnt", sum);
+
+            Double cnt = average.get("cnt");
+            if (cnt == null) cnt = 0d;
+            cnt++;
+            average.put("cnt", cnt);
+            writeJson(average, averagePath);
         }
 
         @Override
