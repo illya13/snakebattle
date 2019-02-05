@@ -44,7 +44,7 @@ import java.nio.file.Paths;
 
 public class Learning {
     enum FEATURE {
-        STONES, ATTACK, DESTRUCT, SHORT, MEDIUM
+        STONES, ATTACK, FLY, FOLLOW, DESTRUCT, SHORT, MEDIUM
     }
 
     public static abstract class Strategy {
@@ -190,6 +190,8 @@ public class Learning {
                 weights.put(FEATURE.DESTRUCT.name(), 100d);
                 weights.put(FEATURE.SHORT.name(), 70d);
                 weights.put(FEATURE.MEDIUM.name(), 80d);
+                weights.put(FEATURE.FLY.name(), 30d);
+                weights.put(FEATURE.FOLLOW.name(), 30d);
             }
             writeFeatures();
         }
@@ -239,14 +241,8 @@ public class Learning {
             System.out.println("updating features...");
             for(FEATURE feature: features) {
                 double current  = weights.get(feature.name());
-                // TODO: update more features
-                if ( (feature == FEATURE.SHORT) || (feature == FEATURE.MEDIUM) ) {
-                    if ((current+delta > 30) && (current+delta < 100)) {
-                        weights.put(feature.name(), current + delta);
-                        System.out.printf("\t%s %.3f %.3f %.3f\n",
-                                feature.name(), current, delta, current + delta);
-                    }
-                }
+                System.out.printf("\t%s %.3f %.3f %.3f\n",
+                        feature.name(), current, delta, current + delta);
             }
             System.out.println();
             writeFeatures();

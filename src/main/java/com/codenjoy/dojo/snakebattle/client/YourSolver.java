@@ -133,14 +133,6 @@ public class YourSolver implements Solver<Board> {
             }
         }
 
-        go = safeStepTarget(point, FLYING_PILL, priority);
-        if (go.isPresent()) {
-            System.out.println("=> FLYING_PILL");
-            flyCounter = (fly) ? flyCounter-10 : 0;
-            if (!fly) fly = true;
-            return go;
-        }
-
         go = safeStepTarget(point, FURY_PILL, priority);
         if (go.isPresent()) {
             System.out.println("=> FURY_PILL");
@@ -168,6 +160,16 @@ public class YourSolver implements Solver<Board> {
         if (go.isPresent()) {
             System.out.println("=> APPLE");
             return go;
+        }
+
+        if (isFlyMode()) {
+            go = safeStepTarget(point, FLYING_PILL, priority);
+            if (go.isPresent()) {
+                System.out.println("=> FLYING_PILL");
+                flyCounter = (fly) ? flyCounter - 10 : 0;
+                if (!fly) fly = true;
+                return go;
+            }
         }
 
         return go;
@@ -200,6 +202,17 @@ public class YourSolver implements Solver<Board> {
             go = getBFSDirection(point, board.size() / 6, false);
             if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: ANY SHORT");
+                return go;
+            }
+        }
+
+        if (isFollowMode()) {
+            go = board.bfsAttack(point, board.size() * 2, false,
+                    BARRIER_ATTACK,
+                    ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
+                    ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
+            if (go.isPresent() && isSafeAttack(point, go.get())) {
+                System.out.println("=> BFS: FOLLOW");
                 return go;
             }
         }
@@ -280,6 +293,14 @@ public class YourSolver implements Solver<Board> {
 
     private boolean isAttackMode() {
         return fury && (furyCounter < 9) && learning.getStrategy().hasFeature(Learning.FEATURE.ATTACK);
+    }
+
+    private boolean isFlyMode() {
+        return (!fury || (furyCounter > 7)) && learning.getStrategy().hasFeature(Learning.FEATURE.FLY);
+    }
+
+    private boolean isFollowMode() {
+        return (board.getEnemySnakes() == 1) && learning.getStrategy().hasFeature(Learning.FEATURE.FOLLOW);
     }
 
     private boolean isStoneMode() {
