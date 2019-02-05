@@ -258,7 +258,7 @@ public class Learning {
             double global = average.get(FIELDS.SUM.name()) / average.get(FIELDS.CNT.name());
             double relative = (local - global) / global;
 
-            System.out.printf("local: %.3f, global: %.3f, relative: %.3f",
+            System.out.printf("local: %.3f, global: %.3f, relative: %.3f\n",
                     local, global, relative);
 
             for(FEATURE feature: features) {
@@ -270,7 +270,7 @@ public class Learning {
                     weights.put(feature.name(), current);
                     System.out.println(" => " + current);
                 } else {
-                    System.out.println();
+                    System.out.println(" ... skipped");
                 }
             }
             System.out.println();
