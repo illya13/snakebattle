@@ -266,12 +266,10 @@ public class Learning {
                 System.out.printf("\t%s %.3f", feature.name(), current);
 
                 current += current * relative;
-                if ((current < 100) && (current > 10)) {
-                    weights.put(feature.name(), current);
-                    System.out.println(" => " + current);
-                } else {
-                    System.out.println(" ... skipped");
-                }
+                if (current > 100) current = 100d;
+                if (current < 10) current = 10d;
+                weights.put(feature.name(), current);
+                System.out.println(" => " + current);
             }
             System.out.println();
             writeJson(weights, featuresPath);
