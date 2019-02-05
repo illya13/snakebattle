@@ -251,6 +251,9 @@ public class Learning {
 
         private void updateFeatures(double delta, int steps) {
             System.out.println("updating features...");
+            if ((average.get(FIELDS.CNT.name()) == null) || (average.get(FIELDS.CNT.name()) == 0))
+                return;
+
             for(FEATURE feature: features) {
                 double local = delta / steps;
                 double global = average.get(FIELDS.SUM.name()) / average.get(FIELDS.CNT.name());
