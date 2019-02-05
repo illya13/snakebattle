@@ -265,12 +265,20 @@ public class Learning {
             Double sum = average.get("sum");
             if (sum == null) sum = 0d;
             sum += delta;
-            average.put("cnt", sum);
+            average.put("sum", sum);
 
             Double cnt = average.get("cnt");
             if (cnt == null) cnt = 0d;
             cnt++;
             average.put("cnt", cnt);
+
+            for(FEATURE feature: features) {
+                Double value = average.get(feature.name());
+                if (value == null) value = 0d;
+                value++;
+                average.put(feature.name(), value);
+            }
+
             writeJson(average, averagePath);
         }
 
