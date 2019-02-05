@@ -173,6 +173,10 @@ public class Learning {
 
 
     public static class DefaultStrategy extends Strategy {
+        enum FIELDS {
+            CNT, SUM
+        }
+
         private String featuresPath;
         private String averagePath;
         private Map<String, Double> average;
@@ -190,7 +194,7 @@ public class Learning {
                 weights.put(FEATURE.STONES.name(), 100d);
                 weights.put(FEATURE.ATTACK.name(), 100d);
                 weights.put(FEATURE.DESTRUCT.name(), 100d);
-                weights.put(FEATURE.SHORT.name(), 70d);
+                weights.put(FEATURE.SHORT.name(), 90d);
                 weights.put(FEATURE.MEDIUM.name(), 80d);
                 weights.put(FEATURE.FLY.name(), 30d);
                 weights.put(FEATURE.FOLLOW.name(), 30d);
@@ -248,11 +252,21 @@ public class Learning {
         private void updateFeatures(double delta, int steps) {
             System.out.println("updating features...");
             for(FEATURE feature: features) {
-/*
-                double current  = weights.get(feature.name());
-                System.out.printf("\t%s %.3f %.3f %.3f\n",
-                        feature.name(), current, delta, current + delta);
-*/
+                double local = delta / steps;
+                double global = average.get(FIELDS.SUM.name()) / average.get(FIELDS.CNT.name());
+                double relative = (local - global) / global;
+
+                Double current = weights.get(feature.name());
+                System.out.printf("\t%s %.3f %d %.3f %.3f %.3f %.3f",
+                        feature.name(), delta, steps, local, global, relative, current);
+
+                current += current * relative;
+                if ((current < 100) && (current > 10)) {
+                    weights.put(feature.name(), current);
+                    System.out.println(" => " + current);
+                } else {
+                    System.out.println();
+                }
             }
             System.out.println();
             writeJson(weights, featuresPath);
@@ -264,15 +278,15 @@ public class Learning {
                 average = new HashMap<>();
             }
 
-            Double sum = average.get("sum");
+            Double sum = average.get(FIELDS.SUM.name());
             if (sum == null) sum = 0d;
             sum += delta;
-            average.put("sum", sum);
+            average.put(FIELDS.SUM.name(), sum);
 
-            Double cnt = average.get("cnt");
+            Double cnt = average.get(FIELDS.CNT.name());
             if (cnt == null) cnt = 0d;
             cnt += steps;
-            average.put("cnt", cnt);
+            average.put(FIELDS.CNT.name(), cnt);
 
             for(FEATURE feature: features) {
                 Double value = average.get(feature.name());
