@@ -265,7 +265,7 @@ public class Learning {
                 Double current = weights.get(feature.name());
                 System.out.printf("\t%s %.3f", feature.name(), current);
 
-                current += current * relative;
+                current += current * relative / 100;
                 if (current > 100) current = 100d;
                 if (current < 10) current = 10d;
                 weights.put(feature.name(), current);
