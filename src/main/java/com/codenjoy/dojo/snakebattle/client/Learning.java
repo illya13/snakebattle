@@ -254,14 +254,16 @@ public class Learning {
             if ((average.get(FIELDS.CNT.name()) == null) || (average.get(FIELDS.CNT.name()) == 0))
                 return;
 
-            for(FEATURE feature: features) {
-                double local = delta / steps;
-                double global = average.get(FIELDS.SUM.name()) / average.get(FIELDS.CNT.name());
-                double relative = (local - global) / global;
+            double local = delta / steps;
+            double global = average.get(FIELDS.SUM.name()) / average.get(FIELDS.CNT.name());
+            double relative = (local - global) / global;
 
+            System.out.printf("local: %.3f, global: %.3f, relative: %.3f",
+                    local, global, relative);
+
+            for(FEATURE feature: features) {
                 Double current = weights.get(feature.name());
-                System.out.printf("\t%s %.3f %d %.3f %.3f %.3f %.3f",
-                        feature.name(), delta, steps, local, global, relative, current);
+                System.out.printf("\t%s %.3f", feature.name(), current);
 
                 current += current * relative;
                 if ((current < 100) && (current > 10)) {
