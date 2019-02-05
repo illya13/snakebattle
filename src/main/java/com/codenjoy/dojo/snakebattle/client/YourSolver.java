@@ -211,7 +211,7 @@ public class YourSolver implements Solver<Board> {
                     BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
                     ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
-            if (go.isPresent() && isSafeAttack(point, go.get())) {
+            if (go.isPresent() && isSafeStep(point, go.get())) {
                 System.out.println("=> BFS: FOLLOW");
                 return go;
             }
