@@ -62,7 +62,7 @@ public class Learning {
         }
 
         public abstract void init();
-        public abstract void update(double weight);
+        public abstract void update(double weight, int steps);
     }
 
     private static final String URL = "https://epam-bot-challenge.com.ua/codenjoy-balancer/rest/score/day/";
@@ -97,7 +97,7 @@ public class Learning {
                 System.out.printf(" == %s before: %d, now: %d, delta: %.0f, steps: %d => %.3f\n",
                         strategy.toString(), before, now, delta, steps, delta/steps);
 
-                strategy.update(delta/steps - 1);
+                strategy.update(delta, steps);
             }
         }
         prev = stat;
@@ -240,23 +240,25 @@ public class Learning {
             }
         }
 
-        public void update(double delta) {
-            updateAverage(delta);
-            updateFeatures(delta);
+        public void update(double delta, int steps) {
+            updateAverage(delta, steps);
+            updateFeatures(delta, steps);
         }
 
-        private void updateFeatures(double delta) {
+        private void updateFeatures(double delta, int steps) {
             System.out.println("updating features...");
             for(FEATURE feature: features) {
+/*
                 double current  = weights.get(feature.name());
                 System.out.printf("\t%s %.3f %.3f %.3f\n",
                         feature.name(), current, delta, current + delta);
+*/
             }
             System.out.println();
             writeJson(weights, featuresPath);
         }
 
-        private void updateAverage(double delta) {
+        private void updateAverage(double delta, int steps) {
             average = readJson(averagePath);
             if (average == null) {
                 average = new HashMap<>();
@@ -269,7 +271,7 @@ public class Learning {
 
             Double cnt = average.get("cnt");
             if (cnt == null) cnt = 0d;
-            cnt++;
+            cnt += steps;
             average.put("cnt", cnt);
 
             for(FEATURE feature: features) {
