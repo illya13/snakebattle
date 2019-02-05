@@ -45,7 +45,6 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  */
 public class YourSolver implements Solver<Board> {
     private static final String BASE_URL = "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/";
-    private static final String PLAYER_EMAIL = "illya.havsiyevych@gmail.com";
     private static final String PLAYER_CODE = "?code=1617935781189693616";
     private static final String PLAYER_HASH = "bppowg4adbpirr4fm3yirto4krg1cwnwkjeo6gonbixy";
 
@@ -465,7 +464,7 @@ public class YourSolver implements Solver<Board> {
     public static void main(String[] args) {
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
-                BASE_URL + PLAYER_EMAIL + PLAYER_CODE,
+                BASE_URL + PLAYER_HASH + PLAYER_CODE,
                 new YourSolver(new RandomDice()),
                 new Board());
     }
