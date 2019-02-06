@@ -23,7 +23,6 @@ package com.codenjoy.dojo.snakebattle.client;
  */
 
 
-import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.services.Dice;
 import com.codenjoy.dojo.services.Direction;
 import org.junit.Before;
@@ -59,7 +58,7 @@ public class SolverTest {
 
     @Test
     public void should1() {
-        asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
                 "☼#                      $    ☼\n" +
                 "☼☼                           ☼\n" +
@@ -93,7 +92,7 @@ public class SolverTest {
 
     @Test
     public void should2() {
-        asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
                 "☼#                      $    ☼\n" +
                 "☼☼                           ☼\n" +
@@ -127,7 +126,7 @@ public class SolverTest {
 
     @Test
     public void should3() {
-        asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                  ○        ☼\n" +
                 "☼#                           ☼\n" +
                 "☼☼             ●     ●       ☼\n" +
@@ -162,7 +161,8 @@ public class SolverTest {
 
     @Test
     public void should4() {
-        asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+        ai.prev = Direction.LEFT;
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
                 "☼#      ●                    ☼\n" +
                 "☼☼    ○                      ☼\n" +
@@ -191,12 +191,12 @@ public class SolverTest {
                 "☼#                   ○       ☼\n" +
                 "☼☼                   ●       ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT, Direction.LEFT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
     }
 
     @Test
     public void should5() {
-        asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
                 "☼#                           ☼\n" +
                 "☼☼                           ☼\n" +
@@ -230,7 +230,7 @@ public class SolverTest {
 
     @Test
     public void should6() {
-        asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                     $     ☼\n" +
                 "☼#                      ○●   ☼\n" +
                 "☼☼                           ☼\n" +
@@ -264,7 +264,7 @@ public class SolverTest {
 
     @Test
     public void should7() {
-        asertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
                 "☼#                           ☼\n" +
                 "☼☼       ●  ●                ☼\n" +
@@ -296,13 +296,7 @@ public class SolverTest {
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.LEFT);
     }
 
-    private void asertAI(String board, Direction expected) {
-        String actual = ai.get(board(board));
-        assertEquals(expected.toString(), actual);
-    }
-
-    private void asertAI(String board, Direction prev, Direction expected) {
-        ai.prev = prev;
+    private void assertAI(String board, Direction expected) {
         String actual = ai.get(board(board));
         assertEquals(expected.toString(), actual);
     }

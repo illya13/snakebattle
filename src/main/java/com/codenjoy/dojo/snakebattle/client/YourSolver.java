@@ -56,14 +56,14 @@ public class YourSolver implements Solver<Board> {
     private int step;
     private boolean shortAction;
 
-    private boolean fury;
+    boolean fury;
     private boolean fly;
 
     private boolean pill;
     private int flyCounter;
-    private int furyCounter;
-    private int stoneCounter;
-    private boolean initialized = false;
+    int furyCounter;
+    int stoneCounter;
+    boolean initialized = false;
     private Map<Point, Set<Point>> prediction = new HashMap<>();
 
     YourSolver(Dice dice) {
@@ -103,7 +103,7 @@ public class YourSolver implements Solver<Board> {
         return direction;
     }
 
-    private void initRound() {
+    void initRound() {
         learning.reset(board, step);
         step = 0;
         stoneCounter = 0;
@@ -304,7 +304,7 @@ public class YourSolver implements Solver<Board> {
 
 
     private String act(Direction direction) {
-        if ( (enemyCloseToTail() || (!shortAction && canEatStoneSoon()) || (shortAction && fury && (furyCounter < 10 - board.getMySize())))
+        if ( (enemyCloseToTail() || (!shortAction && canEatStoneSoon()) || (shortAction && fury && (furyCounter <= 10 - board.getMySize())))
                 && (stoneCounter > 0) ) {
             System.out.println("ACT");
             stoneCounter--;
