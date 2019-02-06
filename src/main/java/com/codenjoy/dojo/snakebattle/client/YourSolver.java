@@ -219,7 +219,7 @@ public class YourSolver implements Solver<Board> {
         }
 
         if (isFollowMode()) {
-            go = board.bfsAttack(point, board.size() * 2, false,
+            go = board.bfsAttack(point, board.size() / 2, false,
                     BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
                     ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
