@@ -394,7 +394,7 @@ public class YourSolver implements Solver<Board> {
     private boolean canAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS) == 0 ||
                 ((fury && furyCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
-                ( board.getMySize() > board.getEnemySize() );
+                ( board.getMySize() - board.getEnemySize() > 1 );
     }
 
     private boolean canEatStoneAt(Point p) {
