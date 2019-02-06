@@ -54,7 +54,6 @@ public class YourSolver implements Solver<Board> {
     private Point me;
     private Direction[] priority;
     private int step;
-    private boolean shortAction;
 
     private boolean fury;
     private boolean fly;
@@ -232,7 +231,6 @@ public class YourSolver implements Solver<Board> {
         if (isMediumMode()) {
             go = getBFSDirection(point, board.size() / 2, true);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
-                shortAction = false;
                 System.out.println("=> BFS: ANY MEDIUM");
                 return go.getDirection();
             }
@@ -240,7 +238,6 @@ public class YourSolver implements Solver<Board> {
             if (board.getMySize() > 4) {
                 go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL, STONE);
                 if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
-                    shortAction = false;
                     System.out.println("=> BFS: STONE MEDIUM");
                     return go.getDirection();
                 }
@@ -249,7 +246,6 @@ public class YourSolver implements Solver<Board> {
 
         go = getBFSDirection(point, board.size() * 2, true);
         if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
-            shortAction = false;
             System.out.println("=> BFS: ANY LONG");
             return go.getDirection();
         }
@@ -280,7 +276,7 @@ public class YourSolver implements Solver<Board> {
 
 
     private String act(Direction direction) {
-        if ( (enemyCloseToTail() || (!shortAction && canEatStoneSoon())) && (stoneCounter > 0) ) {
+        if ( (enemyCloseToTail() || canEatStoneSoon()) && (stoneCounter > 0) ) {
             System.out.println("ACT");
             stoneCounter--;
             return "(" + direction.toString() + ", ACT)";
@@ -411,7 +407,6 @@ public class YourSolver implements Solver<Board> {
         System.out.printf(" => %s\n", learning.getStrategy());
 
         step++;
-        shortAction = true;
 
         me = board.getMe();
         priority = board.getPriority(me, true);
