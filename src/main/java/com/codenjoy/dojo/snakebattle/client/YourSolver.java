@@ -76,6 +76,8 @@ public class YourSolver implements Solver<Board> {
 
     @Override
     public String get(Board board) {
+        long ts = System.currentTimeMillis();
+
         this.board = board;
         if (board.isGameOver()) return "";
 
@@ -95,7 +97,10 @@ public class YourSolver implements Solver<Board> {
         if (isPredictMode())predict();
 
         prev = nextStep();
-        return act(prev);
+        String direction = act(prev);
+
+        System.out.printf("latency: %d ms\n", System.currentTimeMillis() - ts);
+        return direction;
     }
 
     private void initRound() {
