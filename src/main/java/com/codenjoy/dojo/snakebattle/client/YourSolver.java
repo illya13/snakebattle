@@ -324,12 +324,11 @@ public class YourSolver implements Solver<Board> {
 
     private boolean weAreLate(Point target, int distance) {
         System.out.println("are we late?");
-        for (Point enemy: board.getEnemies()) {
-            BFS.Result go = board.bfs(enemy, distance,false, BARRIER_NORMAL, board.getAt(target));
-            if (go.getDirection().isPresent()) {
-                System.out.printf("\t %s %s\n", board.getAt(enemy), go.getDirection().get());
-                return true;
-            }
+        BFS.Result go = board.bfsAttack(target, distance,false, BARRIER_ATTACK, ENEMY_HEAD_ELEMENTS);
+        if (go.getDirection().isPresent()) {
+            System.out.printf("\t %s %s %d\n",
+                    board.getAt(target), board.getAt(go.getTarget().get()), go.getDistance());
+            return true;
         }
         return false;
     }
