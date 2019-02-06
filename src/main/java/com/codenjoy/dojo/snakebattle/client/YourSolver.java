@@ -363,6 +363,17 @@ public class YourSolver implements Solver<Board> {
         }
     }
 
+    private boolean isEnemyPredicted(Point point) {
+        if (!isPredictMode())
+            return false;
+
+        for (Set<Point> set: prediction.values()) {
+            if (set.contains(point))
+                return true;
+        }
+        return false;
+    }
+
     private void initStep() {
         System.out.printf(" => %s\n", learning.getStrategy());
 
@@ -413,7 +424,8 @@ public class YourSolver implements Solver<Board> {
         Point p = direction.change(point);
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafe(p) ) &&
-                !isStepBack(direction) && canEatStoneAt(p) && canAttack(p);
+                !isStepBack(direction) && canEatStoneAt(p) && canAttack(p) &&
+                !isEnemyPredicted(p);
     }
 
     private boolean isSafeAttack(Point point, Direction direction) {
