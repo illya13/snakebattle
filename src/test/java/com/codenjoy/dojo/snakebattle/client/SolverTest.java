@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 public class SolverTest {
 
     private Dice dice;
-    private Solver ai;
+    private YourSolver ai;
 
     @Before
     public void setup() {
@@ -191,7 +191,7 @@ public class SolverTest {
                 "☼#                   ○       ☼\n" +
                 "☼☼                   ●       ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT, Direction.LEFT);
     }
 
     @Test
@@ -297,6 +297,12 @@ public class SolverTest {
     }
 
     private void asertAI(String board, Direction expected) {
+        String actual = ai.get(board(board));
+        assertEquals(expected.toString(), actual);
+    }
+
+    private void asertAI(String board, Direction prev, Direction expected) {
+        ai.prev = prev;
         String actual = ai.get(board(board));
         assertEquals(expected.toString(), actual);
     }

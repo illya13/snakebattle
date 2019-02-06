@@ -48,7 +48,7 @@ public class YourSolver implements Solver<Board> {
     private static final int SELF_DESTRUCT_STEPS = 300;
 
     private Learning learning;
-    private Direction prev;
+    Direction prev;
 
     private Board board;
     private Point me;
