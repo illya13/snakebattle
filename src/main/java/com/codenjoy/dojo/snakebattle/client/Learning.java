@@ -200,7 +200,7 @@ public class Learning {
                 weights.put(FEATURE.MEDIUM.name(), 80d);
                 weights.put(FEATURE.FLY.name(), 30d);
                 weights.put(FEATURE.FOLLOW.name(), 30d);
-                weights.put(FEATURE.PREDICT.name(), 30d);
+                weights.put(FEATURE.PREDICT.name(), 100d);
             }
             writeJson(weights, featuresPath);
         }

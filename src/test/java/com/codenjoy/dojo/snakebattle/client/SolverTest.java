@@ -29,7 +29,6 @@ import com.codenjoy.dojo.services.Direction;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.codenjoy.dojo.services.Direction.RIGHT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;

@@ -105,6 +105,7 @@ public class BFS {
 
 
     private Result calcWeights(Map<Point, Path> visited, LinkedHashSet<Point> found) {
+        System.out.println("BFS weights:");
         Map<Direction, Double> weightMap = new HashMap<>();
         for (Point point: found) {
             Direction direction = traceBack(start, point, visited);
@@ -181,7 +182,7 @@ public class BFS {
         private Result(Direction direction, Point target, int distance) {
             this.target = target;
             this.direction = direction;
-            this.distance =- distance;
+            this.distance = distance;
         }
 
         public Optional<Direction> getDirection() {

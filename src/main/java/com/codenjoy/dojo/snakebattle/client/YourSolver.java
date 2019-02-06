@@ -32,7 +32,7 @@ import com.codenjoy.dojo.services.RandomDice;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
 
-import java.util.Optional;
+import java.util.*;
 
 import static com.codenjoy.dojo.snakebattle.client.Board.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
@@ -67,6 +67,7 @@ public class YourSolver implements Solver<Board> {
     private int furyCounter;
     private int stoneCounter;
     private boolean initialized = false;
+    private Map<Point, Set<Point>> prediction = new HashMap<>();
 
     YourSolver(Dice dice) {
         learning = Learning.Builder.newLearning()
@@ -93,6 +94,9 @@ public class YourSolver implements Solver<Board> {
         initStep();
 
         if (isSelfDestructMode()) return "ACT(0)";
+
+        if (isPredictMode())
+            predict();
 
         prev = nextStep();
         return act(prev);
@@ -319,7 +323,45 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean weAreLate(Point target, int distance) {
+        System.out.println("are we late?");
+        for (Point enemy: board.getEnemies()) {
+            BFS.Result go = board.bfs(enemy, distance,false, BARRIER_NORMAL, board.getAt(target));
+            if (go.getDirection().isPresent()) {
+                System.out.printf("\t %s %s\n", board.getAt(enemy), go.getDirection().get());
+                return true;
+            }
+        }
         return false;
+    }
+
+    private void predict() {
+        prediction.clear();
+        System.out.println("predictions:");
+        for (Point enemy: board.getEnemies()) {
+            Set<Point> targets = new HashSet<>();
+
+            switch (board.getAt(enemy)) {
+                case ENEMY_HEAD_UP:
+                    targets.add(Direction.UP.change(enemy));
+                    break;
+                case ENEMY_HEAD_DOWN:
+                    targets.add(Direction.DOWN.change(enemy));
+                    break;
+                case ENEMY_HEAD_LEFT:
+                    targets.add(Direction.LEFT.change(enemy));
+                    break;
+                case ENEMY_HEAD_RIGHT:
+                    targets.add(Direction.RIGHT.change(enemy));
+                    break;
+            }
+
+            BFS.Result go = board.bfs(enemy, board.size() / 6,false, BARRIER_NORMAL, GOLD, APPLE, FURY_PILL, STONE);
+            if (go.getDirection().isPresent()) {
+                targets.add(go.getDirection().get().change(enemy));
+            }
+            prediction.put(enemy, targets);
+            System.out.printf("\t %s %s\n", board.getAt(enemy), targets);
+        }
     }
 
     private void initStep() {

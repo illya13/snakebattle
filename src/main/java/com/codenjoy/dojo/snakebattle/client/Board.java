@@ -288,4 +288,8 @@ public class Board extends AbstractBoard<Elements> {
         List<Point> tail = get(ME_TAIL_ELEMENTS);
         return (!tail.isEmpty()) ? get(ME_TAIL_ELEMENTS).get(0) : getMe();
     }
+
+    public List<Point> getEnemies() {
+        return get(ENEMY_HEAD_ELEMENTS);
+    }
 }
