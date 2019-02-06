@@ -23,12 +23,9 @@ package com.codenjoy.dojo.snakebattle.client;
  */
 
 
-import com.codenjoy.dojo.services.Direction;
+import com.codenjoy.dojo.services.*;
 import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.client.WebSocketRunner;
-import com.codenjoy.dojo.services.Dice;
-import com.codenjoy.dojo.services.Point;
-import com.codenjoy.dojo.services.RandomDice;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
 
@@ -68,7 +65,6 @@ public class YourSolver implements Solver<Board> {
     private int stoneCounter;
     private boolean initialized = false;
     private Map<Point, Set<Point>> prediction = new HashMap<>();
-    private Map<Point, Set<Point>> attackPrediction = new HashMap<>();
 
     YourSolver(Dice dice) {
         learning = Learning.Builder.newLearning()
@@ -96,10 +92,7 @@ public class YourSolver implements Solver<Board> {
 
         if (isSelfDestructMode()) return "ACT(0)";
 
-        if (isPredictMode()) {
-            predict();
-            attackPredict();
-        }
+        if (isPredictMode())predict();
 
         prev = nextStep();
         return act(prev);
@@ -342,19 +335,38 @@ public class YourSolver implements Solver<Board> {
         for (Point enemy: board.getEnemies()) {
             Set<Point> targets = getEnemyTargetByHead(enemy);
 
-            BFS.Result go = board.bfs(enemy, board.size() / 6,false, BARRIER_NORMAL, GOLD, APPLE, FURY_PILL, STONE);
-            updateEnemyTargets(enemy, targets, go, prediction);
+            getEnemyTargetByBFS(targets, enemy, GOLD, APPLE);
+            getEnemyTargetByBFS(targets, enemy, FURY_PILL);
+            getEnemyTargetByBFS(targets, enemy, STONE);
+            BFS.Result go = board.bfsFly(enemy, board.size() / 2,false, BARRIER_FLY, join(ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS));
+            if (go.getDirection().isPresent()) {
+                targets.add(go.getDirection().get().change(enemy));
+            }
+            prediction.put(enemy, targets);
+            System.out.printf("\t %s %s\n", board.getAt(enemy), targets);
+        }
+
+        debugPrediction();
+    }
+
+    private void debugPrediction() {
+        for (int y = board.size() - 1; y >= 0; --y) {
+            for (int x = 0; x < board.size(); ++x) {
+                Point p = PointImpl.pt(x, y);
+                if (!isEnemyPredicted(p)) {
+                    System.out.print(board.isAt(p, NONE) ? "   " : board.getAllAt(x, y));
+                } else {
+                    System.out.printf(" %s ", HEAD_DEAD);
+                }
+            }
+            System.out.println();
         }
     }
 
-    private void attackPredict() {
-        attackPrediction.clear();
-        System.out.println("attack prediction:");
-        for (Point enemy: board.getEnemies()) {
-            Set<Point> targets = getEnemyTargetByHead(enemy);
-
-            BFS.Result go = board.bfs(enemy, board.size() / 6,false, BARRIER_FLY, join(ME_HEAD_ELEMENTS, ME_BODY_TAIL_ELEMENTS));
-            updateEnemyTargets(enemy, targets, go, attackPrediction);
+    private void getEnemyTargetByBFS(Set<Point> targets, Point enemy, Elements... elements) {
+        BFS.Result go = board.bfs(enemy, board.size() / 2,false, BARRIER_ATTACK, elements);
+        if (go.getDirection().isPresent()) {
+            targets.add(go.getDirection().get().change(enemy));
         }
     }
 
@@ -377,15 +389,7 @@ public class YourSolver implements Solver<Board> {
         return targets;
     }
 
-    private void updateEnemyTargets(Point enemy, Set<Point> targets, BFS.Result go, Map<Point, Set<Point>> prediction) {
-        if (go.getDirection().isPresent()) {
-            targets.add(go.getDirection().get().change(enemy));
-        }
-        prediction.put(enemy, targets);
-        System.out.printf("\t %s %s\n", board.getAt(enemy), targets);
-    }
-
-    private boolean isEnemyPredicted(Point point, Map<Point, Set<Point>> prediction) {
+    private boolean isEnemyPredicted(Point point) {
         if (!isPredictMode())
             return false;
 
@@ -447,7 +451,7 @@ public class YourSolver implements Solver<Board> {
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafe(p) ) &&
                 !isStepBack(direction) && canEatStoneAt(p) && canAttack(p) &&
-                !isEnemyPredicted(p, prediction);
+                !isEnemyPredicted(p);
     }
 
     private boolean isSafeAttack(Point point, Direction direction) {
