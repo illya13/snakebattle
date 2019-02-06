@@ -343,7 +343,7 @@ public class YourSolver implements Solver<Board> {
             getEnemyTargetByBFS(targets, enemy, GOLD, APPLE);
             getEnemyTargetByBFS(targets, enemy, FURY_PILL);
             getEnemyTargetByBFS(targets, enemy, STONE);
-            BFS.Result go = board.bfsFly(enemy, board.size() / 2,false, BARRIER_FLY, join(ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS));
+            BFS.Result go = board.bfsFly(enemy, board.size(),false, BARRIER_FLY, join(ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS));
             if (go.getDirection().isPresent()) {
                 targets.add(go.getDirection().get().change(enemy));
             }
@@ -369,7 +369,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private void getEnemyTargetByBFS(Set<Point> targets, Point enemy, Elements... elements) {
-        BFS.Result go = board.bfs(enemy, board.size() / 2,false, BARRIER_ATTACK, elements);
+        BFS.Result go = board.bfs(enemy, board.size(),false, BARRIER_ATTACK, elements);
         if (go.getDirection().isPresent()) {
             targets.add(go.getDirection().get().change(enemy));
         }
