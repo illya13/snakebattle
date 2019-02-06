@@ -130,7 +130,7 @@ public class YourSolver implements Solver<Board> {
         Optional<Direction> go;
 
         if (isAttackMode()) {
-            go = safeAttackTarget(point, ENEMY_ELEMENTS, priority);
+            go = safeAttackTarget(point, join(ENEMY_HEAD_ELEMENTS, ENEMY_BODY_ELEMENTS), priority);
             if (go.isPresent()) {
                 System.out.println("=> ATTACK");
                 return go;
