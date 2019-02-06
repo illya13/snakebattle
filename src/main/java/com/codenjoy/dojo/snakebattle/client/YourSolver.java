@@ -68,6 +68,7 @@ public class YourSolver implements Solver<Board> {
     private int stoneCounter;
     private boolean initialized = false;
     private Map<Point, Set<Point>> prediction = new HashMap<>();
+    private Map<Point, Set<Point>> attackPrediction = new HashMap<>();
 
     YourSolver(Dice dice) {
         learning = Learning.Builder.newLearning()
@@ -95,8 +96,10 @@ public class YourSolver implements Solver<Board> {
 
         if (isSelfDestructMode()) return "ACT(0)";
 
-        if (isPredictMode())
+        if (isPredictMode()) {
             predict();
+            attackPredict();
+        }
 
         prev = nextStep();
         return act(prev);
@@ -337,33 +340,52 @@ public class YourSolver implements Solver<Board> {
         prediction.clear();
         System.out.println("predictions:");
         for (Point enemy: board.getEnemies()) {
-            Set<Point> targets = new HashSet<>();
-
-            switch (board.getAt(enemy)) {
-                case ENEMY_HEAD_UP:
-                    targets.add(Direction.UP.change(enemy));
-                    break;
-                case ENEMY_HEAD_DOWN:
-                    targets.add(Direction.DOWN.change(enemy));
-                    break;
-                case ENEMY_HEAD_LEFT:
-                    targets.add(Direction.LEFT.change(enemy));
-                    break;
-                case ENEMY_HEAD_RIGHT:
-                    targets.add(Direction.RIGHT.change(enemy));
-                    break;
-            }
+            Set<Point> targets = getEnemyTargetByHead(enemy);
 
             BFS.Result go = board.bfs(enemy, board.size() / 6,false, BARRIER_NORMAL, GOLD, APPLE, FURY_PILL, STONE);
-            if (go.getDirection().isPresent()) {
-                targets.add(go.getDirection().get().change(enemy));
-            }
-            prediction.put(enemy, targets);
-            System.out.printf("\t %s %s\n", board.getAt(enemy), targets);
+            updateEnemyTargets(enemy, targets, go, prediction);
         }
     }
 
-    private boolean isEnemyPredicted(Point point) {
+    private void attackPredict() {
+        attackPrediction.clear();
+        System.out.println("attack prediction:");
+        for (Point enemy: board.getEnemies()) {
+            Set<Point> targets = getEnemyTargetByHead(enemy);
+
+            BFS.Result go = board.bfs(enemy, board.size() / 6,false, BARRIER_FLY, join(ME_HEAD_ELEMENTS, ME_BODY_TAIL_ELEMENTS));
+            updateEnemyTargets(enemy, targets, go, attackPrediction);
+        }
+    }
+
+    private Set<Point> getEnemyTargetByHead(Point enemy) {
+        Set<Point> targets = new HashSet<>();
+        switch (board.getAt(enemy)) {
+            case ENEMY_HEAD_UP:
+                targets.add(Direction.UP.change(enemy));
+                break;
+            case ENEMY_HEAD_DOWN:
+                targets.add(Direction.DOWN.change(enemy));
+                break;
+            case ENEMY_HEAD_LEFT:
+                targets.add(Direction.LEFT.change(enemy));
+                break;
+            case ENEMY_HEAD_RIGHT:
+                targets.add(Direction.RIGHT.change(enemy));
+                break;
+        }
+        return targets;
+    }
+
+    private void updateEnemyTargets(Point enemy, Set<Point> targets, BFS.Result go, Map<Point, Set<Point>> prediction) {
+        if (go.getDirection().isPresent()) {
+            targets.add(go.getDirection().get().change(enemy));
+        }
+        prediction.put(enemy, targets);
+        System.out.printf("\t %s %s\n", board.getAt(enemy), targets);
+    }
+
+    private boolean isEnemyPredicted(Point point, Map<Point, Set<Point>> prediction) {
         if (!isPredictMode())
             return false;
 
@@ -425,7 +447,7 @@ public class YourSolver implements Solver<Board> {
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafe(p) ) &&
                 !isStepBack(direction) && canEatStoneAt(p) && canAttack(p) &&
-                !isEnemyPredicted(p);
+                !isEnemyPredicted(p, prediction);
     }
 
     private boolean isSafeAttack(Point point, Direction direction) {
