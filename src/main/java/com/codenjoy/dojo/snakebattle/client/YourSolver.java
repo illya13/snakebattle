@@ -351,7 +351,7 @@ public class YourSolver implements Solver<Board> {
             System.out.printf("\t %s %s\n", board.getAt(enemy), targets);
         }
 
-        debugPrediction();
+        // debugPrediction();
     }
 
     private void debugPrediction() {
