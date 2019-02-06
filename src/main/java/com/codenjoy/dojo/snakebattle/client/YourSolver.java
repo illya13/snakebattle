@@ -153,7 +153,6 @@ public class YourSolver implements Solver<Board> {
             go = safeStepTarget(point, STONE, priority);
             if (go.isPresent()) {
                 System.out.println("=> STONE");
-                stoneCounter++;
                 return go;
             }
         }
@@ -310,6 +309,8 @@ public class YourSolver implements Solver<Board> {
             stoneCounter--;
             return "(" + direction.toString() + ", ACT)";
         }
+        if (board.isAt(direction.change(me), STONE))
+            stoneCounter++;
         return direction.toString();
     }
 
