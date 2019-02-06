@@ -200,8 +200,12 @@ public class YourSolver implements Solver<Board> {
 
             go = getBFSDirection(point, board.size() / 6, false);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
-                System.out.println("=> BFS: ANY SHORT");
-                return go.getDirection();
+                if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
+                    System.out.println("=> BFS: SKIPPED BY PREDICT");
+                } else {
+                    System.out.println("=> BFS: ANY SHORT");
+                    return go.getDirection();
+                }
             }
         }
 
@@ -310,6 +314,13 @@ public class YourSolver implements Solver<Board> {
         return (step > SELF_DESTRUCT_STEPS) && learning.getStrategy().hasFeature(Learning.FEATURE.DESTRUCT);
     }
 
+    private boolean isPredictMode() {
+        return learning.getStrategy().hasFeature(Learning.FEATURE.PREDICT);
+    }
+
+    private boolean weAreLate(Point target, int distance) {
+        return false;
+    }
 
     private void initStep() {
         System.out.printf(" => %s\n", learning.getStrategy());

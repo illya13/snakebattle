@@ -44,7 +44,7 @@ import java.nio.file.Paths;
 
 public class Learning {
     enum FEATURE {
-        STONES, ATTACK, FLY, FOLLOW, DESTRUCT, SHORT, MEDIUM
+        STONES, ATTACK, FLY, FOLLOW, DESTRUCT, SHORT, MEDIUM, PREDICT
     }
 
     public static abstract class Strategy {
@@ -200,6 +200,7 @@ public class Learning {
                 weights.put(FEATURE.MEDIUM.name(), 80d);
                 weights.put(FEATURE.FLY.name(), 30d);
                 weights.put(FEATURE.FOLLOW.name(), 30d);
+                weights.put(FEATURE.PREDICT.name(), 30d);
             }
             writeJson(weights, featuresPath);
         }

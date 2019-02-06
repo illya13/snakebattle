@@ -68,7 +68,7 @@ public class BFS {
         Point point = found.iterator().next();
         return (weight)
                 ? calcWeights(visited, found)
-                : new Result(traceBack(start, point, visited), point);
+                : new Result(traceBack(start, point, visited), point, visited.get(point).distance);
     }
 
 
@@ -129,7 +129,7 @@ public class BFS {
 
         System.out.println(weightMap);
         // System.out.println(sorted);
-        return new Result(sorted.get(0), null);
+        return new Result(sorted.get(0));
     }
 
 
@@ -167,14 +167,21 @@ public class BFS {
 
 
     public static class Result {
-        private static final Result empty = new Result(null, null);
+        private static final Result empty = new Result(null, null, 0);
 
         private Direction direction;
         private Point target;
+        private int distance;
 
-        private Result(Direction direction, Point target) {
+        private Result(Direction direction) {
             this.target = target;
             this.direction = direction;
+        }
+
+        private Result(Direction direction, Point target, int distance) {
+            this.target = target;
+            this.direction = direction;
+            this.distance =- distance;
         }
 
         public Optional<Direction> getDirection() {
@@ -183,6 +190,10 @@ public class BFS {
 
         public Optional<Point> getTarget() {
             return (target == null) ? Optional.empty() : Optional.of(target);
+        }
+
+        public int getDistance() {
+            return distance;
         }
 
         public static Result empty() {
