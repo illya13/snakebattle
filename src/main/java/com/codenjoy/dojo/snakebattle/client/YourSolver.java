@@ -137,6 +137,10 @@ public class YourSolver implements Solver<Board> {
             }
         }
 
+        if (isFollowMode()) {
+            // can we do smth ?
+        }
+
         go = safeStepTarget(point, FURY_PILL, priority);
         if (go.isPresent()) {
             System.out.println("=> FURY_PILL");
@@ -396,9 +400,6 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean isEnemyPredicted(Point point) {
-        if (!isPredictMode())
-            return false;
-
         for (Set<Point> set: prediction.values()) {
             if (set.contains(point))
                 return true;
@@ -488,6 +489,7 @@ public class YourSolver implements Solver<Board> {
 
     private boolean canAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS) == 0 ||
+                (isPredictMode() && !isEnemyPredicted(point)) ||
                 ((fury && furyCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ( board.getMySize() - board.getEnemySize() > 1 );
     }
