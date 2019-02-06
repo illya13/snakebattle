@@ -331,6 +331,7 @@ public class YourSolver implements Solver<Board> {
                     board.getAt(target), board.getAt(go.getTarget().get()), go.getDistance());
             return true;
         }
+        System.out.println("\tno");
         return false;
     }
 
