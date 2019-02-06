@@ -455,8 +455,7 @@ public class YourSolver implements Solver<Board> {
         Point p = direction.change(point);
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafe(p) ) &&
-                !isStepBack(direction) && canEatStoneAt(p) && canAttack(p) &&
-                !isEnemyPredicted(p);
+                !isStepBack(direction) && canEatStoneAt(p) && canAttack(p);
     }
 
     private boolean isSafeAttack(Point point, Direction direction) {
