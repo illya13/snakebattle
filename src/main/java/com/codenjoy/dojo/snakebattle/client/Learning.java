@@ -94,10 +94,12 @@ public class Learning {
                 int before = Integer.valueOf(prev.get().get("score"));
                 int now = Integer.valueOf(stat.get().get("score"));
                 double delta = (now - before);
-                System.out.printf(" == %s before: %d, now: %d, delta: %.0f, steps: %d => %.3f\n",
-                        strategy.toString(), before, now, delta, steps, delta/steps);
+                if (delta > 0) {
+                    System.out.printf(" == %s before: %d, now: %d, delta: %.0f, steps: %d => %.3f\n",
+                            strategy.toString(), before, now, delta, steps, delta / steps);
 
-                strategy.update(delta, steps);
+                    strategy.update(delta, steps);
+                }
             }
         }
         prev = stat;
