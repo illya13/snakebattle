@@ -280,7 +280,8 @@ public class YourSolver implements Solver<Board> {
 
 
     private String act(Direction direction) {
-        if ( (enemyCloseToTail() || (!shortAction && canEatStoneSoon())) && (stoneCounter > 0) ) {
+        if ( (enemyCloseToTail() || (!shortAction && canEatStoneSoon()) || (shortAction && fury && (furyCounter < 10 - board.getMySize())))
+                && (stoneCounter > 0) ) {
             System.out.println("ACT");
             stoneCounter--;
             return "(" + direction.toString() + ", ACT)";
