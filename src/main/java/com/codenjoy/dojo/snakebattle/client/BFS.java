@@ -52,7 +52,7 @@ public class BFS {
         mode = MODE.NORMAL;
     }
 
-    public Optional<Direction> bfs(int size) {
+    public Result bfs(int size) {
         Queue<Point> queue = new LinkedList<>();
         queue.add(start);
 
@@ -61,13 +61,14 @@ public class BFS {
 
         LinkedHashSet<Point> found = bfs(queue, visited, size);
         if (found.isEmpty())
-            return Optional.empty();
+            return Result.empty();
 
         // debug(visited);
 
+        Point point = found.iterator().next();
         return (weight)
                 ? calcWeights(visited, found)
-                : Optional.of(traceBack(start, found.iterator().next(), visited));
+                : new Result(traceBack(start, point, visited), point);
     }
 
 
@@ -103,7 +104,7 @@ public class BFS {
     }
 
 
-    private Optional<Direction> calcWeights(Map<Point, Path> visited, LinkedHashSet<Point> found) {
+    private Result calcWeights(Map<Point, Path> visited, LinkedHashSet<Point> found) {
         Map<Direction, Double> weightMap = new HashMap<>();
         for (Point point: found) {
             Direction direction = traceBack(start, point, visited);
@@ -128,7 +129,7 @@ public class BFS {
 
         System.out.println(weightMap);
         // System.out.println(sorted);
-        return Optional.of(sorted.get(0));
+        return new Result(sorted.get(0), null);
     }
 
 
@@ -164,6 +165,30 @@ public class BFS {
         return true;
     }
 
+
+    public static class Result {
+        private static final Result empty = new Result(null, null);
+
+        private Direction direction;
+        private Point target;
+
+        private Result(Direction direction, Point target) {
+            this.target = target;
+            this.direction = direction;
+        }
+
+        public Optional<Direction> getDirection() {
+            return (direction == null) ? Optional.empty() : Optional.of(direction);
+        }
+
+        public Optional<Point> getTarget() {
+            return (target == null) ? Optional.empty() : Optional.of(target);
+        }
+
+        public static Result empty() {
+            return empty;
+        }
+    }
 
     public static class Builder {
         private BFS bfs;
@@ -230,7 +255,7 @@ public class BFS {
     }
 
 
-    public enum POINTS {
+    private enum POINTS {
         APPLE(Elements.APPLE, 1), GOLD(Elements.GOLD, 5), STONE(Elements.STONE, 10), FURY(Elements.FURY_PILL, 20);
 
         private Elements elements;

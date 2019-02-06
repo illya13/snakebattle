@@ -176,32 +176,32 @@ public class YourSolver implements Solver<Board> {
 
 
     private Optional<Direction> midTerm(Point point) {
-        Optional<Direction> go;
+        BFS.Result go;
 
         if (isAttackMode()) {
             go = board.bfsAttack(point, board.size() / 6, false,
                     BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
                     ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
-            if (go.isPresent() && isSafeAttack(point, go.get())) {
+            if (go.getDirection().isPresent() && isSafeAttack(point, go.getDirection().get())) {
                 System.out.println("=> BFS: ATTACK");
-                return go;
+                return go.getDirection();
             }
         }
 
         if (isShortMode()) {
             if (isStoneMode() && canEatStoneSoon()) {
                 go = board.bfs(point, board.size() / 6, false, BARRIER_NORMAL, STONE);
-                if (go.isPresent() && isSafeStep(point, go.get())) {
+                if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                     System.out.println("=> BFS: STONE SHORT");
-                    return go;
+                    return go.getDirection();
                 }
             }
 
             go = getBFSDirection(point, board.size() / 6, false);
-            if (go.isPresent() && isSafeStep(point, go.get())) {
+            if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 System.out.println("=> BFS: ANY SHORT");
-                return go;
+                return go.getDirection();
             }
         }
 
@@ -210,35 +210,35 @@ public class YourSolver implements Solver<Board> {
                     BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
                     ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
-            if (go.isPresent() && isSafeStep(point, go.get())) {
+            if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 System.out.println("=> BFS: FOLLOW");
-                return go;
+                return go.getDirection();
             }
         }
 
         if (isMediumMode()) {
             go = getBFSDirection(point, board.size() / 2, true);
-            if (go.isPresent() && isSafeStep(point, go.get())) {
+            if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 shortAction = false;
                 System.out.println("=> BFS: ANY MEDIUM");
-                return go;
+                return go.getDirection();
             }
 
             if (board.getMySize() > 4) {
                 go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL, STONE);
-                if (go.isPresent() && isSafeStep(point, go.get())) {
+                if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                     shortAction = false;
                     System.out.println("=> BFS: STONE MEDIUM");
-                    return go;
+                    return go.getDirection();
                 }
             }
         }
 
         go = getBFSDirection(point, board.size() * 2, true);
-        if (go.isPresent() && isSafeStep(point, go.get())) {
+        if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
             shortAction = false;
             System.out.println("=> BFS: ANY LONG");
-            return go;
+            return go.getDirection();
         }
 
         return Optional.empty();
@@ -276,7 +276,7 @@ public class YourSolver implements Solver<Board> {
     }
 
 
-    private Optional<Direction> getBFSDirection(Point point, int max, boolean weight) {
+    private BFS.Result getBFSDirection(Point point, int max, boolean weight) {
         return (canFly())
                 ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/)
                 : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL/*, FLYING_PILL*/);

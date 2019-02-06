@@ -106,21 +106,21 @@ public class Board extends AbstractBoard<Elements> {
     }
 
 
-    public Optional<Direction> bfs(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
+    public BFS.Result bfs(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
         BFS bfs = BFS.Builder.newBFS(this, start)
                 .barrier(barrier).target(elements).weight(weight)
                 .build();
         return bfs.bfs(max);
     }
 
-    public Optional<Direction> bfsAttack(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
+    public BFS.Result bfsAttack(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
         BFS bfs = BFS.Builder.newBFS(this, start)
                 .barrier(barrier).target(elements).weight(weight)
                 .attack().build();
         return bfs.bfs(max);
     }
 
-    public Optional<Direction> bfsFly(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
+    public BFS.Result bfsFly(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
         BFS bfs = BFS.Builder.newBFS(this, start)
                 .barrier(barrier).target(elements).weight(weight)
                 .fly().build();
