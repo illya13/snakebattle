@@ -204,6 +204,9 @@ public class YourSolver implements Solver<Board> {
                 if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                     System.out.println("=> BFS: STONE SHORT");
                     return go.getDirection();
+                } else if (stoneCounter > 0) {
+                    shortAction = false;
+                    return Optional.empty();
                 }
             }
 
