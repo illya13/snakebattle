@@ -135,6 +135,14 @@ public class MySolver implements Solver<Board> {
                 System.out.println("=> ATTACK");
                 return go;
             }
+
+            if (isPredictMode()) {
+                go = safeAttackPrediction(point, priority);
+                if (go.isPresent()) {
+                    System.out.println("=> PREDICTION ATTACK");
+                    return go;
+                }
+            }
         }
 
         if (isFollowMode()) {
@@ -321,7 +329,8 @@ public class MySolver implements Solver<Board> {
     }
 
     private boolean isAttackMode() {
-        return fury && (furyCounter < 9) && learning.getStrategy().hasFeature(Learning.FEATURE.ATTACK);
+        return ((fury && (furyCounter < 9)) || (board.getMySize() - board.getEnemySize() > 1))
+                && learning.getStrategy().hasFeature(Learning.FEATURE.ATTACK);
     }
 
     private boolean isFlyMode() {
@@ -465,6 +474,15 @@ public class MySolver implements Solver<Board> {
         for (Direction direction: directions) {
             Point p = direction.change(point);
             if (board.isAt(p, elements) && isSafeAttack(point, direction))
+                return Optional.of(direction);
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Direction> safeAttackPrediction(Point point, Direction[] directions) {
+        for (Direction direction: directions) {
+            Point p = direction.change(point);
+            if(isEnemyPredicted(p) && isSafeAttack(point, direction))
                 return Optional.of(direction);
         }
         return Optional.empty();
