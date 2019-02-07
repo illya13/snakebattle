@@ -40,7 +40,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  * Обрати внимание на {@see YourSolverTest} - там приготовлен тестовый
  * фреймворк для тебя.
  */
-public class YourSolver implements Solver<Board> {
+public class MySolver implements Solver<Board> {
     private static final String BASE_URL = "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/";
     private static final String PLAYER_CODE = "?code=1617935781189693616";
     private static final String PLAYER_HASH = "bppowg4adbpirr4fm3yirto4krg1cwnwkjeo6gonbixy";
@@ -66,7 +66,7 @@ public class YourSolver implements Solver<Board> {
     boolean initialized = false;
     private Map<Point, Set<Point>> prediction = new HashMap<>();
 
-    YourSolver(Dice dice) {
+    MySolver(Dice dice) {
         learning = Learning.Builder.newLearning()
                 .withStrategy(new Learning.DefaultStrategy(dice, "./features.json", "average.json"))
                 .withPlayer(PLAYER_HASH)
@@ -588,7 +588,7 @@ public class YourSolver implements Solver<Board> {
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
                 BASE_URL + PLAYER_HASH + PLAYER_CODE,
-                new YourSolver(new RandomDice()),
+                new MySolver(new RandomDice()),
                 new Board());
     }
 }

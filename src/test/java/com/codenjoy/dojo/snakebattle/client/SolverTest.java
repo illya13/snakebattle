@@ -43,13 +43,13 @@ import static org.mockito.Mockito.when;
 public class SolverTest {
 
     private Dice dice;
-    private YourSolver ai;
+    private MySolver ai;
 
     @Before
     public void setup() {
         dice = mock(Dice.class);
         when(dice.next(anyInt())).thenReturn(50);
-        ai = new YourSolver(dice);
+        ai = new MySolver(dice);
     }
 
     private Board board(String board) {

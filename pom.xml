@@ -89,7 +89,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.codenjoy.dojo.snakebattle.client.YourSolver</mainClass>
+                            <mainClass>com.codenjoy.dojo.snakebattle.client.MySolver</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
