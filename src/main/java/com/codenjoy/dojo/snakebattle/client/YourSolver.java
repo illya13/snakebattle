@@ -514,7 +514,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean canAttack(Point point) {
-        return board.countNear(point, ENEMY_HEAD_ELEMENTS) == 0 ||
+        return board.countNear(point, ENEMY_HEAD_ELEMENTS, 2) == 0 ||
                 (isPredictMode() && !isEnemyPredicted(point)) ||
                 ((fury && furyCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ( board.getMySize() - board.getEnemySize() > 1 );
@@ -537,7 +537,7 @@ public class YourSolver implements Solver<Board> {
     }
 
     private boolean enemyCloseToTail() {
-        return board.countNear(board.getMyTail(), ENEMY_HEAD_ELEMENTS) > 0;
+        return board.countNear(board.getMyTail(), ENEMY_HEAD_ELEMENTS, 1) > 0;
     }
 
     private boolean isStepBack(Direction direction) {

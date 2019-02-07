@@ -206,7 +206,7 @@ public class Board extends AbstractBoard<Elements> {
         Map<Direction, Integer> map = new HashMap<>();
         for (Direction direction:  new Direction[]{RIGHT, DOWN, LEFT, UP}) {
             Point p = direction.change(point);
-            int count = countNear(p, SAFE_ELEMENTS);
+            int count = countNear(p, SAFE_ELEMENTS, 2);
             map.put(direction, count);
         }
 
@@ -218,11 +218,11 @@ public class Board extends AbstractBoard<Elements> {
         return sorted.keySet().toArray(new Direction[4]);
     }
 
-    public int countNear(Point point, Elements[] elements) {
+    public int countNear(Point point, Elements[] elements, int radius) {
         int result = 0;
         for(int dx = -1; dx <= 1; ++dx) {
             for(int dy = -1; dy <= 1; ++dy) {
-                if (Math.abs(dx) + Math.abs(dy) == 1) {
+                if (Math.abs(dx) + Math.abs(dy) == radius) {
                     if (!PointImpl.pt(point.getX() + dx, point.getY() + dy).isOutOf(this.size)) {
                         if (isAt(point.getX() + dx, point.getY() + dy, elements)) {
                             result++;
