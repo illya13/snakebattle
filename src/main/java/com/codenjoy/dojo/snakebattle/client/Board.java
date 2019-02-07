@@ -235,9 +235,9 @@ public class Board extends AbstractBoard<Elements> {
 
     public int countNear(Point point, Elements[] elements, int radius) {
         int result = 0;
-        for(int dx = -1; dx <= 1; ++dx) {
-            for(int dy = -1; dy <= 1; ++dy) {
-                if (Math.abs(dx) + Math.abs(dy) == radius) {
+        for(int dx = -radius; dx <= radius; ++dx) {
+            for(int dy = -radius; dy <= radius; ++dy) {
+                if (Math.abs(dx) + Math.abs(dy) <= radius) {
                     if (!PointImpl.pt(point.getX() + dx, point.getY() + dy).isOutOf(this.size)) {
                         if (isAt(point.getX() + dx, point.getY() + dy, elements)) {
                             result++;
