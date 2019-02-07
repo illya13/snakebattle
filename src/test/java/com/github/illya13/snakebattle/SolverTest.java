@@ -1,4 +1,4 @@
-package com.codenjoy.dojo.snakebattle.client;
+package com.github.illya13.snakebattle;
 
 /*-
  * #%L
@@ -25,13 +25,12 @@ package com.codenjoy.dojo.snakebattle.client;
 
 import com.codenjoy.dojo.services.Dice;
 import com.codenjoy.dojo.services.Direction;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author K.ilya
@@ -43,13 +42,13 @@ import static org.mockito.Mockito.when;
 public class SolverTest {
 
     private Dice dice;
-    private MySolver ai;
+    private Solver ai;
 
     @Before
     public void setup() {
-        dice = mock(Dice.class);
-        when(dice.next(anyInt())).thenReturn(50);
-        ai = new MySolver(dice);
+        dice = Mockito.mock(Dice.class);
+        Mockito.when(dice.next(Matchers.anyInt())).thenReturn(50);
+        ai = new Solver(dice);
     }
 
     private Board board(String board) {
@@ -364,7 +363,7 @@ public class SolverTest {
                 "☼#                           ☼\n" +
                 "☼☼           ●               ☼\n" +
                 "☼☼   ®                       ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
     }
     @Test
     public void should10() {
@@ -408,6 +407,7 @@ public class SolverTest {
     @Test
     public void should11() {
         // [MEDIUM, PREDICT, ATTACK, SHORT, DESTRUCT, STONES]
+        ai.prev = Direction.DOWN;
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼         ○                 ☼\n" +
                 "☼#                           ☼\n" +
@@ -437,11 +437,11 @@ public class SolverTest {
                 "☼#                           ☼\n" +
                 "☼☼               ○ ○         ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.LEFT);
     }
 
     private void assertAI(String board, Direction expected) {
         String actual = ai.get(board(board));
-        assertEquals(expected.toString(), actual);
+        Assert.assertEquals(expected.toString(), actual);
     }
 }

@@ -84,7 +84,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.codenjoy.dojo.snakebattle.client.MySolver</mainClass>
+                            <mainClass>com.github.illya13.snakebattle.Solver</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

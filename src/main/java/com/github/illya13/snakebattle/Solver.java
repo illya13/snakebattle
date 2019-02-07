@@ -1,4 +1,4 @@
-package com.codenjoy.dojo.snakebattle.client;
+package com.github.illya13.snakebattle;
 
 /*-
  * #%L
@@ -24,14 +24,12 @@ package com.codenjoy.dojo.snakebattle.client;
 
 
 import com.codenjoy.dojo.services.*;
-import com.codenjoy.dojo.client.Solver;
 import com.codenjoy.dojo.client.WebSocketRunner;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
 
 import java.util.*;
 
-import static com.codenjoy.dojo.snakebattle.client.Board.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 
 /**
@@ -40,7 +38,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  * Обрати внимание на {@see YourSolverTest} - там приготовлен тестовый
  * фреймворк для тебя.
  */
-public class MySolver implements Solver<Board> {
+public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo.snakebattle.client.Board> {
     private static final String BASE_URL = "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/";
     private static final String PLAYER_CODE = "?code=1617935781189693616";
     private static final String PLAYER_HASH = "bppowg4adbpirr4fm3yirto4krg1cwnwkjeo6gonbixy";
@@ -66,7 +64,7 @@ public class MySolver implements Solver<Board> {
     boolean initialized = false;
     private Map<Point, Set<Point>> prediction = new HashMap<>();
 
-    MySolver(Dice dice) {
+    Solver(Dice dice) {
         learning = Learning.Builder.newLearning()
                 .withStrategy(new Learning.DefaultStrategy(dice, "./features.json", "average.json"))
                 .withPlayer(PLAYER_HASH)
@@ -75,13 +73,13 @@ public class MySolver implements Solver<Board> {
     }
 
     @Override
-    public String get(Board board) {
+    public String get(com.codenjoy.dojo.snakebattle.client.Board board) {
         long ts = System.currentTimeMillis();
 
-        this.board = board;
+        this.board = (Board) board;
         if (board.isGameOver()) return "";
 
-        if (board.isGameStart()) {
+        if (this.board.isGameStart()) {
             initialized = false;
             return "";
         }
@@ -130,7 +128,7 @@ public class MySolver implements Solver<Board> {
         Optional<Direction> go;
 
         if (isAttackMode()) {
-            go = safeAttackTarget(point, join(ENEMY_HEAD_ELEMENTS, ENEMY_BODY_ELEMENTS), priority);
+            go = safeAttackTarget(point, Board.join(Board.ENEMY_HEAD_ELEMENTS, Board.ENEMY_BODY_ELEMENTS), priority);
             if (go.isPresent()) {
                 System.out.println("=> ATTACK");
                 return go;
@@ -198,7 +196,7 @@ public class MySolver implements Solver<Board> {
 
         if (isAttackMode()) {
             go = board.bfsAttack(point, 9-furyCounter, false,
-                    BARRIER_ATTACK,
+                    Board.BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
                     ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
             if (go.getDirection().isPresent() && isSafeAttack(point, go.getDirection().get())) {
@@ -208,7 +206,7 @@ public class MySolver implements Solver<Board> {
         }
 
         if (isStoneMode() && canEatStoneSoon()) {
-            go = board.bfs(point, 2 * board.getMySize(), false, BARRIER_NORMAL, STONE);
+            go = board.bfs(point, 2 * board.getMySize(), false, Board.BARRIER_NORMAL, STONE);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 System.out.println("=> BFS: STONE");
                 return go.getDirection();
@@ -218,7 +216,7 @@ public class MySolver implements Solver<Board> {
             }
         }
 
-        go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL_STONE, FURY_PILL);
+        go = board.bfs(point, board.size() / 2, false, Board.BARRIER_NORMAL_STONE, FURY_PILL);
         if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
             if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
                 skipped.add(go.getTarget().get());
@@ -232,7 +230,7 @@ public class MySolver implements Solver<Board> {
 
         if (isFollowMode()) {
             go = board.bfsAttack(point, board.size() / 2, false,
-                    BARRIER_ATTACK,
+                    Board.BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
                     ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
@@ -275,19 +273,19 @@ public class MySolver implements Solver<Board> {
 
 
     private Direction lastCall(Point point) {
-        Optional<Direction> go = safeStepAvoid(point, BARRIER_NORMAL_STONE, priority);
+        Optional<Direction> go = safeStepAvoid(point, Board.BARRIER_NORMAL_STONE, priority);
         if (go.isPresent())
             return go.get();
 
-        go = unsafeStepAvoid(point, BARRIER_NORMAL, priority);
+        go = unsafeStepAvoid(point, Board.BARRIER_NORMAL, priority);
         if (go.isPresent())
             return go.get();
 
-        go = unsafeStepAvoid(point, BARRIER_CUT_MYSELF, priority);
+        go = unsafeStepAvoid(point, Board.BARRIER_CUT_MYSELF, priority);
         if (go.isPresent())
             return go.get();
 
-        go = unsafeStepAvoid(point, BARRIER_NO_WAY, priority);
+        go = unsafeStepAvoid(point, Board.BARRIER_NO_WAY, priority);
         if (go.isPresent())
             return go.get();
 
@@ -310,14 +308,14 @@ public class MySolver implements Solver<Board> {
 
     private BFS.Result getBFSDirection(Point point, int max) {
         return (canFly())
-                ? board.bfsFly(point, max, false, BARRIER_FLY, GOLD, APPLE)
-                : board.bfs(point, max, false, BARRIER_NORMAL_STONE, GOLD, APPLE);
+                ? board.bfsFly(point, max, false, Board.BARRIER_FLY, GOLD, APPLE)
+                : board.bfs(point, max, false, Board.BARRIER_NORMAL_STONE, GOLD, APPLE);
     }
 
     private Optional<Direction> getBFSWeightDirection(Point point, int max, Set<Point> skipped) {
         return (canFly())
-                ? board.bfsWeightFly(point, max, skipped, BARRIER_FLY, GOLD, APPLE, FURY_PILL)
-                : board.bfsWeight(point, max, skipped, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL);
+                ? board.bfsWeightFly(point, max, skipped, Board.BARRIER_FLY, GOLD, APPLE, FURY_PILL)
+                : board.bfsWeight(point, max, skipped, Board.BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL);
     }
 
     private boolean isShortMode() {
@@ -355,7 +353,7 @@ public class MySolver implements Solver<Board> {
 
     private boolean weAreLate(Point target, int distance) {
         System.out.println("are we late?");
-        BFS.Result go = board.bfsAttack(target, distance,false, BARRIER_ATTACK, ENEMY_HEAD_ELEMENTS);
+        BFS.Result go = board.bfsAttack(target, distance,false, Board.BARRIER_ATTACK, Board.ENEMY_HEAD_ELEMENTS);
         if (go.getDirection().isPresent()) {
             System.out.printf("\t %s %s %d\n",
                     board.getAt(target), board.getAt(go.getTarget().get()), go.getDistance());
@@ -374,7 +372,7 @@ public class MySolver implements Solver<Board> {
             getEnemyTargetByBFS(targets, enemy, GOLD, APPLE);
             getEnemyTargetByBFS(targets, enemy, FURY_PILL);
             getEnemyTargetByBFS(targets, enemy, STONE);
-            BFS.Result go = board.bfsFly(enemy, board.size(),false, BARRIER_FLY, join(ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS));
+            BFS.Result go = board.bfsFly(enemy, board.size(),false, Board.BARRIER_FLY, Board.join(Board.ME_HEAD_ELEMENTS, Board.ME_BODY_ELEMENTS));
             if (go.getDirection().isPresent()) {
                 targets.add(go.getDirection().get().change(enemy));
             }
@@ -400,7 +398,7 @@ public class MySolver implements Solver<Board> {
     }
 
     private void getEnemyTargetByBFS(Set<Point> targets, Point enemy, Elements... elements) {
-        BFS.Result go = board.bfs(enemy, board.size(),false, BARRIER_ATTACK, elements);
+        BFS.Result go = board.bfs(enemy, board.size(),false, Board.BARRIER_ATTACK, elements);
         if (go.getDirection().isPresent()) {
             targets.add(go.getDirection().get().change(enemy));
         }
@@ -523,8 +521,8 @@ public class MySolver implements Solver<Board> {
     }
 
     private boolean canAttack(Point point) {
-        return board.countNear(point, ENEMY_HEAD_ELEMENTS, 2) == 0 ||
-                (isPredictMode() && !isEnemyPredicted(point)) ||
+        return board.countNear(point, Board.ENEMY_HEAD_ELEMENTS, 2) == 0 ||
+                // (isPredictMode() && !isEnemyPredicted(point)) ||     // FIXME: move to FOLLOW ?
                 ((fury && furyCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ( board.getMySize() - board.getEnemySize() > 1 );
     }
@@ -546,7 +544,7 @@ public class MySolver implements Solver<Board> {
     }
 
     private boolean enemyCloseToTail() {
-        return board.countNear(board.getMyTail(), ENEMY_HEAD_ELEMENTS, 1) > 0;
+        return board.countNear(board.getMyTail(), Board.ENEMY_HEAD_ELEMENTS, 1) > 0;
     }
 
     private boolean isStepBack(Direction direction) {
@@ -597,7 +595,7 @@ public class MySolver implements Solver<Board> {
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
                 BASE_URL + PLAYER_HASH + PLAYER_CODE,
-                new MySolver(new RandomDice()),
+                new Solver(new RandomDice()),
                 new Board());
     }
 }

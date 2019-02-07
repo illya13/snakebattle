@@ -1,4 +1,4 @@
-package com.codenjoy.dojo.snakebattle.client;
+package com.github.illya13.snakebattle;
 
 /*-
  * #%L
@@ -40,7 +40,7 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
  * Содержит ряд унаследованных методов {@see AbstractBoard},
  * но ты можешь добавить сюда любые свои методы на их основе.
  */
-public class Board extends AbstractBoard<Elements> {
+public class Board extends com.codenjoy.dojo.snakebattle.client.Board {
     public static final Elements[] STONE_ELEMENTS = new Elements[] {STONE};
 
     public static final Elements[] EMPTY_ELEMENTS = new Elements[] {NONE, APPLE, FLYING_PILL, FURY_PILL, GOLD};
@@ -93,17 +93,6 @@ public class Board extends AbstractBoard<Elements> {
         }
         return result;
     }
-
-    @Override
-    public Elements valueOf(char ch) {
-        return Elements.valueOf(ch);
-    }
-
-    @Override
-    protected int inversionY(int y) {
-        return size - 1 - y;
-    }
-
 
     public BFS.Result bfs(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
         BFS bfs = BFS.Builder.newBFS(this, start)
@@ -280,14 +269,6 @@ public class Board extends AbstractBoard<Elements> {
 
     public int getEnemySize() {
         return enemySize;
-    }
-
-    public Point getMe() {
-        return getMyHead().get(0);
-    }
-
-    public boolean isGameOver() {
-        return getMyHead().isEmpty();
     }
 
     public boolean isGameStart() {
