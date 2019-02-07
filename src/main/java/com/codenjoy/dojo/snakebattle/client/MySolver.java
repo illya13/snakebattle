@@ -187,7 +187,7 @@ public class MySolver implements Solver<Board> {
         BFS.Result go;
 
         if (isAttackMode()) {
-            go = board.bfsAttack(point, board.size() / 6, false,
+            go = board.bfsAttack(point, 9-furyCounter, false,
                     BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
                     ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
@@ -197,36 +197,25 @@ public class MySolver implements Solver<Board> {
             }
         }
 
-        if (isShortMode()) {
-            if (isStoneMode() && canEatStoneSoon()) {
-                go = board.bfs(point, board.size() / 6, false, BARRIER_NORMAL, STONE);
-                if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
-                    System.out.println("=> BFS: STONE SHORT");
-                    return go.getDirection();
-                } else if (stoneCounter > 0) {
-                    shortAction = false;
-                    return Optional.empty();
-                }
-            }
-
-            go = board.bfs(point, board.size() / 6, false, BARRIER_NORMAL_STONE, FURY_PILL);
+        if (isStoneMode() && canEatStoneSoon()) {
+            go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL, STONE);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
-                if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
-                    System.out.println("=> BFS: FURY SHORT SKIPPED BY PREDICT");
-                } else {
-                    System.out.println("=> BFS: FURY SHORT");
-                    return go.getDirection();
-                }
+                System.out.println("=> BFS: STONE");
+                return go.getDirection();
+            } else if (stoneCounter > 0) {
+                shortAction = false;
+                return Optional.empty();
             }
+        }
 
-            go = getBFSDirection(point, board.size() / 6, false);
-            if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
-                if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
-                    System.out.println("=> BFS: ANY SHORT SKIPPED BY PREDICT");
-                } else {
-                    System.out.println("=> BFS: ANY SHORT");
-                    return go.getDirection();
-                }
+        go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL_STONE, FURY_PILL);
+        if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
+            if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
+                System.out.println("=> BFS: FURY SKIPPED BY PREDICT");
+            } else {
+                shortAction = false;
+                System.out.println("=> BFS: FURY");
+                return go.getDirection();
             }
         }
 
@@ -241,27 +230,19 @@ public class MySolver implements Solver<Board> {
             }
         }
 
-        if (isMediumMode()) {
-            if (isStoneMode() && (board.getMySize() > 4)) {
-                go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL, STONE);
-                if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
-                    shortAction = false;
-                    System.out.println("=> BFS: STONE MEDIUM");
-                    return go.getDirection();
-                }
-            }
-
-            go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL_STONE, FURY_PILL);
+        if (isShortMode()) {
+            go = getBFSDirection(point, board.size() / 6, false);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
-                    System.out.println("=> BFS: FURY MEDIUM SKIPPED BY PREDICT");
+                    System.out.println("=> BFS: ANY SHORT SKIPPED BY PREDICT");
                 } else {
-                    shortAction = false;
-                    System.out.println("=> BFS: FURY MEDIUM");
+                    System.out.println("=> BFS: ANY SHORT");
                     return go.getDirection();
                 }
             }
+        }
 
+        if (isMediumMode()) {
             go = getBFSDirection(point, board.size() / 2, true);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 shortAction = false;

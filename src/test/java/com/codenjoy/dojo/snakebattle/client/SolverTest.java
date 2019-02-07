@@ -367,6 +367,45 @@ public class SolverTest {
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
     }
 
+    @Test
+    public void should10() {
+        ai.initRound();
+        ai.initialized = true;
+        ai.stoneCounter = 2;
+        ai.prev = Direction.LEFT;
+        //  [MEDIUM, PREDICT, ATTACK, SHORT, DESTRUCT, STONES]
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼         ○                 ☼\n" +
+                "☼#           ○               ☼\n" +
+                "☼☼  ○    ●         ○         ☼\n" +
+                "☼☼                      ○    ☼\n" +
+                "☼☼           ●    ○          ☼\n" +
+                "☼☼     ☼☼☼☼☼                 ☼\n" +
+                "☼☼     ☼                     ☼\n" +
+                "☼#     ☼☼☼     ○  ☼☼☼☼#      ☼\n" +
+                "☼☼     ☼          ☼  ○☼  ●   ☼\n" +
+                "☼☼     ☼☼☼☼#      ☼☼☼☼#      ☼\n" +
+                "☼☼             ˄  ☼          ☼\n" +
+                "☼☼             │  ☼         $☼\n" +
+                "☼☼    ●       ×┘             ☼\n" +
+                "☼#                    ○      ☼\n" +
+                "☼☼              ●╘═══►       ☼\n" +
+                "☼☼        ☼☼☼                ☼\n" +
+                "☼☼       ☼  ☼                ☼\n" +
+                "☼☼      ☼☼☼☼#     ☼☼   ☼# ©  ☼\n" +
+                "☼☼      ☼   ☼   ● ☼ ☼ ☼ ☼ ○  ☼\n" +
+                "☼# ●    ☼   ☼     ☼  ☼  ☼    ☼\n" +
+                "☼☼                ☼     ☼    ☼\n" +
+                "☼☼     ●          ☼     ☼    ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼                       ○   ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼                      ○    ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
+    }
+
     private void assertAI(String board, Direction expected) {
         String actual = ai.get(board(board));
         assertEquals(expected.toString(), actual);
