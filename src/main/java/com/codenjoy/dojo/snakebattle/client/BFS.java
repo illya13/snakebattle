@@ -127,6 +127,10 @@ public class BFS {
             weightMap.put(direction, value);
         }
 
+        if (weightMap.keySet().isEmpty()) {
+            return Result.empty();
+        }
+
         List<Direction> sorted = weightMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .map(e -> e.getKey())
