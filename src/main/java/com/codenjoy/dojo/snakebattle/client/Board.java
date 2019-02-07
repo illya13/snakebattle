@@ -111,7 +111,6 @@ public class Board extends AbstractBoard<Elements> {
                 .build();
         return bfs.bfs(max);
     }
-
     public BFS.Result bfsAttack(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
         BFS bfs = BFS.Builder.newBFS(this, start)
                 .barrier(barrier).target(elements).weight(weight)
@@ -124,6 +123,22 @@ public class Board extends AbstractBoard<Elements> {
                 .barrier(barrier).target(elements).weight(weight)
                 .fly().build();
         return bfs.bfs(max);
+    }
+
+    public Optional<Direction> bfsWeight(Point start, int max, Set<Point> skipped, Elements[] barrier, Elements... elements) {
+        BFS bfs = BFS.Builder.newBFS(this, start)
+                .barrier(barrier).target(elements)
+                .weight(true).skipped(skipped)
+                .build();
+        return bfs.bfs(max).getDirection();
+    }
+
+    public Optional<Direction> bfsWeightFly(Point start, int max, Set<Point> skipped, Elements[] barrier, Elements... elements) {
+        BFS bfs = BFS.Builder.newBFS(this, start)
+                .barrier(barrier).target(elements)
+                .weight(true).skipped(skipped)
+                .fly().build();
+        return bfs.bfs(max).getDirection();
     }
 
     private static final int SAFE_TRACE_ROUNDS = 3;

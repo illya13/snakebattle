@@ -41,6 +41,7 @@ public class BFS {
     private Board board;
     private Point start;
     private boolean weight;
+    private Set<Point> skipped;
     private MODE mode;
     private Elements[] barrier;
     private Elements[] target;
@@ -108,6 +109,9 @@ public class BFS {
         System.out.println("BFS weights:");
         Map<Direction, Double> weightMap = new HashMap<>();
         for (Point point: found) {
+            if (skipped.contains(point))
+                continue;
+
             Direction direction = traceBack(start, point, visited);
             double points = POINTS.getPoints(board.getAllAt(point));
             double dx = points / visited.get(point).distance;
@@ -175,7 +179,7 @@ public class BFS {
         private int distance;
 
         private Result(Direction direction) {
-            this.target = target;
+            this.target = null;
             this.direction = direction;
         }
 
@@ -233,6 +237,11 @@ public class BFS {
 
         public Builder weight(boolean weight) {
             bfs.weight = weight;
+            return this;
+        }
+
+        public Builder skipped(Set<Point> skipped) {
+            bfs.skipped = skipped;
             return this;
         }
 

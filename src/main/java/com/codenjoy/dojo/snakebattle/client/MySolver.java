@@ -184,7 +184,9 @@ public class MySolver implements Solver<Board> {
 
 
     private Optional<Direction> midTerm(Point point) {
+        Set<Point> skipped = new HashSet<>();
         BFS.Result go;
+        Optional<Direction> goWeight;
 
         if (isAttackMode()) {
             go = board.bfsAttack(point, 9-furyCounter, false,
@@ -198,7 +200,7 @@ public class MySolver implements Solver<Board> {
         }
 
         if (isStoneMode() && canEatStoneSoon()) {
-            go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL, STONE);
+            go = board.bfs(point, 2 * board.getMySize(), false, BARRIER_NORMAL, STONE);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 System.out.println("=> BFS: STONE");
                 return go.getDirection();
@@ -211,6 +213,7 @@ public class MySolver implements Solver<Board> {
         go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL_STONE, FURY_PILL);
         if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
             if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
+                skipped.add(go.getTarget().get());
                 System.out.println("=> BFS: FURY SKIPPED BY PREDICT");
             } else {
                 shortAction = false;
@@ -231,9 +234,10 @@ public class MySolver implements Solver<Board> {
         }
 
         if (isShortMode()) {
-            go = getBFSDirection(point, board.size() / 6, false);
+            go = getBFSDirection(point, board.size() / 6);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
+                    skipped.add(go.getTarget().get());
                     System.out.println("=> BFS: ANY SHORT SKIPPED BY PREDICT");
                 } else {
                     System.out.println("=> BFS: ANY SHORT");
@@ -243,19 +247,19 @@ public class MySolver implements Solver<Board> {
         }
 
         if (isMediumMode()) {
-            go = getBFSDirection(point, board.size() / 2, true);
-            if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
+            goWeight = getBFSWeightDirection(point, board.size() / 2, skipped);
+            if (goWeight.isPresent() && isSafeStep(point, goWeight.get())) {
                 shortAction = false;
                 System.out.println("=> BFS: ANY MEDIUM");
-                return go.getDirection();
+                return goWeight;
             }
         }
 
-        go = getBFSDirection(point, board.size() * 2, true);
-        if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
+        goWeight = getBFSWeightDirection(point, board.size() * 2, skipped);
+        if (goWeight.isPresent() && isSafeStep(point, goWeight.get())) {
             shortAction = false;
             System.out.println("=> BFS: ANY LONG");
-            return go.getDirection();
+            return goWeight;
         }
 
         return Optional.empty();
@@ -296,10 +300,16 @@ public class MySolver implements Solver<Board> {
     }
 
 
-    private BFS.Result getBFSDirection(Point point, int max, boolean weight) {
+    private BFS.Result getBFSDirection(Point point, int max) {
         return (canFly())
-                ? board.bfsFly(point, max, weight, BARRIER_FLY, GOLD, APPLE/*, FURY_PILL, FLYING_PILL*/)
-                : board.bfs(point, max, weight, BARRIER_NORMAL_STONE, GOLD, APPLE/*, FURY_PILL, FLYING_PILL*/);
+                ? board.bfsFly(point, max, false, BARRIER_FLY, GOLD, APPLE)
+                : board.bfs(point, max, false, BARRIER_NORMAL_STONE, GOLD, APPLE);
+    }
+
+    private Optional<Direction> getBFSWeightDirection(Point point, int max, Set<Point> skipped) {
+        return (canFly())
+                ? board.bfsWeightFly(point, max, skipped, BARRIER_FLY, GOLD, APPLE, FURY_PILL)
+                : board.bfsWeight(point, max, skipped, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL);
     }
 
     private boolean isShortMode() {
