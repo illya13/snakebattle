@@ -13,6 +13,7 @@ import static com.github.illya13.snakebattle.Board.*;
 public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo.snakebattle.client.Board> {
     private static final String BASE_URL = "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/";
     private static final String PLAYER_CODE = "?code=1617935781189693616";
+    private static final String PLAYER_EMAIL = "illya.havsiyevych@gmail.com";
     private static final String PLAYER_HASH = "mfxfgzynjbqf1fnfbbyicuaxjbpf1s3dmofwwtebbfco";
 
     private static final int SELF_DESTRUCT_STEPS = 300;
@@ -596,7 +597,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
     public static void main(String[] args) {
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
-                BASE_URL + PLAYER_HASH + PLAYER_CODE,
+                BASE_URL + PLAYER_EMAIL + PLAYER_CODE,
                 new Solver(new RandomDice()),
                 new Board());
     }
