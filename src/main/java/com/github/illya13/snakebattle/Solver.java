@@ -341,7 +341,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         System.out.println("are we late?");
 
         BFS.Result go = board.bfsAttack(null, target, distance, false, BARRIER_ATTACK, ENEMY_HEAD_ELEMENTS);
-        if (go.getDirection().isPresent()) {
+        if (go.getDirection().isPresent() && (go.getDistance() <= distance)) {
             System.out.printf("\t %s %s %d\n",
                     board.getAt(target), board.getAt(go.getTarget().get()), go.getDistance());
             return true;
