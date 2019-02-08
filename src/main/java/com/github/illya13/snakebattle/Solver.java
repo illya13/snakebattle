@@ -326,7 +326,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
     }
 
     private boolean isStoneMode() {
-        return !fly && (SELF_DESTRUCT_STEPS - step < 30) && learning.getStrategy().hasFeature(Learning.FEATURE.STONES);
+        return !fly && (SELF_DESTRUCT_STEPS - step > 30) && learning.getStrategy().hasFeature(Learning.FEATURE.STONES);
     }
 
     private boolean isSelfDestructMode() {
