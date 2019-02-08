@@ -160,10 +160,12 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
             }
         }
 
-        go = avoidBorder(point, priority);
-        if (go.isPresent()) {
-            System.out.println("=> SLIDE INSIDE");
-            return go;
+        if (isSlideInsideMode()) {
+            go = avoidBorder(point, priority);
+            if (go.isPresent()) {
+                System.out.println("=> SLIDE INSIDE");
+                return go;
+            }
         }
 
         return go;
@@ -320,6 +322,10 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         return (canFly())
                 ? board.bfsWeightFly(turnAround(prev), point, max, skipped, BARRIER_FLY, GOLD, APPLE, FURY_PILL)
                 : board.bfsWeight(turnAround(prev), point, max, skipped, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL);
+    }
+
+    private boolean isSlideInsideMode() {
+        return learning.getStrategy().hasFeature(Learning.FEATURE.INSIDE);
     }
 
     private boolean isShortMode() {
