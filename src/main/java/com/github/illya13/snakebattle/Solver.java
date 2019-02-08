@@ -100,7 +100,9 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         Optional<Direction> go;
 
         if (isAttackMode()) {
-            go = safeAttackTarget(point, join(ENEMY_HEAD_ELEMENTS, ENEMY_BODY_ELEMENTS), priority);
+            go = (fury)
+                    ? safeAttackTarget(point, join(ENEMY_HEAD_ELEMENTS, ENEMY_BODY_ELEMENTS), priority)
+                    : safeAttackTarget(point, join(ENEMY_HEAD_ELEMENTS), priority);
             if (go.isPresent()) {
                 System.out.println("=> ATTACK");
                 return go;
@@ -246,9 +248,12 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
 
     private Direction lastCall(Point point) {
         Optional<Direction> go = safeStepAvoid(point, BARRIER_NORMAL_STONE, priority);
-        if (go.isPresent())
+        if (go.isPresent()) {
+            System.out.println("=> SAFE STEP");
             return go.get();
+        }
 
+        System.out.println("=> LAST CALL");
         go = unsafeStepAvoid(point, BARRIER_NORMAL, priority);
         if (go.isPresent())
             return go.get();
@@ -464,7 +469,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         Point p = direction.change(point);
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafe(p) ) &&
-                !isStepBack(direction) && canEatStoneAt(p) && canAttack(p);
+                !isStepBack(direction) && canEatStoneAt(p) && avoidAttack(p);
     }
 
     private boolean isSafeAttack(Point point, Direction direction) {
@@ -494,7 +499,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         return Optional.empty();
     }
 
-    private boolean canAttack(Point point) {
+    private boolean avoidAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS, 2) == 0 ||
                 // (isPredictMode() && !isEnemyPredicted(point)) ||     // FIXME: move to FOLLOW ?
                 ((fury && furyCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
