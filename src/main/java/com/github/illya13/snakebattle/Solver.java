@@ -476,7 +476,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
 
     private Optional<Direction> avoidBorder(Point point, Direction[] directions) {
         for (Direction direction: directions) {
-            if ( (point.getX() < 2) || (point.getY() < 3) || (point.getX() == board.size() - 2) || (point.getY() == board.size() - 2) ) {
+            if ( (point.getX() < 3) || (point.getY() < 2) || (point.getX() == board.size() - 2) || (point.getY() == board.size() - 2) ) {
                 if (isSafeStep(point, direction))
                     return Optional.of(direction);
             }
