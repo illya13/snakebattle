@@ -261,7 +261,7 @@ public class SolverTest {
                 "☼#  ○     ●                  ☼\n" +
                 "☼☼  ○                        ☼\n" +
                 "☼☼     $                     ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
     }
 
     @Test
