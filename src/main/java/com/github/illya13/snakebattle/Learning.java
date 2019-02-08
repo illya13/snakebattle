@@ -181,7 +181,7 @@ public class Learning {
                 weights.put(FEATURE.SHORT.name(), 100d);
                 weights.put(FEATURE.MEDIUM.name(), 100d);
                 weights.put(FEATURE.FLY.name(), 10d);
-                weights.put(FEATURE.FOLLOW.name(), 10d);
+                weights.put(FEATURE.FOLLOW.name(), 5d);
                 weights.put(FEATURE.PREDICT.name(), 100d);
             }
             writeJson(weights, featuresPath);
