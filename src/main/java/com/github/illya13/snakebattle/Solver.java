@@ -565,6 +565,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         return board.countNear(point, ENEMY_HEAD_ELEMENTS, 2) == 0 ||
                 // (isPredictMode() && !isEnemyPredicted(point)) ||     // FIXME: move to FOLLOW ?
                 ((fury && furyCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
+                ((board.countNear(point, ENEMY_HEAD_ELEMENTS, 1) == 0) && board.isAt(point, FURY_PILL) ) ||
                 ( board.getMySize() - board.getEnemySize() > 1 );
     }
 
