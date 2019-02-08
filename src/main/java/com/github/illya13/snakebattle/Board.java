@@ -149,7 +149,7 @@ public class Board extends com.codenjoy.dojo.snakebattle.client.Board {
             }
         }
 
-        debugSafe(safeGo);
+        // debugSafe(safeGo);
         // debugSafe(safeFly);
         // debugSafe(safeAttack);
     }
