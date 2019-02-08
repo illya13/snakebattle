@@ -166,6 +166,7 @@ public class SolverTest {
 
     @Test
     public void should5() {
+        // unstable
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
                 "☼#                           ☼\n" +

@@ -476,7 +476,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         Point p = direction.change(point);
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafeAttack(p) ) &&
-                !isStepBack(direction);
+                !isStepBack(direction) && avoidTail(p);
     }
 
     private Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
@@ -504,6 +504,10 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
                 // (isPredictMode() && !isEnemyPredicted(point)) ||     // FIXME: move to FOLLOW ?
                 ((fury && furyCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ( board.getMySize() - board.getEnemySize() > 1 );
+    }
+
+    private boolean avoidTail(Point point) {
+        return !board.isAt(point, ENEMY_TAIL_ELEMENTS);
     }
 
     private boolean canEatStoneAt(Point p) {
