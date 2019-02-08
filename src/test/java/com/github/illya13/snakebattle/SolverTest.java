@@ -403,7 +403,7 @@ public class SolverTest {
                 "☼#                           ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼                      ○    ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
     }
 
     @Test
@@ -439,7 +439,7 @@ public class SolverTest {
                 "☼#                           ☼\n" +
                 "☼☼               ○ ○         ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.LEFT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
     }
 
     private void assertAI(String board, Direction expected) {

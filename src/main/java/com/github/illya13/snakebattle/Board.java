@@ -187,8 +187,11 @@ public class Board extends com.codenjoy.dojo.snakebattle.client.Board {
             map.put(direction, count);
         }
 
+        Point middle = PointImpl.pt(size()/2, size()/2);
         Map<Direction, Integer> sorted = map.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .sorted((o1, o2) -> (o1.getValue().equals(o2.getValue()))
+                        ? Double.compare(middle.distance(o1.getKey().change(point)), middle.distance(o2.getKey().change(point)))
+                        : -Integer.compare(o1.getValue(), o2.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
         if (debug) System.out.println("priority: " + sorted);
