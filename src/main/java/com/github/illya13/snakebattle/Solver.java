@@ -16,7 +16,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
     private static final String PLAYER_EMAIL = "illya.havsiyevych@gmail.com";
     private static final String PLAYER_HASH = "bppowg4adbpirr4fm3yirto4krg1cwnwkjeo6gonbixy";
 
-    private static final int SELF_DESTRUCT_STEPS = 300;
+    private static final int SELF_DESTRUCT_STEPS = 301;
 
     private Learning learning;
     Direction prev;
@@ -326,7 +326,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
     }
 
     private boolean isStoneMode() {
-        return !fly && learning.getStrategy().hasFeature(Learning.FEATURE.STONES);
+        return !fly && (SELF_DESTRUCT_STEPS - step < 30) && learning.getStrategy().hasFeature(Learning.FEATURE.STONES);
     }
 
     private boolean isSelfDestructMode() {
