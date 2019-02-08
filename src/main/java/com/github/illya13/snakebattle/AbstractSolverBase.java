@@ -147,7 +147,7 @@ public abstract class AbstractSolverBase implements com.codenjoy.dojo.client.Sol
     }
 
     protected boolean canEatStoneSoon() {
-        return ((board.getMySize() > 4) && (!fly || flyCounter > 7)) || (fury && furyCounter < 9);
+        return ((board.getMySize() > 6) && (!fly || flyCounter > 7)) || (fury && furyCounter < 9);
     }
 
     protected boolean canFly() {
