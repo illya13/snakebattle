@@ -254,6 +254,10 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         }
 
         System.out.println("=> LAST CALL");
+        go = unsafeStepPredictionAvoid(point, BARRIER_NORMAL_STONE, priority);
+        if (go.isPresent())
+            return go.get();
+
         go = unsafeStepAvoid(point, BARRIER_NORMAL_STONE, priority);
         if (go.isPresent())
             return go.get();
@@ -496,12 +500,23 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
     private Optional<Direction> unsafeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
         for (Direction direction: directions) {
             Point p = direction.change(point);
+            if(!board.isAt(p, elements) && !isStepBack(direction)) {
+                return Optional.of(direction);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Direction> unsafeStepPredictionAvoid(Point point, Elements[] elements, Direction[] directions) {
+        for (Direction direction: directions) {
+            Point p = direction.change(point);
             if(!board.isAt(p, elements) && !isStepBack(direction) && (!isPredictMode() || !isEnemyPredicted(p))) {
                 return Optional.of(direction);
             }
         }
         return Optional.empty();
     }
+
 
     private boolean avoidAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS, 2) == 0 ||
