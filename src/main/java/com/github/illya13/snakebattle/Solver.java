@@ -170,7 +170,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         Optional<Direction> goWeight;
 
         if (isAttackMode()) {
-            go = board.bfsAttack(point, 9-furyCounter, false,
+            go = board.bfsAttack(turnAround(prev), point, 9-furyCounter, false,
                     BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
                     ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
@@ -181,7 +181,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         }
 
         if (isStoneMode() && canEatStoneSoon()) {
-            go = board.bfs(point, 2 * board.getMySize(), false, BARRIER_NORMAL, STONE);
+            go = board.bfs(turnAround(prev), point, 2 * board.getMySize(), false, BARRIER_NORMAL, STONE);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 System.out.println("=> BFS: STONE");
                 return go.getDirection();
@@ -191,7 +191,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
             }
         }
 
-        go = board.bfs(point, board.size() / 2, false, BARRIER_NORMAL_STONE, FURY_PILL);
+        go = board.bfs(turnAround(prev), point, board.size() / 2, false, BARRIER_NORMAL_STONE, FURY_PILL);
         if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
             if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
                 skipped.add(go.getTarget().get());
@@ -204,7 +204,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         }
 
         if (isFollowMode()) {
-            go = board.bfsAttack(point, board.size() / 2, false,
+            go = board.bfsAttack(turnAround(prev), point, board.size() / 2, false,
                     BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
                     ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
@@ -294,14 +294,14 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
 
     private BFS.Result getBFSDirection(Point point, int max) {
         return (canFly())
-                ? board.bfsFly(point, max, false, BARRIER_FLY, GOLD, APPLE)
-                : board.bfs(point, max, false, BARRIER_NORMAL_STONE, GOLD, APPLE);
+                ? board.bfsFly(turnAround(prev), point, max, false, BARRIER_FLY, GOLD, APPLE)
+                : board.bfs(turnAround(prev), point, max, false, BARRIER_NORMAL_STONE, GOLD, APPLE);
     }
 
     private Optional<Direction> getBFSWeightDirection(Point point, int max, Set<Point> skipped) {
         return (canFly())
-                ? board.bfsWeightFly(point, max, skipped, BARRIER_FLY, GOLD, APPLE, FURY_PILL)
-                : board.bfsWeight(point, max, skipped, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL);
+                ? board.bfsWeightFly(turnAround(prev), point, max, skipped, BARRIER_FLY, GOLD, APPLE, FURY_PILL)
+                : board.bfsWeight(turnAround(prev), point, max, skipped, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL);
     }
 
     private boolean isShortMode() {
@@ -340,7 +340,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
     private boolean weAreLate(Point target, int distance) {
         System.out.println("are we late?");
 
-        BFS.Result go = board.bfsAttack(target, distance, false, BARRIER_ATTACK, ENEMY_HEAD_ELEMENTS);
+        BFS.Result go = board.bfsAttack(null, target, distance, false, BARRIER_ATTACK, ENEMY_HEAD_ELEMENTS);
         if (go.getDirection().isPresent()) {
             System.out.printf("\t %s %s %d\n",
                     board.getAt(target), board.getAt(go.getTarget().get()), go.getDistance());
@@ -360,7 +360,7 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
             getEnemyTargetByBFS(targets, enemy, FURY_PILL);
             getEnemyTargetByBFS(targets, enemy, STONE);
 
-            BFS.Result go = board.bfsFly(enemy, board.size(), false, BARRIER_FLY, join(ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS));
+            BFS.Result go = board.bfsFly(turnAround(getEnemyDirectionByHead(enemy)), enemy, board.size(), false, BARRIER_FLY, join(ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS));
             if (go.getDirection().isPresent()) {
                 targets.add(go.getDirection().get().change(enemy));
             }
@@ -386,10 +386,24 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
     }
 
     private void getEnemyTargetByBFS(Set<Point> targets, Point enemy, Elements... elements) {
-        BFS.Result go = board.bfs(enemy, board.size(), false, BARRIER_ATTACK, elements);
+        BFS.Result go = board.bfs(turnAround(getEnemyDirectionByHead(enemy)), enemy, board.size(), false, BARRIER_ATTACK, elements);
         if (go.getDirection().isPresent()) {
             targets.add(go.getDirection().get().change(enemy));
         }
+    }
+
+    private Direction getEnemyDirectionByHead(Point enemy) {
+        switch (board.getAt(enemy)) {
+            case ENEMY_HEAD_UP:
+                return Direction.UP;
+            case ENEMY_HEAD_DOWN:
+                return Direction.DOWN;
+            case ENEMY_HEAD_LEFT:
+                return Direction.LEFT;
+            case ENEMY_HEAD_RIGHT:
+                return Direction.RIGHT;
+        }
+        return null;
     }
 
     private Set<Point> getEnemyTargetByHead(Point enemy) {

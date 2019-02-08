@@ -510,6 +510,41 @@ public class SolverTest {
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
     }
 
+    @Test
+    public void should14() {
+        ai.prev = Direction.RIGHT;
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#○                          ☼\n" +
+                "☼☼  ○    ●         ○         ☼\n" +
+                "☼☼           ●          ○    ☼\n" +
+                "☼☼           ●  ○ ○    ○     ☼\n" +
+                "☼☼     ☼☼☼☼☼○                ☼\n" +
+                "☼☼  ○  ☼                 ○   ☼\n" +
+                "☼#     ☼☼☼        ☼☼☼☼#      ☼\n" +
+                "☼☼     ☼          ☼   ☼      ☼\n" +
+                "☼☼     ☼☼☼☼#      ☼☼☼☼#      ☼\n" +
+                "☼☼                ☼          ☼\n" +
+                "☼☼○               ☼          ☼\n" +
+                "☼☼    ●  ○               ○   ☼\n" +
+                "☼#    ×┐                     ☼\n" +
+                "☼☼    ●♣                     ☼\n" +
+                "☼☼        ☼☼☼                ☼\n" +
+                "☼☼       ☼  ☼               $☼\n" +
+                "☼☼  ©   ☼☼☼☼#     ☼☼   ☼#    ☼\n" +
+                "☼☼      ☼   ☼     ☼○☼●☼ ☼    ☼\n" +
+                "☼#      ☼○  ☼     ☼  ☼  ☼    ☼\n" +
+                "☼☼                ☼     ☼    ☼\n" +
+                "☼☼     ●          ☼     ☼    ☼\n" +
+                "☼☼    ●                      ☼\n" +
+                "☼☼ $                ╘♥       ☼\n" +
+                "☼☼ ●                ●        ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼     ○                     ☼\n" +
+                "☼☼                     ○     ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
+    }
+
     private void assertAI(String board, Direction expected) {
         String actual = ai.get(board(board));
         Assert.assertEquals(expected.toString(), actual);

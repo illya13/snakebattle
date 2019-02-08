@@ -17,6 +17,7 @@ public class BFS {
     }
 
     private Board board;
+    private Direction prev;
     private Point start;
     private boolean weight;
     private Set<Point> skipped;
@@ -24,7 +25,8 @@ public class BFS {
     private Elements[] barrier;
     private Elements[] target;
 
-    private BFS(Board board, Point start) {
+    private BFS(Board board, Direction prev, Point start) {
+        this.prev = prev;
         this.board = board;
         this.start = start;
         weight = false;
@@ -64,6 +66,9 @@ public class BFS {
             }
 
             for (Direction direction: board.getPriority(point, false)) {
+                if (start.equals(point) && direction.equals(prev))
+                    continue;
+
                 Point p = direction.change(point);
                 if (!visited.containsKey(p) && !board.isAt(p, barrier) && !p.isOutOf(board.size())) {
                     int distance = visited.get(point).getDistance();
@@ -191,9 +196,9 @@ public class BFS {
     public static class Builder {
         private BFS bfs;
 
-        public static Builder newBFS(Board board, Point start) {
+        public static Builder newBFS(Board board, Direction prev, Point start) {
             Builder builder = new Builder();
-            builder.bfs = new BFS(board, start);
+            builder.bfs = new BFS(board, prev, start);
             return builder;
         }
 

@@ -66,37 +66,37 @@ public class Board extends com.codenjoy.dojo.snakebattle.client.Board {
         return result;
     }
 
-    public BFS.Result bfs(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
-        BFS bfs = BFS.Builder.newBFS(this, start)
+    public BFS.Result bfs(Direction prev, Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
+        BFS bfs = BFS.Builder.newBFS(this, prev, start)
                 .barrier(barrier).target(elements).weight(weight)
                 .build();
         return bfs.bfs(max);
     }
 
-    public BFS.Result bfsAttack(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
-        BFS bfs = BFS.Builder.newBFS(this, start)
+    public BFS.Result bfsAttack(Direction prev, Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
+        BFS bfs = BFS.Builder.newBFS(this, prev, start)
                 .barrier(barrier).target(elements).weight(weight)
                 .attack().build();
         return bfs.bfs(max);
     }
 
-    public BFS.Result bfsFly(Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
-        BFS bfs = BFS.Builder.newBFS(this, start)
+    public BFS.Result bfsFly(Direction prev, Point start, int max, boolean weight, Elements[] barrier, Elements... elements) {
+        BFS bfs = BFS.Builder.newBFS(this, prev, start)
                 .barrier(barrier).target(elements).weight(weight)
                 .fly().build();
         return bfs.bfs(max);
     }
 
-    public Optional<Direction> bfsWeight(Point start, int max, Set<Point> skipped, Elements[] barrier, Elements... elements) {
-        BFS bfs = BFS.Builder.newBFS(this, start)
+    public Optional<Direction> bfsWeight(Direction prev, Point start, int max, Set<Point> skipped, Elements[] barrier, Elements... elements) {
+        BFS bfs = BFS.Builder.newBFS(this, prev, start)
                 .barrier(barrier).target(elements)
                 .weight(true).skipped(skipped)
                 .build();
         return bfs.bfs(max).getDirection();
     }
 
-    public Optional<Direction> bfsWeightFly(Point start, int max, Set<Point> skipped, Elements[] barrier, Elements... elements) {
-        BFS bfs = BFS.Builder.newBFS(this, start)
+    public Optional<Direction> bfsWeightFly(Direction prev, Point start, int max, Set<Point> skipped, Elements[] barrier, Elements... elements) {
+        BFS bfs = BFS.Builder.newBFS(this, prev, start)
                 .barrier(barrier).target(elements)
                 .weight(true).skipped(skipped)
                 .fly().build();
