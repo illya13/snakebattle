@@ -166,7 +166,7 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
         Point p = direction.change(point);
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafeAttack(p) ) &&
-                !isStepBack(direction) && avoidTail(p);
+                !isStepBack(direction) && canEatStoneAt(p) && avoidTail(p);
     }
 
     protected Optional<Direction> safeStepAvoid(Point point, Elements[] elements, Direction[] directions) {
