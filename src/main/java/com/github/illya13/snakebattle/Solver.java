@@ -37,7 +37,7 @@ public class Solver extends SolverBaseImpl {
 
         if (isSelfDestructMode()) return "ACT(0)";
 
-        if (isPredictMode()) predict();
+        if (isPredictMode()) initPredict();
 
         prev = nextStep();
         String direction = act(prev);
@@ -174,7 +174,7 @@ public class Solver extends SolverBaseImpl {
 
         go = board.bfs(turnAround(prev), point, board.size() / 2, false, BARRIER_NORMAL_STONE, FURY_PILL);
         if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
-            if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
+            if (isPredictMode() && go.getTarget().isPresent() && areWeLate(go.getTarget().get(), go.getDistance())) {
                 skipped.add(go.getTarget().get());
                 System.out.println("=> BFS: FURY SKIPPED BY PREDICT");
             } else {
@@ -198,7 +198,7 @@ public class Solver extends SolverBaseImpl {
         if (isShortMode()) {
             go = getBFSDirection(point, board.size() / 6);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
-                if (isPredictMode() && go.getTarget().isPresent() && weAreLate(go.getTarget().get(), go.getDistance())) {
+                if (isPredictMode() && go.getTarget().isPresent() && areWeLate(go.getTarget().get(), go.getDistance())) {
                     skipped.add(go.getTarget().get());
                     System.out.println("=> BFS: ANY SHORT SKIPPED BY PREDICT");
                 } else {

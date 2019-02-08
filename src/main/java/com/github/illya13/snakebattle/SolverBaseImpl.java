@@ -9,6 +9,8 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 import static com.github.illya13.snakebattle.Board.*;
 
 public abstract class SolverBaseImpl extends AbstractSolverBase {
+    Map<Point, Set<Point>> prediction = new HashMap<>();
+
     SolverBaseImpl(Dice dice) {
         super(dice);
     }
@@ -25,8 +27,7 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
                 : board.bfsWeight(turnAround(prev), point, max, skipped, BARRIER_NORMAL_STONE, GOLD, APPLE, FURY_PILL);
     }
 
-
-    protected boolean weAreLate(Point target, int distance) {
+    protected boolean areWeLate(Point target, int distance) {
         System.out.println("are we late?");
 
         BFS.Result go = board.bfsAttack(null, target, distance, false, BARRIER_ATTACK, ENEMY_HEAD_ELEMENTS);
@@ -39,7 +40,7 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
         return false;
     }
 
-    protected void predict() {
+    protected void initPredict() {
         prediction.clear();
         System.out.println("predictions:");
         for (Point enemy: board.getEnemies()) {
@@ -89,7 +90,6 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
         return false;
     }
 
-
     protected Optional<Direction> avoidBorder(Point point, Direction[] directions) {
         for (Direction direction: directions) {
             if ( (point.getX() < 3) || (point.getY() < 2) || (point.getX() == board.size() - 2) || (point.getY() == board.size() - 2) ) {
@@ -99,7 +99,6 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
         }
         return Optional.empty();
     }
-
 
     protected Optional<Direction> safeStepTarget(Point point, Elements elements, Direction[] directions) {
         return safeStepTarget(point, new Elements[]{elements}, directions);
@@ -175,7 +174,6 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
         }
         return Optional.empty();
     }
-
 
     protected boolean avoidAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS, 2) == 0 ||

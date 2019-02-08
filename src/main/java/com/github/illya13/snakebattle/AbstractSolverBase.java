@@ -33,8 +33,8 @@ public abstract class AbstractSolverBase implements com.codenjoy.dojo.client.Sol
     int flyCounter;
     int furyCounter;
     int stoneCounter;
+
     boolean initialized = false;
-    Map<Point, Set<Point>> prediction = new HashMap<>();
 
 
     AbstractSolverBase(Dice dice) {
@@ -51,7 +51,6 @@ public abstract class AbstractSolverBase implements com.codenjoy.dojo.client.Sol
         stoneCounter = 0;
         pill = false;
     }
-
 
     protected void initStep() {
         System.out.printf(" => %s\n", learning.getStrategy());
@@ -97,7 +96,6 @@ public abstract class AbstractSolverBase implements com.codenjoy.dojo.client.Sol
             furyCounter = 0;
         }
     }
-
 
     protected boolean isSlideInsideMode() {
         return learning.getStrategy().hasFeature(Learning.FEATURE.INSIDE);
