@@ -3,6 +3,7 @@ package com.github.illya13.snakebattle;
 import com.codenjoy.dojo.services.Dice;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.glassfish.jersey.client.ClientProperties;
 
 import javax.net.ssl.*;
 import javax.ws.rs.client.Client;
@@ -99,12 +100,12 @@ public class Learning {
     }
 
     private List<Map<String, String>> getStandings(Client client) {
-        WebTarget webTarget = client.target(URL + date);
-        Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
-        Response response = invocationBuilder.get();
-        String stringResponse = response.readEntity(String.class);
-
         try {
+            WebTarget webTarget = client.target(URL + date);
+            Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
+            Response response = invocationBuilder.get();
+            String stringResponse = response.readEntity(String.class);
+
             TypeReference<List<Map<String,String>>> typeRef = new TypeReference<List<Map<String,String>>>(){};
             ObjectMapper mapper  = new ObjectMapper();
             return mapper.readValue(stringResponse, typeRef);
@@ -140,12 +141,15 @@ public class Learning {
 
             HostnameVerifier verifier = (hostName, sslSession) -> true;
 
-            return Optional.of(
-                    ClientBuilder.newBuilder()
-                            .sslContext(ctx)
-                            .hostnameVerifier(verifier)
-                            .build()
-            );
+            Client client = ClientBuilder.newBuilder()
+                    .sslContext(ctx)
+                    .hostnameVerifier(verifier)
+                    .build();
+
+            client.property(ClientProperties.CONNECT_TIMEOUT, 300);
+            client.property(ClientProperties.READ_TIMEOUT,    300);
+
+            return Optional.of(client);
         } catch (Exception ignored) {
         }
         return Optional.empty();
