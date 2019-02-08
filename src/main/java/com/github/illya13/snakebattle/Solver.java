@@ -280,15 +280,19 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
 
 
     private String act(Direction direction) {
+        String result = direction.toString();
+
         if ( (enemyCloseToTail() || (!shortAction && canEatStoneSoon()) || (shortAction && fury && (furyCounter <= 10 - board.getMySize())))
                 && (stoneCounter > 0) ) {
             System.out.println("ACT");
             stoneCounter--;
-            return "(" + direction.toString() + ", ACT)";
+            result = "(" + direction.toString() + ", ACT)";
         }
+
         if (board.isAt(direction.change(me), STONE))
             stoneCounter++;
-        return direction.toString();
+
+        return result;
     }
 
 
