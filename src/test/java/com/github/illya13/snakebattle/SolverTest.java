@@ -231,6 +231,7 @@ public class SolverTest {
 
     @Test
     public void should6() {
+        ai.prev = Direction.LEFT;
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                     $     ☼\n" +
                 "☼#                      ○●   ☼\n" +
@@ -260,7 +261,7 @@ public class SolverTest {
                 "☼#  ○     ●                  ☼\n" +
                 "☼☼  ○                        ☼\n" +
                 "☼☼     $                     ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
     }
 
     @Test
