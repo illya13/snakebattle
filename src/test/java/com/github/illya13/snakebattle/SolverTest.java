@@ -195,7 +195,7 @@ public class SolverTest {
                 "☼# ╔╕│                       ☼\n" +
                 "☼☼◄╝ ˅           ○   ○       ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
 
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼             ®             ☼\n" +
@@ -444,6 +444,7 @@ public class SolverTest {
 
     @Test
     public void should12() {
+        ai.prev = Direction.RIGHT;
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
                 "☼#                           ☼\n" +
@@ -473,7 +474,7 @@ public class SolverTest {
                 "☼#     ○                ˅   ●☼\n" +
                 "☼☼               ○           ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
     }
 
     @Test
@@ -507,7 +508,7 @@ public class SolverTest {
                 "☼#                 ○      │║ ☼\n" +
                 "☼☼                    ○   ˅╚►☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.DOWN);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
     }
 
     @Test

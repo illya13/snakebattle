@@ -160,6 +160,12 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
             }
         }
 
+        go = avoidBoard(point, priority);
+        if (go.isPresent()) {
+            System.out.println("=> SLIDE INSIDE");
+            return go;
+        }
+
         return go;
     }
 
@@ -466,6 +472,16 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
         if (fury) System.out.print(", fury[" + furyCounter + "]");
         if (fly) System.out.print(", fly[" + flyCounter + "]");
         System.out.println();
+    }
+
+    private Optional<Direction> avoidBoard(Point point, Direction[] directions) {
+        for (Direction direction: directions) {
+            if ( (point.getX() < 2) || (point.getY() < 3) || (point.getX() == board.size() - 1) || (point.getY() == board.size() - 1) ) {
+                if (isSafeStep(point, direction))
+                    return Optional.of(direction);
+            }
+        }
+        return Optional.empty();
     }
 
 
