@@ -13,7 +13,7 @@ import static com.github.illya13.snakebattle.Board.*;
 public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo.snakebattle.client.Board> {
     private static final String BASE_URL = "https://game2.epam-bot-challenge.com.ua/codenjoy-contest/board/player/";
     private static final String PLAYER_CODE = "?code=1617935781189693616";
-    private static final String PLAYER_HASH = "bppowg4adbpirr4fm3yirto4krg1cwnwkjeo6gonbixy";
+    private static final String PLAYER_HASH = "mfxfgzynjbqf1fnfbbyicuaxjbpf1s3dmofwwtebbfco";
 
     private static final int SELF_DESTRUCT_STEPS = 300;
 
