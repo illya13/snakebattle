@@ -174,8 +174,16 @@ public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo
                     BARRIER_ATTACK,
                     ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP,
                     ENEMY_BODY_HORIZONTAL, ENEMY_BODY_VERTICAL, ENEMY_BODY_LEFT_DOWN, ENEMY_BODY_LEFT_UP, ENEMY_BODY_RIGHT_DOWN, ENEMY_BODY_RIGHT_UP);
-            if (go.getDirection().isPresent() && isSafeAttack(point, go.getDirection().get())) {
+            if (go.getDirection().isPresent() && (go.getDistance() > 1) && isSafeAttack(point, go.getDirection().get())) {
                 System.out.println("=> BFS: ATTACK");
+                return go.getDirection();
+            }
+
+            go = board.bfsAttack(turnAround(prev), point, 9-furyCounter, false,
+                    BARRIER_ATTACK,
+                    ENEMY_HEAD_DOWN, ENEMY_HEAD_LEFT, ENEMY_HEAD_RIGHT, ENEMY_HEAD_UP);
+            if (go.getDirection().isPresent() && (go.getDistance() > 1) && isSafeAttack(point, go.getDirection().get())) {
+                System.out.println("=> BFS: ATTACK HEAD ONLY");
                 return go.getDirection();
             }
         }
