@@ -96,16 +96,23 @@ public class BFS {
                 continue;
 
             Direction direction = traceBack(start, point, visited);
-            double points = POINTS.getPoints(board.getAllAt(point));
-            double dx = points / visited.get(point).distance;
+            double score = SCORES.getScore(board.getAllAt(point));
+            double dx = score / visited.get(point).distance;
+
+            double distance = 0d;
+            for(Point enemy: board.getEnemies()) {
+                distance += enemy.distance(point);
+            }
+            distance /= board.getEnemySnakes();
+            dx *= distance;
 
             Double value = weightMap.get(direction);
             if (value == null)
                 value = 0d;
             value += dx;
 
-            System.out.printf("\t%s %s %3.0f %d %.3f\n", direction, board.getAllAt(point), points,
-                    visited.get(point).distance, dx);
+            System.out.printf("\t%s %s %3.0f %d %.3f %.3f\n", direction, board.getAllAt(point), score,
+                    visited.get(point).distance, distance, dx);
 
             weightMap.put(direction, value);
         }
@@ -263,29 +270,29 @@ public class BFS {
     }
 
 
-    private enum POINTS {
+    private enum SCORES {
         APPLE(Elements.APPLE, 1), GOLD(Elements.GOLD, 10), STONE(Elements.STONE, 5), FURY(Elements.FURY_PILL, 20);
 
         private Elements elements;
-        private int points;
+        private int score;
 
-        POINTS(Elements elements, int points) {
+        SCORES(Elements elements, int score) {
             this.elements = elements;
-            this.points = points;
+            this.score = score;
         }
 
-        public static int getPoints(List<Elements> elements) {
+        public static int getScore(List<Elements> elements) {
             int sum = 0;
             for(Elements e: elements) {
-                sum += getPoints(e);
+                sum += getScore(e);
             }
             return sum;
         }
 
-        public static int getPoints(Elements elements) {
-            for (POINTS p: values()) {
+        public static int getScore(Elements elements) {
+            for (SCORES p: values()) {
                 if (p.elements.equals(elements)) {
-                    return p.points;
+                    return p.score;
                 }
             }
             return 0;
