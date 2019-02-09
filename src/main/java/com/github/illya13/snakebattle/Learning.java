@@ -175,7 +175,7 @@ public class Learning {
             if (weights == null || weights.isEmpty()) {
                 weights = new HashMap<>();
 
-                weights.put(FEATURE.STONES.name(), 100d);
+                weights.put(FEATURE.STONES.name(), 50d);
                 weights.put(FEATURE.ATTACK.name(), 100d);
                 weights.put(FEATURE.DESTRUCT.name(), 100d);
                 weights.put(FEATURE.SHORT.name(), 100d);
@@ -248,6 +248,9 @@ public class Learning {
                     local, global, relative);
 
             for(FEATURE feature: features) {
+                if ((feature != FEATURE.FLY) && (feature != FEATURE.FOLLOW) && (feature != FEATURE.INSIDE) && (feature != FEATURE.STONES))
+                    continue;
+
                 Double current = weights.get(feature.name());
                 System.out.printf("\t%s %.3f", feature.name(), current);
 
