@@ -178,10 +178,10 @@ public class Learning {
                 weights.put(FEATURE.STONES.name(), 100d);
                 weights.put(FEATURE.ATTACK.name(), 100d);
                 weights.put(FEATURE.DESTRUCT.name(), 100d);
-                weights.put(FEATURE.SHORT.name(), 100d);
+                weights.put(FEATURE.SHORT.name(), 50d);
                 weights.put(FEATURE.MEDIUM.name(), 100d);
-                weights.put(FEATURE.FLY.name(), 10d);
-                weights.put(FEATURE.FOLLOW.name(), 5d);
+                weights.put(FEATURE.FLY.name(), 20d);
+                weights.put(FEATURE.FOLLOW.name(), 20d);
                 weights.put(FEATURE.PREDICT.name(), 100d);
                 weights.put(FEATURE.INSIDE.name(), 50d);
             }
@@ -251,7 +251,7 @@ public class Learning {
                 Double current = weights.get(feature.name());
                 System.out.printf("\t%s %.3f", feature.name(), current);
 
-                current += current * relative / 100;
+                current += 5 * current * relative / 100;
                 if (current > 100) current = 100d;
                 if (current < 10) current = 10d;
                 weights.put(feature.name(), current);

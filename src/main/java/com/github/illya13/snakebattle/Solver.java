@@ -168,7 +168,7 @@ public class Solver extends SolverBaseImpl {
         }
 
         if (isStoneMode() && canEatStoneSoon()) {
-            go = board.bfs(turnAround(prev), point, 2 * board.getMySize(), false, BARRIER_NORMAL, STONE);
+            go = board.bfs(turnAround(prev), point, board.size() / 4, false, BARRIER_NORMAL, STONE);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 System.out.println("=> BFS: STONE");
                 return go.getDirection();
@@ -178,7 +178,7 @@ public class Solver extends SolverBaseImpl {
             }
         }
 
-        go = board.bfs(turnAround(prev), point, board.size() / 2, false, BARRIER_NORMAL_STONE, FURY_PILL);
+        go = board.bfs(turnAround(prev), point, board.size() / 4, false, BARRIER_NORMAL_STONE, FURY_PILL);
         if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
             if (isPredictMode() && go.getTarget().isPresent() && areWeLate(go.getTarget().get(), go.getDistance())) {
                 skipped.add(go.getTarget().get());
@@ -269,7 +269,7 @@ public class Solver extends SolverBaseImpl {
     private String act(Direction direction) {
         String result = direction.toString();
 
-        if ( (enemyCloseToTail() || (!shortAction && canEatStoneSoon()) || (shortAction && fury && (furyCounter <= 10 - board.getMySize())))
+        if ( (enemyCloseToTail() /*|| (!shortAction && canEatStoneSoon())*/ || (shortAction && fury && (furyCounter <= 10 - board.getMySize())))
                 && (stoneCounter > 0) ) {
             System.out.println("ACT");
             stoneCounter--;

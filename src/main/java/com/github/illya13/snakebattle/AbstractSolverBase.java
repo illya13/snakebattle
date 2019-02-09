@@ -123,7 +123,7 @@ public abstract class AbstractSolverBase implements com.codenjoy.dojo.client.Sol
     }
 
     protected boolean isStoneMode() {
-        return !fly && (SELF_DESTRUCT_STEPS - step > 30) && learning.getStrategy().hasFeature(Learning.FEATURE.STONES);
+        return !fly && learning.getStrategy().hasFeature(Learning.FEATURE.STONES);
     }
 
     protected boolean isSelfDestructMode() {
