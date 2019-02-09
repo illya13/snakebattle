@@ -125,14 +125,6 @@ public class Solver extends SolverBaseImpl {
             }
         }
 
-        if (isSlideInsideMode()) {
-            go = avoidBorder(point, priority);
-            if (go.isPresent()) {
-                System.out.println("=> SLIDE INSIDE");
-                return go;
-            }
-        }
-
         return go;
     }
 

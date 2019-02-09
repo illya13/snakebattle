@@ -23,7 +23,7 @@ import java.nio.file.Paths;
 
 public class Learning {
     enum FEATURE {
-        STONES, ATTACK, FLY, FOLLOW, DESTRUCT, SHORT, MEDIUM, PREDICT, INSIDE
+        STONES, ATTACK, FLY, FOLLOW, DESTRUCT, SHORT, MEDIUM, PREDICT
     }
 
     public static abstract class Strategy {
@@ -183,7 +183,6 @@ public class Learning {
                 weights.put(FEATURE.FLY.name(), 20d);
                 weights.put(FEATURE.FOLLOW.name(), 20d);
                 weights.put(FEATURE.PREDICT.name(), 100d);
-                weights.put(FEATURE.INSIDE.name(), 50d);
             }
             writeJson(weights, featuresPath);
         }
@@ -248,7 +247,7 @@ public class Learning {
                     local, global, relative);
 
             for(FEATURE feature: features) {
-                if ((feature != FEATURE.FLY) && (feature != FEATURE.FOLLOW) && (feature != FEATURE.INSIDE) && (feature != FEATURE.STONES))
+                if ((feature != FEATURE.FLY) && (feature != FEATURE.FOLLOW) && (feature != FEATURE.STONES))
                     continue;
 
                 Double current = weights.get(feature.name());

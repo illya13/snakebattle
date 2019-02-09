@@ -96,10 +96,6 @@ public abstract class AbstractSolverBase implements com.codenjoy.dojo.client.Sol
         }
     }
 
-    protected boolean isSlideInsideMode() {
-        return learning.getStrategy().hasFeature(Learning.FEATURE.INSIDE);
-    }
-
     protected boolean isShortMode() {
         return learning.getStrategy().hasFeature(Learning.FEATURE.SHORT);
     }

@@ -169,7 +169,6 @@ public class SolverTest {
     @Test
     public void should5() {
         ai.prev = Direction.UP;
-        ai.learning.getStrategy().features.add(Learning.FEATURE.INSIDE);
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                      ┌───┐☼\n" +
                 "☼#                      │<──┘☼\n" +
@@ -530,7 +529,6 @@ public class SolverTest {
         ai.prev = Direction.RIGHT;
 
         ai.learning.getStrategy().features = new HashSet<>();
-        ai.learning.getStrategy().features.add(Learning.FEATURE.INSIDE);
         ai.learning.getStrategy().features.add(Learning.FEATURE.PREDICT);
         ai.learning.getStrategy().features.add(Learning.FEATURE.STONES);
         ai.learning.getStrategy().features.add(Learning.FEATURE.ATTACK);
