@@ -178,7 +178,7 @@ public class Learning {
                 weights.put(FEATURE.STONES.name(), 100d);
                 weights.put(FEATURE.ATTACK.name(), 100d);
                 weights.put(FEATURE.DESTRUCT.name(), 100d);
-                weights.put(FEATURE.SHORT.name(), 50d);
+                weights.put(FEATURE.SHORT.name(), 100d);
                 weights.put(FEATURE.MEDIUM.name(), 100d);
                 weights.put(FEATURE.FLY.name(), 20d);
                 weights.put(FEATURE.FOLLOW.name(), 20d);

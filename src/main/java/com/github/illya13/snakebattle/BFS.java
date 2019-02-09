@@ -264,7 +264,7 @@ public class BFS {
 
 
     private enum POINTS {
-        APPLE(Elements.APPLE, 1), GOLD(Elements.GOLD, 10), STONE(Elements.STONE, 10), FURY(Elements.FURY_PILL, 20);
+        APPLE(Elements.APPLE, 1), GOLD(Elements.GOLD, 10), STONE(Elements.STONE, 5), FURY(Elements.FURY_PILL, 20);
 
         private Elements elements;
         private int points;
