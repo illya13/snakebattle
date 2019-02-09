@@ -166,7 +166,8 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
         Point p = direction.change(point);
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafe(p) ) &&
-                !isStepBack(direction) && canEatStoneAt(p) && avoidAttack(p);
+                !isStepBack(direction) && canEatStoneAt(p) &&
+                avoidAttack(p) && avoidPredictedAttack(p);
     }
 
     protected boolean isSafeAttack(Point point, Direction direction) {
@@ -208,9 +209,22 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
 
     protected boolean avoidAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS, 2) == 0 ||
-                (isPredictMode() && !isEnemyAttackPredicted(point)) ||
                 ((fury && furyCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ((board.countNear(point, ENEMY_HEAD_ELEMENTS, 1) == 0) && board.isAt(point, FURY_PILL) ) ||
-                ( board.getMySize() - board.getEnemySize() > 1 );
+                (board.getMySize() - board.getEnemySize() > 1);
+    }
+
+    protected boolean avoidPredictedAttack(Point point) {
+        if (!isPredictMode())
+            return true;
+
+        for (Direction direction: priority) {
+            Point p = direction.change(point);
+            if (isEnemyAttackPredicted(p)) {
+                System.out.printf("ENEMY ATTACK PREDICTED %s %s\n", board.getAt(p), p);
+                return false;
+            }
+        }
+        return true;
     }
 }
