@@ -10,6 +10,7 @@ import static com.github.illya13.snakebattle.Board.*;
 
 public abstract class SolverBaseImpl extends AbstractSolverBase {
     Map<Point, Set<Point>> prediction = new HashMap<>();
+    Map<Point, Set<Point>> attackPrediction = new HashMap<>();
 
     SolverBaseImpl(Dice dice) {
         super(dice);
@@ -50,15 +51,20 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
             getEnemyTargetByBFS(targets, enemy, FURY_PILL);
             getEnemyTargetByBFS(targets, enemy, STONE);
 
-            BFS.Result go = board.bfsFly(turnAround(getEnemyDirectionByHead(enemy)), enemy, board.size(), false, BARRIER_FLY, join(ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS));
+            Set<Point> attackTargets = new HashSet<>();
+            BFS.Result go = board.bfsFly(turnAround(getEnemyDirectionByHead(enemy)), enemy, board.size(), false, BARRIER_ATTACK, join(ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS));
             if (go.getDirection().isPresent()) {
                 targets.add(go.getDirection().get().change(enemy));
+                attackTargets.add(go.getDirection().get().change(enemy));
             }
             prediction.put(enemy, targets);
+            attackPrediction.put(enemy, attackTargets);
             System.out.printf("\t %s %s\n", board.getAt(enemy), targets);
+            System.out.printf("\t %s %s\n", board.getAt(enemy), attackTargets);
         }
 
         // debugPrediction();
+        // debugAttackPrediction();
     }
 
     protected void debugPrediction() {
@@ -66,6 +72,20 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
             for (int x = 0; x < board.size(); ++x) {
                 Point p = PointImpl.pt(x, y);
                 if (!isEnemyPredicted(p)) {
+                    System.out.print(board.isAt(p, NONE) ? "   " : board.getAllAt(x, y));
+                } else {
+                    System.out.printf(" %s ", HEAD_DEAD);
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    protected void debugAttackPrediction() {
+        for (int y = board.size() - 1; y >= 0; --y) {
+            for (int x = 0; x < board.size(); ++x) {
+                Point p = PointImpl.pt(x, y);
+                if (!isEnemyAttackPredicted(p)) {
                     System.out.print(board.isAt(p, NONE) ? "   " : board.getAllAt(x, y));
                 } else {
                     System.out.printf(" %s ", HEAD_DEAD);
@@ -84,6 +104,14 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
 
     protected boolean isEnemyPredicted(Point point) {
         for (Set<Point> set: prediction.values()) {
+            if (set.contains(point))
+                return true;
+        }
+        return false;
+    }
+
+    protected boolean isEnemyAttackPredicted(Point point) {
+        for (Set<Point> set: attackPrediction.values()) {
             if (set.contains(point))
                 return true;
         }
@@ -180,7 +208,7 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
 
     protected boolean avoidAttack(Point point) {
         return board.countNear(point, ENEMY_HEAD_ELEMENTS, 2) == 0 ||
-                // (isPredictMode() && !isEnemyPredicted(point)) ||     // FIXME: move to FOLLOW ?
+                (isPredictMode() && !isEnemyAttackPredicted(point)) ||
                 ((fury && furyCounter < 9) && !board.isNear(point, ENEMY_HEAD_EVIL) ) ||
                 ((board.countNear(point, ENEMY_HEAD_ELEMENTS, 1) == 0) && board.isAt(point, FURY_PILL) ) ||
                 ( board.getMySize() - board.getEnemySize() > 1 );
