@@ -166,9 +166,6 @@ public class Solver extends SolverBaseImpl {
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 System.out.println("=> BFS: STONE");
                 return go.getDirection();
-            } else if (stoneCounter > 0) {
-                shortAction = false;
-                return Optional.empty();
             }
         }
 
@@ -178,7 +175,6 @@ public class Solver extends SolverBaseImpl {
                 skipped.add(go.getTarget().get());
                 System.out.println("=> BFS: FURY SKIPPED BY PREDICT");
             } else {
-                shortAction = false;
                 System.out.println("=> BFS: FURY");
                 return go.getDirection();
             }
@@ -211,7 +207,6 @@ public class Solver extends SolverBaseImpl {
         if (isMediumMode()) {
             goWeight = getBFSWeightDirection(point, board.size() / 2, skipped);
             if (goWeight.isPresent() && isSafeStep(point, goWeight.get())) {
-                shortAction = false;
                 System.out.println("=> BFS: ANY MEDIUM");
                 return goWeight;
             }
@@ -219,7 +214,6 @@ public class Solver extends SolverBaseImpl {
 
         goWeight = getBFSWeightDirection(point, board.size() * 2, skipped);
         if (goWeight.isPresent() && isSafeStep(point, goWeight.get())) {
-            shortAction = false;
             System.out.println("=> BFS: ANY LONG");
             return goWeight;
         }
@@ -263,7 +257,7 @@ public class Solver extends SolverBaseImpl {
     private String act(Direction direction) {
         String result = direction.toString();
 
-        if ( (enemyCloseToTail() /*|| (!shortAction && canEatStoneSoon())*/ || (shortAction && fury && (furyCounter <= 10 - board.getMySize())))
+        if ( (enemyCloseToTail() || (fury && (furyCounter <= 10 - board.getMySize())))
                 && (stoneCounter > 0) ) {
             System.out.println("ACT");
             stoneCounter--;

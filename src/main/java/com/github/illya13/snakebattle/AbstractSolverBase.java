@@ -24,7 +24,6 @@ public abstract class AbstractSolverBase implements com.codenjoy.dojo.client.Sol
     Point me;
     Direction[] priority;
     int step;
-    boolean shortAction;
 
     boolean fury;
     boolean fly;
@@ -56,7 +55,6 @@ public abstract class AbstractSolverBase implements com.codenjoy.dojo.client.Sol
         System.out.printf(" => %s\n", learning.getStrategy());
 
         step++;
-        shortAction = true;
 
         me = board.getMe();
         priority = board.getPriority(me, true);
