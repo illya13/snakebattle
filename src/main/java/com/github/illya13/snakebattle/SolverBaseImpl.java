@@ -90,17 +90,6 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
         return false;
     }
 
-    protected boolean lockProtection(Point point) {
-        if (closeToBorder(point)) {
-            for (Point enemy: board.getEnemies()) {
-                if (enemy.distance(point) < 2.24) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     protected Optional<Direction> avoidBorder(Point point, Direction[] directions) {
         for (Direction direction: directions) {
             if (closeToBorder(point) && isSafeStep(point, direction)) {
@@ -149,7 +138,7 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
         Point p = direction.change(point);
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafe(p) ) &&
-                !isStepBack(direction) && canEatStoneAt(p) && avoidAttack(p) && lockProtection(p);
+                !isStepBack(direction) && canEatStoneAt(p) && avoidAttack(p);
     }
 
     protected boolean isSafeAttack(Point point, Direction direction) {
