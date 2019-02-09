@@ -90,38 +90,28 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
         return false;
     }
 
-    protected Optional<Direction> lockProtection(Point point) {
-        for (Point enemy: board.getEnemies()) {
-            if (enemy.distance(point) < 2.24) {
-                if ((point.getX() == 2) && Direction.LEFT.equals(prev)) {
-                    System.out.print("lock right ");
-                    System.out.println(getEnemyDirectionByHead(enemy));
+    protected boolean lockProtection(Point point) {
+        if (closeToBorder(point)) {
+            for (Point enemy: board.getEnemies()) {
+                if (enemy.distance(point) < 2.24) {
+                    return false;
                 }
-                if ((point.getX() == board.size() - 2) && Direction.RIGHT.equals(prev)) {
-                    System.out.print("lock right ");
-                    System.out.println(getEnemyDirectionByHead(enemy));
-                }
-                if ((point.getY() == 1) && Direction.DOWN.equals(prev)) {
-                    System.out.print("lock down ");
-                    System.out.println(getEnemyDirectionByHead(enemy));
-                }
-                if ((point.getY() == board.size() - 2) && Direction.UP.equals(prev)) {
-                    System.out.print("lock up ");
-                    System.out.println(getEnemyDirectionByHead(enemy));
-                }
+            }
+        }
+        return true;
+    }
+
+    protected Optional<Direction> avoidBorder(Point point, Direction[] directions) {
+        for (Direction direction: directions) {
+            if (closeToBorder(point) && isSafeStep(point, direction)) {
+                return Optional.of(direction);
             }
         }
         return Optional.empty();
     }
 
-    protected Optional<Direction> avoidBorder(Point point, Direction[] directions) {
-        for (Direction direction: directions) {
-            if ( (point.getX() < 3) || (point.getY() < 2) || (point.getX() == board.size() - 2) || (point.getY() == board.size() - 2) ) {
-                if (isSafeStep(point, direction))
-                    return Optional.of(direction);
-            }
-        }
-        return Optional.empty();
+    private boolean closeToBorder(Point point) {
+        return (point.getX() < 3) || (point.getY() < 2) || (point.getX() >= board.size() - 2) || (point.getY() >= board.size() - 2);
     }
 
     protected Optional<Direction> safeStepTarget(Point point, Elements elements, Direction[] directions) {
@@ -159,7 +149,7 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
         Point p = direction.change(point);
 
         return ( canFly() ? board.isSafeFly(p) : board.isSafe(p) ) &&
-                !isStepBack(direction) && canEatStoneAt(p) && avoidAttack(p);
+                !isStepBack(direction) && canEatStoneAt(p) && avoidAttack(p) && lockProtection(p);
     }
 
     protected boolean isSafeAttack(Point point, Direction direction) {

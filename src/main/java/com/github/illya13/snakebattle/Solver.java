@@ -133,12 +133,6 @@ public class Solver extends SolverBaseImpl {
             }
         }
 
-        go = lockProtection(point);
-        if (go.isPresent()) {
-            System.out.println("=> LOCK PROTECTION");
-            return go;
-        }
-
         return go;
     }
 
