@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
+import java.util.HashSet;
+
 
 public class SolverTest {
 
@@ -166,68 +168,38 @@ public class SolverTest {
 
     @Test
     public void should5() {
-        ai.prev = Direction.LEFT;
+        ai.prev = Direction.UP;
+        ai.learning.getStrategy().features.add(Learning.FEATURE.INSIDE);
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
-                "☼☼             ®             ☼\n" +
-                "☼#                           ☼\n" +
-                "☼☼ ○      ●          ○       ☼\n" +
-                "☼☼                           ☼\n" +
-                "☼☼                           ☼\n" +
-                "☼☼     ☼☼☼☼☼             $   ☼\n" +
-                "☼☼     ☼             ○       ☼\n" +
-                "☼#     ☼☼☼  ○     ☼☼☼☼#      ☼\n" +
-                "☼☼     ☼          ☼   ☼  ●   ☼\n" +
-                "☼☼     ☼☼☼☼#     ○☼☼☼☼#      ☼\n" +
+                "☼☼                      ┌───┐☼\n" +
+                "☼#                      │<──┘☼\n" +
+                "☼☼      ○●              └─┐  ☼\n" +
+                "☼☼                        │  ☼\n" +
+                "☼☼           ●           ○└┐ ☼\n" +
+                "☼☼     ☼☼☼☼☼               │ ☼\n" +
+                "☼☼     ☼○         ©        │ ☼\n" +
+                "☼#     ☼☼☼        ☼☼☼☼#    │æ☼\n" +
+                "☼☼     ☼          ☼ ○ ☼  ● └┘☼\n" +
+                "☼☼     ☼☼☼☼#○     ☼☼☼☼#      ☼\n" +
+                "☼☼              ● ☼          ☼\n" +
                 "☼☼                ☼          ☼\n" +
-                "☼☼                ☼         $☼\n" +
-                "☼☼©   ●                      ☼\n" +
-                "☼#        ○                  ☼\n" +
-                "☼☼               ○           ☼\n" +
-                "☼☼        ☼☼☼                ☼\n" +
-                "☼☼       ☼  ☼        ○       ☼\n" +
-                "☼☼      ☼☼☼☼#     ☼☼   ☼#    ☼\n" +
-                "☼☼      ☼○  ☼   ● ☼ ☼ ☼ ☼ ○  ☼\n" +
-                "☼#      ☼   ☼     ☼  ☼  ☼  ○ ☼\n" +
-                "☼☼   æ            ☼     ☼    ☼\n" +
-                "☼☼   │ ●          ☼     ☼    ☼\n" +
-                "☼☼   │                       ☼\n" +
-                "☼☼   │   $          ○   ○   ○☼\n" +
-                "☼☼   │ ©○      ●         ○ ○ ☼\n" +
-                "☼# ╔╕│                       ☼\n" +
-                "☼☼◄╝ ˅           ○   ○       ☼\n" +
-                "☼☼                           ☼\n" +
+                "☼☼  © ●             ○        ☼\n" +
+                "☼#  ○                        ☼\n" +
+                "☼☼           ╓               ☼\n" +
+                "☼☼        ☼☼☼║               ☼\n" +
+                "☼☼       ☼ ○☼║  ●       ○    ☼\n" +
+                "☼☼      ☼☼☼☼#║    ☼☼   ☼#    ☼\n" +
+                "☼☼    ● ☼   ☼║  ● ☼ ☼ ☼$☼    ☼\n" +
+                "☼#      ☼   ☼║    ☼○ ☼  ☼    ☼\n" +
+                "☼☼   ╔═══════╝    ☼     ☼    ☼\n" +
+                "☼☼ ●╔╝ ●          ☼    ○☼    ☼\n" +
+                "☼☼  ║                        ☼\n" +
+                "☼☼  ║                        ☼\n" +
+                "☼☼ ╔╝          ●             ☼\n" +
+                "☼#▲║                         ☼\n" +
+                "☼☼╚╝     ┌────────ö ˄        ☼\n" +
+                "☼☼       └──────────┘        ☼\n" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
-
-        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
-                "☼☼             ®             ☼\n" +
-                "☼#                           ☼\n" +
-                "☼☼ ○      ●          ○       ☼\n" +
-                "☼☼                           ☼\n" +
-                "☼☼                           ☼\n" +
-                "☼☼     ☼☼☼☼☼             $   ☼\n" +
-                "☼☼     ☼             ○       ☼\n" +
-                "☼#     ☼☼☼  ○     ☼☼☼☼#      ☼\n" +
-                "☼☼     ☼          ☼   ☼  ●   ☼\n" +
-                "☼☼     ☼☼☼☼#     ○☼☼☼☼#      ☼\n" +
-                "☼☼                ☼          ☼\n" +
-                "☼☼                ☼         $☼\n" +
-                "☼☼©   ●                      ☼\n" +
-                "☼#        ○                  ☼\n" +
-                "☼☼               ○           ☼\n" +
-                "☼☼        ☼☼☼                ☼\n" +
-                "☼☼       ☼  ☼        ○       ☼\n" +
-                "☼☼      ☼☼☼☼#     ☼☼   ☼#    ☼\n" +
-                "☼☼      ☼○  ☼   ● ☼ ☼ ☼ ☼ ○  ☼\n" +
-                "☼#      ☼   ☼     ☼  ☼  ☼  ○ ☼\n" +
-                "☼☼           ○    ☼     ☼    ☼\n" +
-                "☼☼   æ ●          ☼     ☼    ☼\n" +
-                "☼☼   │                       ☼\n" +
-                "☼☼   │   $          ○   ○   ○☼\n" +
-                "☼☼   │ ©○      ●         ○ ○ ☼\n" +
-                "☼# ╓ │                       ☼\n" +
-                "☼☼╔╝<┘           ○   ○       ☼\n" +
-                "☼☼▼                          ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
     }
 
     @Test
@@ -476,11 +448,12 @@ public class SolverTest {
                 "☼#     ○                ˅   ●☼\n" +
                 "☼☼               ○           ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
     }
 
     @Test
     public void should13() {
+        ai.prev = Direction.DOWN;
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼ ●       ○            ○    ☼\n" +
                 "☼#                           ☼\n" +
@@ -510,7 +483,7 @@ public class SolverTest {
                 "☼#                 ○      ˅║ ☼\n" +
                 "☼☼                    ○    ▼ ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
     }
 
     @Test
@@ -551,11 +524,44 @@ public class SolverTest {
     @Test
     public void should15() {
         ai.prev = Direction.RIGHT;
-        assertAI("☼☼               │           ☼\n" +
-                "☼☼            ®● │           ☼\n" +
-                "☼# ○        ○    └┐╘╗        ☼\n" +
-                "☼☼                ˅ ╚►       ☼\n" +
+
+        ai.learning.getStrategy().features = new HashSet<>();
+        ai.learning.getStrategy().features.add(Learning.FEATURE.INSIDE);
+        ai.learning.getStrategy().features.add(Learning.FEATURE.PREDICT);
+        ai.learning.getStrategy().features.add(Learning.FEATURE.STONES);
+        ai.learning.getStrategy().features.add(Learning.FEATURE.ATTACK);
+        ai.learning.getStrategy().features.add(Learning.FEATURE.DESTRUCT);
+        ai.learning.getStrategy().features.add(Learning.FEATURE.MEDIUM);
+
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼ ▲       ○                 ☼\n" +
+                "☼# ╚╗        ®               ☼\n" +
+                "☼☼  ╙    ●                   ☼\n" +
+                "☼☼ <─────┐                   ☼\n" +
+                "☼☼       └─ö      ○          ☼\n" +
+                "☼☼     ☼☼☼☼☼                 ☼\n" +
+                "☼☼     ☼                     ☼\n" +
+                "☼#     ☼☼☼        ☼☼☼☼#      ☼\n" +
+                "☼☼     ☼          ☼   ☼      ☼\n" +
+                "☼☼     ☼☼☼☼#      ☼☼☼☼#      ☼\n" +
+                "☼☼                ☼          ☼\n" +
+                "☼☼○○              ☼          ☼\n" +
+                "☼☼    ●        ○             ☼\n" +
+                "☼#                           ☼\n" +
                 "☼☼                           ☼\n" +
+                "☼☼ ○    ○ ☼☼☼                ☼\n" +
+                "☼☼   ○   ☼  ☼                ☼\n" +
+                "☼☼      ☼☼☼☼#     ☼☼   ☼#    ☼\n" +
+                "☼☼      ☼ ○ ☼   ● ☼ ☼ ☼ ☼    ☼\n" +
+                "☼#      ☼   ☼     ☼  ☼ ○☼    ☼\n" +
+                "☼☼          ○     ☼○    ☼    ☼\n" +
+                "☼☼     ●     ●    ☼     ☼ ●  ☼\n" +
+                "☼☼                  ©        ☼\n" +
+                "☼☼            $              ☼\n" +
+                "☼☼ ○    ○   ○  ●             ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼               ○      ○    ☼\n" +
+                "☼☼        ○                  ☼\n" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
     }
 
