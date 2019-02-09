@@ -43,6 +43,7 @@ public abstract class SolverBaseImpl extends AbstractSolverBase {
 
     protected void initPredict() {
         prediction.clear();
+        attackPrediction.clear();
         System.out.println("predictions:");
         for (Point enemy: board.getEnemies()) {
             Set<Point> targets = getEnemyTargetByHead(enemy);
