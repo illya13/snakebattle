@@ -98,22 +98,24 @@ public class BFS {
             Direction direction = traceBack(start, point, visited);
             double score = SCORES.getScore(board.getAllAt(point));
             double dx = score / visited.get(point).distance;
+            System.out.printf("\t%s %s %3.0f %d", direction, board.getAllAt(point), score, visited.get(point).distance);
 
-            double distance = 0d;
-            for(Point enemy: board.getEnemies()) {
-                distance += enemy.distance(point);
+            if (board.getEnemySnakes() > 0) {
+                double distance = 0d;
+                for (Point enemy : board.getEnemies()) {
+                    distance += enemy.distance(point);
+                }
+                distance /= board.getEnemySnakes();
+                dx *= distance;
+                System.out.printf(" %.3f ", distance);
             }
-            distance /= board.getEnemySnakes();
-            dx *= distance;
 
             Double value = weightMap.get(direction);
             if (value == null)
                 value = 0d;
             value += dx;
 
-            System.out.printf("\t%s %s %3.0f %d %.3f %.3f\n", direction, board.getAllAt(point), score,
-                    visited.get(point).distance, distance, dx);
-
+            System.out.printf("%.3f\n", dx);
             weightMap.put(direction, value);
         }
 
