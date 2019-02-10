@@ -42,7 +42,7 @@ public class Solver extends SolverBaseImpl {
         prev = nextStep();
         String direction = act(prev);
 
-        System.out.printf("latency: %d ms\n", System.currentTimeMillis() - ts);
+        System.out.printf("[%d] latency: %d ms\n", System.currentTimeMillis() / 1000, System.currentTimeMillis() - ts);
         return direction;
     }
 
@@ -95,7 +95,7 @@ public class Solver extends SolverBaseImpl {
             return go;
         }
 
-        if (isStoneMode()) {
+        if (isStoneMode() || fury) {
             go = safeStepTarget(point, STONE, priority);
             if (go.isPresent()) {
                 System.out.println("=> STONE");
@@ -153,7 +153,7 @@ public class Solver extends SolverBaseImpl {
             }
         }
 
-        if (isStoneMode() && canEatStoneSoon()) {
+        if ((isStoneMode() || (fury && furyCounter < 9)) && canEatStoneSoon()) {
             go = board.bfs(turnAround(prev), point, board.size() / 4, false, BARRIER_NORMAL, STONE);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 System.out.println("=> BFS: STONE");
@@ -249,7 +249,7 @@ public class Solver extends SolverBaseImpl {
     private String act(Direction direction) {
         String result = direction.toString();
 
-        if ( (enemyCloseToTail() || (fury && (furyCounter <= 10 - board.getMySize())))
+        if ( (enemyCloseToTail() || (isStoneMode() && fury && (furyCounter <= 10 - board.getMySize())))
                 && (stoneCounter > 0) ) {
             System.out.println("ACT");
             stoneCounter--;

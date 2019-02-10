@@ -204,6 +204,10 @@ public class SolverTest {
     @Test
     public void should6() {
         ai.prev = Direction.LEFT;
+        ai.initRound();
+        ai.initialized = true;
+        ai.stoneCounter = 2;
+
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                     $     ☼\n" +
                 "☼#                      ○●   ☼\n" +
@@ -218,10 +222,10 @@ public class SolverTest {
                 "☼☼                ☼    │     ☼\n" +
                 "☼☼ ╓              ☼    ¤     ☼\n" +
                 "☼☼ ║                         ☼\n" +
-                "☼#◄╝                         ☼\n" +
+                "☼#♥╝                         ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼        ☼☼☼                ☼\n" +
-                "☼☼       ☼© ☼                ☼\n" +
+                "☼☼ ●     ☼© ☼                ☼\n" +
                 "☼☼      ☼☼☼☼#○    ☼☼   ☼#    ☼\n" +
                 "☼☼      ☼   ☼○    ☼ ☼ ☼ ☼    ☼\n" +
                 "☼#      ☼   ☼     ☼  ☼  ☼    ☼\n" +
@@ -521,7 +525,7 @@ public class SolverTest {
                 "☼#                           ☼\n" +
                 "☼☼                  ●●●●●●●● ☼\n" +
                 "☼☼       ©                   ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.DOWN);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
     }
 
     @Test
@@ -564,7 +568,7 @@ public class SolverTest {
                 "☼#               ○       ○   ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼○                        ○ ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
     }
 
     private void assertAI(String board, Direction expected) {
