@@ -67,7 +67,7 @@ public class Learning {
 
         Optional<Map<String, String>> stat = getStat(true);
         if ((board != null) && prev.isPresent() && stat.isPresent()) {
-            if (steps < this.board.size()) {
+            if (steps < this.board.size()+10) {
                 System.out.println("dead bots");
             } else {
                 int before = Integer.valueOf(prev.get().get("score"));
@@ -247,17 +247,12 @@ public class Learning {
                     local, global, relative);
 
             for(FEATURE feature: features) {
-                if ((feature != FEATURE.FLY) && (feature != FEATURE.FOLLOW) && (feature != FEATURE.STONES))
-                    continue;
-
                 Double current = weights.get(feature.name());
                 System.out.printf("\t%s %.3f", feature.name(), current);
 
                 current += 5 * current * relative / 100;
-                if (current > 100) current = 100d;
-                if (current < 10) current = 10d;
-                weights.put(feature.name(), current);
                 System.out.println(" => " + current);
+                weights.put(feature.name(), current);
             }
             System.out.println();
             writeJson(weights, featuresPath);
