@@ -255,7 +255,22 @@ public class Learning {
                 weights.put(feature.name(), current);
             }
             System.out.println();
+
+            rebalanceWeights();
+            System.out.println(weights);
             writeJson(weights, featuresPath);
+        }
+
+        private void rebalanceWeights() {
+            double max = Collections.max(weights.values());
+            double min = Collections.min(weights.values());
+            double dx = 80 / (max - min);
+
+            for (String feature: weights.keySet()) {
+                double value = weights.get(feature);
+                value = 10 + (value - min) * dx;
+                weights.put(feature, value);
+            }
         }
 
         private void updateAverage(double delta, int steps) {
