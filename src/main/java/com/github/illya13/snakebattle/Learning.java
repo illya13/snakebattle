@@ -44,13 +44,13 @@ public class Learning {
         public abstract void update(double weight, int steps);
     }
 
-    private static final String URL = "https://epam-bot-challenge.com.ua/codenjoy-balancer/rest/score/day/";
+    private static final String URL = "https://snakebattle.tk/codenjoy-contest/rest/player/all/scores";
 
     private Board board;
     private Strategy strategy;
     private String date;
     private String player;
-    private Optional<Map<String, String>> prev = Optional.empty();
+    private Optional<Integer> prev = Optional.empty();
 
     public Learning() {
         LocalDate localDate = LocalDate.now();
@@ -65,13 +65,13 @@ public class Learning {
     public void reset(Board board, int steps){
         this.board = board;
 
-        Optional<Map<String, String>> stat = getStat(true);
+        Optional<Integer> stat = getStat(true);
         if ((board != null) && prev.isPresent() && stat.isPresent()) {
             if (steps < this.board.size()+10) {
                 System.out.println("dead bots");
             } else {
-                int before = Integer.valueOf(prev.get().get("score"));
-                int now = Integer.valueOf(stat.get().get("score"));
+                int before = Integer.valueOf(prev.get());
+                int now = Integer.valueOf(stat.get());
                 double delta = (now - before);
                 if (delta > 0) {
                     System.out.printf(" == %s before: %d, now: %d, delta: %.0f, steps: %d => %.3f\n",
@@ -85,33 +85,28 @@ public class Learning {
         strategy.init();
     }
 
-    public Optional<Map<String, String>> getStat(boolean debug) {
+    public Optional<Integer> getStat(boolean debug) {
         Optional<Client> client = newClient();
         if (client.isPresent()) {
-            List<Map<String, String>> table = getStandings(client.get());
-            for (Map<String, String> map: table) {
-                if (map.get("id").equals(player)) {
-                    if (debug) System.out.println(map);
-                    return Optional.of(map);
-                }
-            }
+            Map<String, Integer> table = getStandings(client.get());
+            return Optional.of(table.get(player));
         }
         return Optional.empty();
     }
 
-    private List<Map<String, String>> getStandings(Client client) {
+    private Map<String, Integer> getStandings(Client client) {
         try {
-            WebTarget webTarget = client.target(URL + date);
+            WebTarget webTarget = client.target(URL);
             Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
             Response response = invocationBuilder.get();
             String stringResponse = response.readEntity(String.class);
 
-            TypeReference<List<Map<String,String>>> typeRef = new TypeReference<List<Map<String,String>>>(){};
+            TypeReference<Map<String,Integer>> typeRef = new TypeReference<Map<String,Integer>>(){};
             ObjectMapper mapper  = new ObjectMapper();
             return mapper.readValue(stringResponse, typeRef);
         } catch (Exception ignored) {
         }
-        return Collections.emptyList();
+        return Collections.emptyMap();
     }
 
 
