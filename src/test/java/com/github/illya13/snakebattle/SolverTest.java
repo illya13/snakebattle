@@ -207,6 +207,7 @@ public class SolverTest {
         ai.initRound();
         ai.initialized = true;
         ai.stoneCounter = 2;
+        ai.furyCounter = 3;
 
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                     $     ☼\n" +

@@ -155,7 +155,7 @@ public class Solver extends SolverBaseImpl {
 
         if ((isStoneMode() || (fury && furyCounter < 9)) && canEatStoneSoon()) {
             go = board.bfs(turnAround(prev), point, board.size() / 4, false, BARRIER_NORMAL, STONE);
-            if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
+            if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get()) && (go.getDistance() < 9-furyCounter)) {
                 System.out.println("=> BFS: STONE");
                 return go.getDirection();
             }
