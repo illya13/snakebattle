@@ -242,10 +242,6 @@ public class Learning {
                     local, global, relative);
 
             for(FEATURE feature: features) {
-                if ((feature == FEATURE.ATTACK) || (feature == FEATURE.DESTRUCT) ||
-                        (feature == FEATURE.SHORT) || (feature == FEATURE.MEDIUM))
-                    continue;
-
                 Double current = weights.get(feature.name());
                 System.out.printf("\t%s %.3f", feature.name(), current);
 
