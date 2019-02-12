@@ -235,8 +235,9 @@ public class Solver extends SolverHelperImpl {
             return go.get();
 
         go = unsafeStepAvoid(point, BARRIER_CUT_MYSELF, priority);
-        if (go.isPresent())
+        if (go.isPresent()) {
             return go.get();
+        }
 
         go = unsafeStepAvoid(point, BARRIER_NO_WAY, priority);
         if (go.isPresent())
