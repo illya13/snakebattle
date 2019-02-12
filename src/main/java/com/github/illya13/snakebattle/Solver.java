@@ -10,7 +10,7 @@ import java.util.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 import static com.github.illya13.snakebattle.Board.*;
 
-public class Solver extends SolverBaseImpl {
+public class Solver extends SolverHelperImpl {
 
     Solver(Dice dice) {
         super(dice);

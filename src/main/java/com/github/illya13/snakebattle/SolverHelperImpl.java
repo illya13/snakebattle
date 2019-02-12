@@ -8,11 +8,11 @@ import java.util.*;
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 import static com.github.illya13.snakebattle.Board.*;
 
-public abstract class SolverBaseImpl extends AbstractSolverBase {
+public abstract class SolverHelperImpl extends AbstractSolverBase {
     Map<Point, Set<Point>> prediction = new HashMap<>();
     Map<Point, Set<Point>> attackPrediction = new HashMap<>();
 
-    SolverBaseImpl(Dice dice) {
+    SolverHelperImpl(Dice dice) {
         super(dice);
     }
 
