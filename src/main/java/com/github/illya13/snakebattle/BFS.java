@@ -72,7 +72,7 @@ public class BFS {
                 Point p = direction.change(point);
                 if (!visited.containsKey(p) && !board.isAt(p, barrier) && !p.isOutOf(board.size())) {
                     int distance = visited.get(point).getDistance();
-                    if (distance > max)
+                    if (distance >= max)
                         continue;
 
                     if (!isSafe(p)) {

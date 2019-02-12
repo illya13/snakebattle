@@ -171,13 +171,13 @@ public class Learning {
                 weights = new HashMap<>();
 
                 weights.put(FEATURE.STONES.name(), 50d);
-                weights.put(FEATURE.ATTACK.name(), 100d);
-                weights.put(FEATURE.DESTRUCT.name(), 100d);
-                weights.put(FEATURE.SHORT.name(), 100d);
-                weights.put(FEATURE.MEDIUM.name(), 100d);
+                weights.put(FEATURE.ATTACK.name(), 90d);
+                weights.put(FEATURE.DESTRUCT.name(), 90d);
+                weights.put(FEATURE.SHORT.name(), 90d);
+                weights.put(FEATURE.MEDIUM.name(), 90d);
                 weights.put(FEATURE.FLY.name(), 20d);
                 weights.put(FEATURE.FOLLOW.name(), 20d);
-                weights.put(FEATURE.PREDICT.name(), 100d);
+                weights.put(FEATURE.PREDICT.name(), 90d);
             }
             writeJson(weights, featuresPath);
         }
@@ -242,6 +242,10 @@ public class Learning {
                     local, global, relative);
 
             for(FEATURE feature: features) {
+                if ((feature == FEATURE.ATTACK) || (feature == FEATURE.DESTRUCT) ||
+                        (feature == FEATURE.SHORT) || (feature == FEATURE.MEDIUM))
+                    continue;
+
                 Double current = weights.get(feature.name());
                 System.out.printf("\t%s %.3f", feature.name(), current);
 

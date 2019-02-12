@@ -184,7 +184,7 @@ public class Solver extends SolverBaseImpl {
         }
 
         if (isShortMode()) {
-            go = getBFSDirection(point, board.size() / 6);
+            go = getBFSDirection(point, board.size() / 7);
             if (go.getDirection().isPresent() && isSafeStep(point, go.getDirection().get())) {
                 if (isPredictMode() && go.getTarget().isPresent() && areWeLate(go.getTarget().get(), go.getDistance())) {
                     skipped.add(go.getTarget().get());
@@ -197,7 +197,7 @@ public class Solver extends SolverBaseImpl {
         }
 
         if (isMediumMode()) {
-            goWeight = getBFSWeightDirection(point, board.size() / 2, skipped);
+            goWeight = getBFSWeightDirection(point, board.size() / 4, skipped);
             if (goWeight.isPresent() && isSafeStep(point, goWeight.get())) {
                 System.out.println("=> BFS: ANY MEDIUM");
                 return goWeight;
