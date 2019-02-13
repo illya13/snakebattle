@@ -42,12 +42,12 @@ public class Board extends com.codenjoy.dojo.snakebattle.client.Board {
     public static final Elements[] SAFE_FLY_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS, ME_TAIL_ELEMENTS, ENEMY_ELEMENTS);
     public static final Elements[] SAFE_ATTACK_ELEMENTS = join(EMPTY_ELEMENTS, STONE_ELEMENTS, ME_HEAD_ELEMENTS, ME_BODY_ELEMENTS, ME_TAIL_ELEMENTS, ENEMY_ELEMENTS);
 
-    public static final Elements[] BARRIER_NORMAL = join(BARRIER_ELEMENTS, ME_BODY_ELEMENTS, ENEMY_HEAD_ELEMENTS, ENEMY_BODY_ELEMENTS);
+    public static final Elements[] BARRIER_NORMAL = join(BARRIER_ELEMENTS, ME_BODY_ELEMENTS, ENEMY_HEAD_ELEMENTS, ENEMY_BODY_ELEMENTS, ENEMY_TAIL_ELEMENTS);
     public static final Elements[] BARRIER_FLY = join(BARRIER_ELEMENTS);
     public static final Elements[] BARRIER_ATTACK = join(BARRIER_ELEMENTS, ME_BODY_ELEMENTS);
-    public static final Elements[] BARRIER_NORMAL_STONE = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_BODY_ELEMENTS, ENEMY_HEAD_ELEMENTS, ENEMY_BODY_ELEMENTS);
-    public static final Elements[] BARRIER_CUT_MYSELF = join(BARRIER_ELEMENTS, ENEMY_BODY_ELEMENTS);
-    public static final Elements[] BARRIER_NO_WAY = join(ENEMY_BODY_ELEMENTS);
+    public static final Elements[] BARRIER_NORMAL_STONE = join(BARRIER_ELEMENTS, STONE_ELEMENTS, ME_BODY_ELEMENTS, ENEMY_HEAD_ELEMENTS, ENEMY_BODY_ELEMENTS, ENEMY_TAIL_ELEMENTS);
+    public static final Elements[] BARRIER_CUT_MYSELF = join(BARRIER_ELEMENTS, ENEMY_BODY_ELEMENTS, ENEMY_TAIL_ELEMENTS);
+    public static final Elements[] BARRIER_NO_WAY = join(ENEMY_BODY_ELEMENTS, ENEMY_TAIL_ELEMENTS);
 
 
     public static Elements[] join(Elements[]... arrays) {
