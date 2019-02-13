@@ -267,7 +267,7 @@ public class Solver extends SolverHelperImpl {
     public static void main(String[] args) {
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
-                BASE_URL + PLAYER_EMAIL + PLAYER_CODE,
+                BASE_URL + PLAYER_HASH + PLAYER_CODE,
                 new Solver(new RandomDice()),
                 new Board());
     }

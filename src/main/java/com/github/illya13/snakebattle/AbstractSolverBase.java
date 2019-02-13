@@ -10,10 +10,9 @@ import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 import static com.github.illya13.snakebattle.Board.*;
 
 public abstract class AbstractSolverBase implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo.snakebattle.client.Board> {
-    static final String BASE_URL = "https://snakebattle.tk/codenjoy-contest/board/player/";
-    static final String PLAYER_CODE = "?code=632303244189693616";
-    static final String PLAYER_EMAIL = "illia@ukr.net";
-    static final String PLAYER_HASH = "illia@ukr.net";
+    static final String BASE_URL = "https://game3.epam-bot-challenge.com.ua/codenjoy-contest/board/player/";
+    static final String PLAYER_CODE = "?code=9034496345023536178";
+    static final String PLAYER_HASH = "lm9t3j8lgg1qyxfi7pwk";
 
     static final int SELF_DESTRUCT_STEPS = 301;
 

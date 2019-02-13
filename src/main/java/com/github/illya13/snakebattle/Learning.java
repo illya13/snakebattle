@@ -44,7 +44,7 @@ public class Learning {
         public abstract void update(double weight, int steps);
     }
 
-    private static final String URL = "https://snakebattle.tk/codenjoy-contest/rest/player/all/scores";
+    private static final String URL = "https://game3.epam-bot-challenge.com.ua/codenjoy-contest/rest/player/all/scores";
 
     private Board board;
     private Strategy strategy;
@@ -89,7 +89,7 @@ public class Learning {
         Optional<Client> client = newClient();
         if (client.isPresent()) {
             Map<String, Integer> table = getStandings(client.get());
-            return Optional.of(table.get(player));
+            return (table.get(player) != null) ? Optional.of(table.get(player)) : Optional.empty();
         }
         return Optional.empty();
     }
@@ -170,13 +170,13 @@ public class Learning {
             if (weights == null || weights.isEmpty()) {
                 weights = new HashMap<>();
 
-                weights.put(FEATURE.STONES.name(), 50d);
+                weights.put(FEATURE.STONES.name(), 10d);
                 weights.put(FEATURE.ATTACK.name(), 90d);
-                weights.put(FEATURE.DESTRUCT.name(), 90d);
-                weights.put(FEATURE.SHORT.name(), 90d);
-                weights.put(FEATURE.MEDIUM.name(), 90d);
-                weights.put(FEATURE.FLY.name(), 20d);
-                weights.put(FEATURE.FOLLOW.name(), 20d);
+                weights.put(FEATURE.DESTRUCT.name(), 20d);
+                weights.put(FEATURE.SHORT.name(), 30d);
+                weights.put(FEATURE.MEDIUM.name(), 50d);
+                weights.put(FEATURE.FLY.name(), 10d);
+                weights.put(FEATURE.FOLLOW.name(), 10d);
                 weights.put(FEATURE.PREDICT.name(), 90d);
             }
             writeJson(weights, featuresPath);
