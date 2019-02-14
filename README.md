@@ -16,7 +16,7 @@ mvn clean compile assembly:single
 java -jar target/snakebattle-client-jar-with-dependencies.jar
 ```
 
-# details
+# internal details
 - [main logic](https://github.com/illya13/snakebattle/blob/master/src/main/java/com/github/illya13/snakebattle/Solver.java#L50):
     - [realtime](https://github.com/illya13/snakebattle/blob/master/src/main/java/com/github/illya13/snakebattle/Solver.java#L65) step,
     - [mid term](https://github.com/illya13/snakebattle/blob/master/src/main/java/com/github/illya13/snakebattle/Solver.java#L132) step,
