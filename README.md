@@ -41,3 +41,7 @@ java -jar target/snakebattle-client-jar-with-dependencies.jar
 # links
 - https://www.codingame.com/
 - https://www.codewars.com/
+
+# nice to have
+- https://habr.com/ru/post/282522/
+- https://www.baeldung.com/java-monte-carlo-tree-search
