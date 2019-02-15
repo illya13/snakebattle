@@ -26,3 +26,18 @@ java -jar target/snakebattle-client-jar-with-dependencies.jar
 - BFS-based [weights-based mid- and long- term "nice to go" direction detection](https://github.com/illya13/snakebattle/blob/master/src/main/java/com/github/illya13/snakebattle/BFS.java#L36)
 - Number of [embedded features like "stones mining" + stat-based self learning](https://github.com/illya13/snakebattle/blob/master/src/main/java/com/github/illya13/snakebattle/Learning.java)
 - if/then- based and BFS- based enemy [prediction logic](https://github.com/illya13/snakebattle/blob/master/src/main/java/com/github/illya13/snakebattle/SolverHelperImpl.java#L31)
+
+# other repo's
+- https://github.com/ashelkov/snake_bot_challenge
+- https://github.com/patkovskyi/snakebattle
+- https://github.com/Kontsedal/snake-bot
+- https://github.com/ViktorKukurba/snakebattle-bot
+- https://github.com/Arhnt/snake-public
+- https://github.com/gram7gram/epam-snakebot
+- https://github.com/Vitaliy-Yarovuy/snakebattle
+- https://github.com/jeka-kiselyov/snakebot
+- https://github.com/wdcoua/epam-snake-bot/
+
+# links
+- https://www.codingame.com/
+- https://www.codewars.com/
