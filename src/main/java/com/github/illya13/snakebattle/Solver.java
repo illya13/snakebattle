@@ -12,8 +12,8 @@ import static com.github.illya13.snakebattle.Board.*;
 
 public class Solver implements com.codenjoy.dojo.client.Solver<com.codenjoy.dojo.snakebattle.client.Board> {
     static final String BASE_URL = "https://game3.epam-bot-challenge.com.ua/codenjoy-contest/board/player/";
-    static final String PLAYER_CODE = "?code=3406317695233273382";
-    static final String PLAYER_HASH = "iu0fzz81lugtq1z8ceet";
+    static final String PLAYER_CODE = "?code=4006943722048935230";
+    static final String PLAYER_HASH = "mi95vlm7roqt46jc3vgc";
 
     Solver(Dice dice) {
     }
