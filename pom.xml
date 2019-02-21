@@ -89,7 +89,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.illya13.snakebattle.Solver</mainClass>
+                            <mainClass>com.github.illya13.snakebattle.Bootstrap</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
