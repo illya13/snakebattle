@@ -6,16 +6,18 @@ import com.github.illya13.snakebattle.solver.BFSSolver;
 import com.github.illya13.snakebattle.state.StateImpl;
 
 public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
-    static final String BASE_URL = "https://game3.epam-bot-challenge.com.ua/codenjoy-contest/board/player/";
-    static final String PLAYER_CODE = "?code=4006943722048935230";
-    static final String PLAYER_HASH = "mi95vlm7roqt46jc3vgc";
+    static final String BASE_URL = "http://127.0.0.1:8080/codenjoy-contest/board/player/";
+    static final String PLAYER_CODE = "?code=4936129912985058234";
+    static final String PLAYER_HASH = "cm407hwc09ysoc2efktc";
 
     StateImpl state;
+    Board prev;
     boolean initialized;
-    Solver solver = new BFSSolver();
+    Solver solver;
 
     Bootstrap(Dice dice) {
         state = new StateImpl();
+        solver = new BFSSolver();
         initialized = false;
     }
 
@@ -31,8 +33,12 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
         if (!initialized) {
             initialized = true;
             state.reset();
+            state.initStep(board);
+        } else {
+            state.initStep(board); // + prev
         }
-        state.initStep(board);
+        prev = board;
+
         System.out.println(state.toString());
 
         Direction next = solver.next(state);

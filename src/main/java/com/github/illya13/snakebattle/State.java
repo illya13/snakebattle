@@ -43,5 +43,3 @@ public interface State {
         Map<Point, Integer> items(Elements... elements);
     }
 }
-
-
