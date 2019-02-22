@@ -269,7 +269,7 @@ public class StateImpl implements State {
             if (!isFly() && prev.isAt(head(), STONE)) {
                 result += 5;
             }
-            if (!isFly() && prev.isAt(head(), ENEMY_ELEMENTS)) {
+            if (!isFly() && prev.isAt(head(), join(MY_ELEMENTS, ENEMY_ELEMENTS))) {
                 result += 10 * eatSize(head(), direction().inverted().change(head()), prev);
             }
             if (!board.get(Elements.ENEMY_HEAD_DEAD).isEmpty()) {
