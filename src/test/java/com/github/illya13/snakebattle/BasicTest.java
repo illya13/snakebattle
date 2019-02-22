@@ -11,7 +11,6 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 
 public class BasicTest {
@@ -629,6 +628,100 @@ public class BasicTest {
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", "");
     }
 
+    @Test
+    public void rewardTest7() {
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼                     ┌───┐ ☼\n" +
+                "☼#                     │  ┌┘ ☼\n" +
+                "☼☼      ☼#      ┌──┐  ┌┘  │╔╗☼\n" +
+                "☼☼              ¤  └──┘ ╔╗│║║☼\n" +
+                "☼#           ●          ║║˅║║☼\n" +
+                "☼☼                ☼#    ║╚═╝║☼\n" +
+                "☼☼      ☼☼☼        ☼  ☼ ╙   ▼☼\n" +
+                "☼#      ☼          ☼  ☼      ☼\n" +
+                "☼☼      ☼          ☼  ☼      ☼\n" +
+                "☼☼      ☼☼☼    ○          ●  ☼\n" +
+                "☼#              ☼#           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼    ●              ☼       ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼         ○                 ☼\n" +
+                "☼☼                 ☼#        ☼\n" +
+                "☼#       ☼☼ ☼       ○        ☼\n" +
+                "☼☼          ☼     ●          ☼\n" +
+                "☼☼       ☼☼ ☼                ☼\n" +
+                "☼#          ☼                ☼\n" +
+                "☼☼         ☼#    ○           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#   ○         ○    ☼☼☼      ☼\n" +
+                "☼☼  ●                        ☼\n" +
+                "☼☼             ○ ☼☼☼#        ☼\n" +
+                "☼#     ●                     ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼               ○           ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.LEFT);
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼                     ┌───┐ ☼\n" +
+                "☼#                     │  ┌┘ ☼\n" +
+                "☼☼      ☼#      ×──┐  ┌┘  │╔╗☼\n" +
+                "☼☼                 └──┘ ╔╗│║║☼\n" +
+                "☼#           ●          ║║│║║☼\n" +
+                "☼☼                ☼#    ╙╚☺╝║☼\n" +
+                "☼☼      ☼☼☼        ☼  ☼ ○  ◄╝☼\n" +
+                "☼#      ☼          ☼  ☼      ☼\n" +
+                "☼☼      ☼          ☼  ☼      ☼\n" +
+                "☼☼      ☼☼☼    ○          ●  ☼\n" +
+                "☼#              ☼#           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼    ●              ☼       ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼         ○                 ☼\n" +
+                "☼☼                 ☼#        ☼\n" +
+                "☼#       ☼☼ ☼       ○        ☼\n" +
+                "☼☼          ☼     ●          ☼\n" +
+                "☼☼       ☼☼ ☼                ☼\n" +
+                "☼#          ☼                ☼\n" +
+                "☼☼         ☼#    ○           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#   ○         ○    ☼☼☼      ☼\n" +
+                "☼☼  ●                        ☼\n" +
+                "☼☼             ○ ☼☼☼#        ☼\n" +
+                "☼#     ●                     ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼               ○           ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT, 220);
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼      ☼#                 ╔╗☼\n" +
+                "☼☼                      ╔╗ ║║☼\n" +
+                "☼#           ●          ╙║ ║║☼\n" +
+                "☼☼                ☼#     ╚═╝║☼\n" +
+                "☼☼      ☼☼☼        ☼  ☼ ○ ◄═╝☼\n" +
+                "☼#      ☼          ☼  ☼      ☼\n" +
+                "☼☼      ☼          ☼  ☼      ☼\n" +
+                "☼☼      ☼☼☼    ○          ●  ☼\n" +
+                "☼#              ☼#           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼    ●              ☼       ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼         ○                 ☼\n" +
+                "☼☼                 ☼#        ☼\n" +
+                "☼#       ☼☼ ☼       ○        ☼\n" +
+                "☼☼          ☼     ●          ☼\n" +
+                "☼☼       ☼☼ ☼                ☼\n" +
+                "☼#          ☼                ☼\n" +
+                "☼☼         ☼#    ○           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#   ○         ○    ☼☼☼      ☼\n" +
+                "☼☼  ●                        ☼\n" +
+                "☼☼             ○ ☼☼☼#○       ☼\n" +
+                "☼#     ●                     ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼               ○           ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.DOWN, 270);
+    }
+
     private void assertAI(String board, Direction expected) {
         String actual = ai.get(board(board));
         Assert.assertEquals(expected.toString(), actual);
@@ -637,7 +730,7 @@ public class BasicTest {
     private void assertAI(String board, Direction expected, int reward) {
         String actual = ai.get(board(board));
         Assert.assertEquals(expected.toString(), actual);
-        Assert.assertEquals(ai.state.me().reward(), reward);
+        Assert.assertEquals(reward, ai.state.me().reward());
     }
 
     private void assertAI(String board, String string) {

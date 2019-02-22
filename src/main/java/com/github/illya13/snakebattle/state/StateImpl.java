@@ -111,7 +111,7 @@ public class StateImpl implements State {
         return enemies.values();
     }
 
-    private Collection<Snake> snakes() {
+    private List<Snake> snakes() {
         List<Snake> all = new LinkedList<>();
         all.add(me());
         all.addAll(enemies());
@@ -276,11 +276,11 @@ public class StateImpl implements State {
             if (!isFly() && prev.isAt(head(), STONE)) {
                 result += 5;
             }
-            if (!board.get(Elements.ENEMY_HEAD_DEAD).isEmpty()) {
-                result += 10 * deadSize(this, board);
-            }
             if (!isFly() && prev.isAt(head(), ENEMY_ELEMENTS)) {
                 result += 10 * eatSize(head(), direction().inverted().change(head()), prev);
+            }
+            if (!board.get(Elements.ENEMY_HEAD_DEAD).isEmpty()) {
+                result += 10 * deadSize(this, board);
             }
             return result;
         }
@@ -385,29 +385,14 @@ public class StateImpl implements State {
     }
 
     private static int eatSize(Point target, Point winner, Board prev) {
-        List<SnakeImpl> all = new LinkedList<>();
-        if (!winner.equals(prev.getMe())) {
-            SnakeImpl snake = newSnake();
-            initSnake(prev.getMe(), prev, snake);
-            initPills(prev, snake);
-            all.add(snake);
-        }
+        List<Snake> snakes = boardSnakes(prev);
 
-        for(Point p: prev.getEnemies()) {
-            if (!winner.equals(p)) {
-                SnakeImpl snake = newSnake();
-                initSnake(p, prev, snake);
-                initPills(prev, snake);
-                all.add(snake);
-            }
-        }
-
-        for (SnakeImpl snake: all) {
-            if (snake.isFly())
+        for (Snake snake: snakes) {
+            if (snake.isFly() || winner.equals(snake.head()))
                 continue;
 
             int i = inSnake(target, snake);
-            if (i != -1) return i;
+            if (i != -1) return snake.size() - i;
         }
 
         return 0;
@@ -417,7 +402,7 @@ public class StateImpl implements State {
         int i = 0;
         for (Point p : snake.body()) {
             if (p.equals(target)) {
-                return snake.size() - i;
+                return i;
             }
             i++;
         }
@@ -426,19 +411,30 @@ public class StateImpl implements State {
 
     private static int deadSize(Snake alive, Board board) {
         for (Point point: board.get(Elements.ENEMY_HEAD_DEAD)) {
-            SnakeImpl snake = newSnake();
-            initSnake(point, board, snake);
+            SnakeImpl dead = newSnake();
+            initSnake(point, board, dead);
 
-            int i = inSnake(snake.head(), alive);
+            int i = inSnake(dead.head(), alive);
             if (i == -1) continue;
 
-            if ((i == 0) && snake.size() == alive.size()) {
-                // still getting alive snake
-                // need to find dead
-                System.out.println("fuck up");
-            }
-            return snake.size();
+            return dead.size();
         }
         return 0;
+    }
+
+    private static List<Snake> boardSnakes(Board board) {
+        List<Snake> snakes = new LinkedList<>();
+        SnakeImpl snake = newSnake();
+        initSnake(board.getMe(), board, snake);
+        initPills(board, snake);
+        snakes.add(snake);
+
+        for(Point p: board.getEnemies()) {
+            snake = newSnake();
+            initSnake(p, board, snake);
+            initPills(board, snake);
+            snakes.add(snake);
+        }
+        return snakes;
     }
 }
