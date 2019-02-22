@@ -3,11 +3,15 @@ package com.github.illya13.snakebattle;
 
 import com.codenjoy.dojo.services.Dice;
 import com.codenjoy.dojo.services.Direction;
+import com.github.illya13.snakebattle.state.StateImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 
 public class BasicTest {
@@ -526,6 +530,105 @@ public class BasicTest {
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", "");
     }
 
+    @Test
+    public void rewardTest6() {
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼       $                   ☼\n" +
+                "☼# ○                         ☼\n" +
+                "☼☼    ○ ☼#               ○   ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#           ●               ☼\n" +
+                "☼☼     ˄          ☼#         ☼\n" +
+                "☼☼     │☼☼☼     ○  ☼  ☼®     ☼\n" +
+                "☼# ┌┐  │☼          ☼  ☼      ☼\n" +
+                "☼☼ │└──┘☼ ○        ☼  ☼ ©   ●☼\n" +
+                "☼☼ │    ☼☼☼                  ☼\n" +
+                "☼# │      ╓     ☼#®          ☼\n" +
+                "☼☼ │      ║                  ☼\n" +
+                "☼☼ │  ●   ╚╗         ☼      ●☼\n" +
+                "☼# │       ║                 ☼\n" +
+                "☼☼ │       ║                 ☼\n" +
+                "☼☼ │       ║       ☼#        ☼\n" +
+                "☼# │     ☼☼║☼  ○             ☼\n" +
+                "☼☼ │       ║☼ ●   ●   ●      ☼\n" +
+                "☼☼ │    ●☼☼║☼                ☼\n" +
+                "☼# └───┐ ╔═╝☼                ☼\n" +
+                "☼☼ ┌┐  │ ╚╗☼#                ☼\n" +
+                "☼☼┌┘└──┘● ╚════╗       ●   ○ ☼\n" +
+                "☼#└───ö        ║    ☼☼☼      ☼\n" +
+                "☼☼             ║             ☼\n" +
+                "☼☼            ╔╝ ☼☼☼#        ☼\n" +
+                "☼#          ╔═╝              ☼\n" +
+                "☼☼          ╚═══► ○          ☼\n" +
+                "☼☼                   ○    ○  ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
+
+        StateImpl state = (StateImpl)ai.state;
+        setStep(state, 299);
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼       $                   ☼\n" +
+                "☼# ○                         ☼\n" +
+                "☼☼    ○ ☼#               ○   ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#     ˄     ●               ☼\n" +
+                "☼☼     │          ☼#         ☼\n" +
+                "☼☼     │☼☼☼     ○  ☼  ☼®     ☼\n" +
+                "☼# ┌┐  │☼          ☼  ☼      ☼\n" +
+                "☼☼ │└──┘☼ ○        ☼  ☼ ©   ●☼\n" +
+                "☼☼ │    ☼☼☼                  ☼\n" +
+                "☼# │            ☼#®          ☼\n" +
+                "☼☼ │      ╓                  ☼\n" +
+                "☼☼ │  ●   ╚╗         ☼      ●☼\n" +
+                "☼# │       ║                 ☼\n" +
+                "☼☼ │       ║                 ☼\n" +
+                "☼☼ │       ║       ☼#        ☼\n" +
+                "☼# │     ☼☼║☼  ○             ☼\n" +
+                "☼☼ │       ║☼ ●   ●   ●      ☼\n" +
+                "☼☼ │    ●☼☼║☼                ☼\n" +
+                "☼# └───┐ ╔═╝☼                ☼\n" +
+                "☼☼ ┌┐  │ ╚╗☼#                ☼\n" +
+                "☼☼┌┘└──┘● ╚════╗       ●   ○ ☼\n" +
+                "☼#└──ö         ║    ☼☼☼      ☼\n" +
+                "☼☼             ║             ☼\n" +
+                "☼☼            ╔╝ ☼☼☼#        ☼\n" +
+                "☼#          ╔═╝              ☼\n" +
+                "☼☼          ╚════►○          ☼\n" +
+                "☼☼                   ○    ○  ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
+        Assert.assertEquals(ai.state.enemies().iterator().next().reward(), 50);
+
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼       $                   ☼\n" +
+                "☼# ○                         ☼\n" +
+                "☼☼    ○ ☼#               ○   ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#     ☺     ●               ☼\n" +
+                "☼☼     │          ☼#         ☼\n" +
+                "☼☼     │☼☼☼     ○  ☼  ☼®     ☼\n" +
+                "☼# ┌┐  │☼          ☼  ☼      ☼\n" +
+                "☼☼ │└──┘☼ ○        ☼  ☼ ©   ●☼\n" +
+                "☼☼ │    ☼☼☼                  ☼\n" +
+                "☼# │            ☼#®          ☼\n" +
+                "☼☼ │      ╓                  ☼\n" +
+                "☼☼ │  ●   ╚╗         ☼      ●☼\n" +
+                "☼# │       ║                 ☼\n" +
+                "☼☼ │       ║                 ☼\n" +
+                "☼☼ │       ║       ☼#        ☼\n" +
+                "☼# │     ☼☼║☼  ○             ☼\n" +
+                "☼☼ │       ║☼ ●   ●   ●      ☼\n" +
+                "☼☼ │    ●☼☼║☼                ☼\n" +
+                "☼# └───┐ ╔═╝☼                ☼\n" +
+                "☼☼ ┌┐  │ ╚╗☼#                ☼\n" +
+                "☼☼┌┘└──┘● ╚════╗       ●   ○ ☼\n" +
+                "☼#└──ö         ║    ☼☼☼      ☼\n" +
+                "☼☼             ║             ☼\n" +
+                "☼☼            ╔╝ ☼☼☼#        ☼\n" +
+                "☼#          ╔═╝              ☼\n" +
+                "☼☼          ╚════☻○          ☼\n" +
+                "☼☼                   ○    ○  ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", "");
+    }
+
     private void assertAI(String board, Direction expected) {
         String actual = ai.get(board(board));
         Assert.assertEquals(expected.toString(), actual);
@@ -541,4 +644,24 @@ public class BasicTest {
         String actual = ai.get(board(board));
         Assert.assertEquals(string, actual);
     }
+
+    static Field stepField;
+
+    static void setStep(StateImpl state, int step) {
+        try {
+            stepField.set(state, step);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static {
+        try {
+            stepField = StateImpl.class.getDeclaredField("step");
+            stepField.setAccessible(true);
+        } catch (NoSuchFieldException ignored) {
+            // no op
+        }
+    }
+
 }

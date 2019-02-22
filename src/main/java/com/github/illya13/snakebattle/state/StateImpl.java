@@ -24,8 +24,6 @@ public class StateImpl implements State {
     MeImpl me;
     Map<Point, Enemy> enemies;
 
-    private StateImpl() {}
-
     private StateImpl(Board board) {
         this.board = board;
 
@@ -111,6 +109,13 @@ public class StateImpl implements State {
     @Override
     public Collection<Enemy> enemies() {
         return enemies.values();
+    }
+
+    private Collection<Snake> snakes() {
+        List<Snake> all = new LinkedList<>();
+        all.add(me());
+        all.addAll(enemies());
+        return all;
     }
 
     @Override
@@ -285,9 +290,12 @@ public class StateImpl implements State {
                 return true;
 
             int max = 0;
-            for(Enemy enemy: enemies()) {
-                if (enemy.size() > max) {
-                    max = enemy.size();
+            for(Snake snake: snakes()) {
+                if (snake.head().equals(head()))
+                    continue;
+
+                if (snake.size() > max) {
+                    max = snake.size();
                 }
             }
             return (step() == 300) && (size() > max);
@@ -352,6 +360,8 @@ public class StateImpl implements State {
 
 
     // HELPERS
+
+    private StateImpl() {}
 
     private SnakeImpl newSnake_() {
         return new SnakeImpl();
