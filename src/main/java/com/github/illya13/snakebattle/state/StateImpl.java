@@ -124,7 +124,7 @@ public class StateImpl implements State {
     }
 
 
-    private class SnakeImpl implements Snake {
+    private abstract class SnakeImpl implements Snake {
         private static final int MAX_DURATION = 10;
 
         Direction direction;
@@ -137,20 +137,13 @@ public class StateImpl implements State {
 
         private List<Action> actions;
 
-        private SnakeImpl() {
+        SnakeImpl() {
             body = new LinkedList<>();
             actions = new LinkedList<>();
 
             furyCounter = 0;
             flyCounter = 0;
             reward = 0;
-        }
-
-        public SnakeImpl(Point head) {
-            this();
-
-            initSnake(head, board, this);
-            initActions();
         }
 
         public void copyFrom(SnakeImpl other) {
@@ -232,7 +225,7 @@ public class StateImpl implements State {
             return "{" + reward + "} " + direction + "[" + size() + "]" + pillsToString();
         }
 
-        private void initActions() {
+        void initActions() {
             Elements[] barrier = (isFly() || isFury())
                     ? BARRIER_ELEMENTS
                     : join(BARRIER_ELEMENTS, MY_ELEMENTS, ENEMY_ELEMENTS);
@@ -318,15 +311,25 @@ public class StateImpl implements State {
 
 
     private class EnemyImpl extends SnakeImpl implements Enemy {
-        public EnemyImpl(Point head) {
-            super(head);
+        EnemyImpl() {}
+
+        EnemyImpl(Point head) {
+            super();
+
+            initEnemy(head, board, this);
+            initActions();
         }
     }
 
 
     private class MeImpl extends SnakeImpl implements Me {
-        public MeImpl(Point head) {
-            super(head);
+        MeImpl() {}
+
+        MeImpl(Point head) {
+            super();
+
+            initMe(head, board, this);
+            initActions();
         }
     }
 
@@ -363,16 +366,32 @@ public class StateImpl implements State {
 
     private StateImpl() {}
 
-    private SnakeImpl newSnake_() {
-        return new SnakeImpl();
+    private EnemyImpl newEnemy_() {
+        return new EnemyImpl();
     }
 
-    private static SnakeImpl newSnake() {
-        return new StateImpl().newSnake_();
+    private static EnemyImpl newEnemy() {
+        return new StateImpl().newEnemy_();
     }
 
-    private static void initSnake(Point head, Board aBoard, SnakeImpl snake) {
+    private MeImpl newMe_() {
+        return new MeImpl();
+    }
+
+    private static MeImpl newMe() {
+        return new StateImpl().newMe_();
+    }
+
+    private static void initMe(Point head, Board aBoard, MeImpl snake) {
         Parser.ParsedSnake parsed = new Parser(aBoard).parseSnake(head);
+
+        snake.head = parsed.head();
+        snake.direction = parsed.direction();
+        snake.body = parsed.body();
+    }
+
+    private static void initEnemy(Point head, Board aBoard, EnemyImpl snake) {
+        Parser.ParsedSnake parsed = new Parser(aBoard).parseEnemy(head);
 
         snake.head = parsed.head();
         snake.direction = parsed.direction();
@@ -411,8 +430,8 @@ public class StateImpl implements State {
 
     private static int deadSize(Snake alive, Board board) {
         for (Point point: board.get(Elements.ENEMY_HEAD_DEAD)) {
-            SnakeImpl dead = newSnake();
-            initSnake(point, board, dead);
+            EnemyImpl dead = newEnemy();
+            initEnemy(point, board, dead);
 
             int i = inSnake(dead.head(), alive);
             if (i == -1) continue;
@@ -424,16 +443,16 @@ public class StateImpl implements State {
 
     private static List<Snake> boardSnakes(Board board) {
         List<Snake> snakes = new LinkedList<>();
-        SnakeImpl snake = newSnake();
-        initSnake(board.getMe(), board, snake);
-        initPills(board, snake);
-        snakes.add(snake);
+        MeImpl me = newMe();
+        initMe(board.getMe(), board, me);
+        initPills(board, me);
+        snakes.add(me);
 
         for(Point p: board.getEnemies()) {
-            snake = newSnake();
-            initSnake(p, board, snake);
-            initPills(board, snake);
-            snakes.add(snake);
+            EnemyImpl enemy = newEnemy();
+            initEnemy(p, board, enemy);
+            initPills(board, enemy);
+            snakes.add(enemy);
         }
         return snakes;
     }
