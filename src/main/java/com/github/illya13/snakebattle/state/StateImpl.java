@@ -5,6 +5,8 @@ import com.codenjoy.dojo.services.Point;
 
 import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.codenjoy.dojo.snakebattle.model.board.Field;
+import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
+import com.codenjoy.dojo.snakebattle.model.board.Timer;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import com.codenjoy.dojo.snakebattle.model.hero.Tail;
 import com.codenjoy.dojo.snakebattle.model.level.LevelImpl;
@@ -24,6 +26,7 @@ import static com.github.illya13.snakebattle.Board.*;
 public class StateImpl implements State {
     Board board;
     LevelImpl level;
+    Field field;
     BFS bfs;
 
     int step;
@@ -37,6 +40,8 @@ public class StateImpl implements State {
         this.board = board;
 
         level = new LevelImpl(board.boardAsString().replaceAll("\n", ""));
+        field = createGame(level);
+
         bfs = new BFS(board);
 
         me = new MeImpl(board.getMe());
@@ -141,7 +146,7 @@ public class StateImpl implements State {
         public SnakeImpl(Point head) {
             this();
 
-            initSnake(head, level, this);
+            initSnake(head, level, field, this);
             initActions();
         }
 
@@ -416,6 +421,19 @@ public class StateImpl implements State {
         }
     }
 
+    private static Field createGame(LevelImpl level) {
+        return new SnakeBoard(level,null,
+                new Timer(new com.codenjoy.dojo.services.settings.SimpleParameter<>(5)),
+                new Timer(new com.codenjoy.dojo.services.settings.SimpleParameter<>(300)),
+                new Timer(new com.codenjoy.dojo.services.settings.SimpleParameter<>(1)),
+                new com.codenjoy.dojo.services.settings.SimpleParameter<>(1),
+                new com.codenjoy.dojo.services.settings.SimpleParameter<>(10),
+                new com.codenjoy.dojo.services.settings.SimpleParameter<>(10),
+                new com.codenjoy.dojo.services.settings.SimpleParameter<>(3),
+                new com.codenjoy.dojo.services.settings.SimpleParameter<>(40)
+        );
+    }
+
     private SnakeImpl newSnake_() {
         return new SnakeImpl();
     }
@@ -424,10 +442,10 @@ public class StateImpl implements State {
         return new StateImpl().newSnake_();
     }
 
-    private static void initSnake(Point head, LevelImpl level, SnakeImpl snake) {
+    private static void initSnake(Point head, LevelImpl level, Field field, SnakeImpl snake) {
         snake.head = head;
         try {
-            Hero hero = (Hero) parseSnake.invoke(level, head, null);
+            Hero hero = (Hero) parseSnake.invoke(level, head, field);
             snake.direction = (Direction) getDirection.invoke(hero);
 
             for (Tail tail : hero.body()) {
@@ -441,16 +459,17 @@ public class StateImpl implements State {
 
     private static int oppositeSize(Point winner, Board prev) {
         LevelImpl oldLevel = new LevelImpl(prev.boardAsString().replaceAll("\n", ""));
+        Field oldField = createGame(oldLevel);
 
         List<SnakeImpl> all = new LinkedList<>();
 
         SnakeImpl snake = newSnake();
-        initSnake(prev.getMe(), oldLevel, snake);
+        initSnake(prev.getMe(), oldLevel, oldField, snake);
         all.add(snake);
 
         for(Point p: prev.getEnemies()) {
             snake = newSnake();
-            initSnake(p, oldLevel, snake);
+            initSnake(p, oldLevel, oldField, snake);
             all.add(snake);
         }
         return 0;
