@@ -36,7 +36,7 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
         System.out.println(state.toString());
 
         Direction next = solver.next(state);
-        state.stepTo(board, next);
+        state.stepTo(next);
 
         return next.toString();
     }

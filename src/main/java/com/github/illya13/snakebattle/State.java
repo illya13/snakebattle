@@ -35,6 +35,7 @@ public interface State {
     }
 
     interface Me extends Snake {
+        int reward();
     }
 
     interface Action {
