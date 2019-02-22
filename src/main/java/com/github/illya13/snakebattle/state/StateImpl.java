@@ -167,7 +167,7 @@ public class StateImpl implements State {
             } else if (prev.isAt(head(), Elements.FLYING_PILL)) {
                 incFly();
             }
-            // updateReward(prev);
+            updateReward(prev);
         }
 
         @Override
@@ -258,33 +258,26 @@ public class StateImpl implements State {
         }
 
         private int detectReward(Board prev) {
-            if (endOfRoundWin()) {
-                return 50;
-            } else if (prev.isAt(head(), APPLE)) {
-                return 1;
-            } else if (prev.isAt(head(), GOLD)) {
-                return 10;
-            } else if (prev.isAt(head(), STONE)) {
-                return 5;
-            } else if (prev.isAt(head(), ENEMY_ELEMENTS)) {
-                return 10 * oppositeSize(direction().inverted().change(head()), prev);
-                // find snake size on old board
-/*
-                for (Enemy enemy: enemies()) {
-                    int i = 0;
-                    for (Point p : enemy.body()) {
-                        if (p.equals(point)) {
-                            if (!flyCase(enemy) && (fightVictory(enemy, i) || eatEnemy(enemy, i))) {
-                                return (enemy.size() - i) * 10;
-                            }
-                            return 0;
-                        }
-                        i++;
-                    }
-                }
-*/
+            int result = 0;
+            if (prev.isAt(head(), APPLE)) {
+                result += 1;
             }
-            return 0;
+            if (prev.isAt(head(), GOLD)) {
+                result += 10;
+            }
+            if (prev.isAt(head(), STONE)) {
+                result += 5;
+            }
+            if (board.isAt(head(), ENEMY_HEAD_DEAD)) {
+                result += 10 * deadSize(head(), board);
+            }
+            if (!isFly() && prev.isAt(head(), ENEMY_ELEMENTS)) {
+                result += 10 * eatSize(head(), direction().inverted().change(head()), prev);
+            }
+            if (endOfRoundWin()) {
+                result += 50;
+            }
+            return result;
         }
 
         private boolean endOfRoundWin() {
@@ -299,54 +292,6 @@ public class StateImpl implements State {
             }
             return (step() == 300) && (size() > max);
         }
-
-/*
-
-
-        private void handleCurrentReward() {
-            int dx = getCurrentReward();
-            if (dx > 0) {
-                reward += dx;
-                System.out.println("+" + dx);
-            }
-        }
-*/
-
-/*
-        private int getCurrentReward() {
-            for (Point point: board.get(Elements.ENEMY_HEAD_DEAD)) {
-                EnemyImpl enemy = new EnemyImpl();
-                enemy.reset();
-                enemy.init(point);
-
-                for (Point p: me.body()) {
-                    if (p.equals(enemy.head())) {
-                        return enemy.size();
-                    }
-                }
-            }
-            return 0;
-        }
-*/
-
-/*
-
-*/
-
-/*
-
-        private boolean flyCase(Enemy enemy) {
-            return isFly() || enemy.isFly();
-        }
-
-        private boolean fightVictory(Enemy enemy, int i) {
-            return ((isFury() && enemy.isFury()) || (!isFury() && !enemy.isFury())) && (size() - enemy.size() > 1) && (i == 0);
-        }
-
-        private boolean eatEnemy(Enemy enemy, int i) {
-            return isFury() && !enemy.isFury();
-        }
-*/
 
         private void checkAndDecPills() {
             if (isFury()) furyCounter--;
@@ -457,20 +402,58 @@ public class StateImpl implements State {
         }
     }
 
-    private static int oppositeSize(Point winner, Board prev) {
+    private static void initPills(Board prev, SnakeImpl snake) {
+        snake.furyCounter = (prev.isAt(snake.head(), HEAD_EVIL, ENEMY_HEAD_EVIL)) ? 2 : 0;
+        snake.flyCounter = (prev.isAt(snake.head(), HEAD_FLY, ENEMY_HEAD_FLY)) ? 2 : 0;
+    }
+
+    private static int eatSize(Point target, Point winner, Board prev) {
         LevelImpl oldLevel = new LevelImpl(prev.boardAsString().replaceAll("\n", ""));
         Field oldField = createGame(oldLevel);
 
         List<SnakeImpl> all = new LinkedList<>();
-
-        SnakeImpl snake = newSnake();
-        initSnake(prev.getMe(), oldLevel, oldField, snake);
-        all.add(snake);
+        if (!winner.equals(prev.getMe())) {
+            SnakeImpl snake = newSnake();
+            initSnake(prev.getMe(), oldLevel, oldField, snake);
+            initPills(prev, snake);
+            all.add(snake);
+        }
 
         for(Point p: prev.getEnemies()) {
-            snake = newSnake();
-            initSnake(p, oldLevel, oldField, snake);
-            all.add(snake);
+            if (!winner.equals(p)) {
+                SnakeImpl snake = newSnake();
+                initSnake(p, oldLevel, oldField, snake);
+                initPills(prev, snake);
+                all.add(snake);
+            }
+        }
+
+        for (SnakeImpl snake: all) {
+            if (snake.isFly())
+                continue;
+
+            int i = 0;
+            for (Point p : snake.body()) {
+                if (p.equals(target)) {
+                    return snake.size() - i;
+                }
+                i++;
+            }
+        }
+
+        return 0;
+    }
+
+    private static int deadSize(Point target, Board board) {
+        LevelImpl oldLevel = new LevelImpl(board.boardAsString().replaceAll("\n", ""));
+        Field oldField = createGame(oldLevel);
+
+        for (Point point: board.get(Elements.ENEMY_HEAD_DEAD)) {
+            SnakeImpl snake = newSnake();
+            initSnake(point, oldLevel, oldField, snake);
+            if (target.equals(snake.head())) {
+                return snake.size();
+            }
         }
         return 0;
     }
