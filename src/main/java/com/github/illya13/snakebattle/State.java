@@ -14,12 +14,12 @@ public interface State {
     int step();
 
     Me me();
-    Collection<Enemy> enemies();
+    List<Enemy> enemies();
 
     interface Snake {
         Direction direction();
         Point head();
-        Collection<Point> body();
+        List<Point> body();
         int size();
 
         boolean isFury();
@@ -28,7 +28,7 @@ public interface State {
         boolean isFly();
         int fly();
 
-        Collection<Action> actions();
+        List<Action> actions();
 
         int reward();
     }

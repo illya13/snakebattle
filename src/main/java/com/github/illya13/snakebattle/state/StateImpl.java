@@ -107,8 +107,8 @@ public class StateImpl implements State {
     }
 
     @Override
-    public Collection<Enemy> enemies() {
-        return enemies.values();
+    public List<Enemy> enemies() {
+        return new LinkedList<>(enemies.values());
     }
 
     private List<Snake> snakes() {
@@ -184,7 +184,7 @@ public class StateImpl implements State {
         }
 
         @Override
-        public Collection<Point> body() {
+        public List<Point> body() {
             return body;
         }
 
@@ -218,7 +218,7 @@ public class StateImpl implements State {
         }
 
         @Override
-        public Collection<Action> actions() {
+        public List<Action> actions() {
             return actions;
         }
 
