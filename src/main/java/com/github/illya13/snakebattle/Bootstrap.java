@@ -14,6 +14,7 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     Observer observer;
     Solver solver;
     Direction direction;
+    State state;
 
     Bootstrap(Dice dice) {
         observer = new ObserverImpl();
@@ -30,7 +31,7 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
             return "";
         }
 
-        State state = (!initialized) ? observer.init(board) : observer.update(board, direction);
+        state = (!initialized) ? observer.init(board) : observer.update(board, direction);
         System.out.println(state.toString());
 
         direction = solver.next(state);

@@ -4,17 +4,9 @@ import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 
 import com.codenjoy.dojo.snakebattle.model.Elements;
-import com.codenjoy.dojo.snakebattle.model.board.Field;
-import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
-import com.codenjoy.dojo.snakebattle.model.board.Timer;
-import com.codenjoy.dojo.snakebattle.model.hero.Hero;
-import com.codenjoy.dojo.snakebattle.model.hero.Tail;
-import com.codenjoy.dojo.snakebattle.model.level.LevelImpl;
 
 import com.github.illya13.snakebattle.Board;
 import com.github.illya13.snakebattle.State;
-
-import java.lang.reflect.Method;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,8 +17,6 @@ import static com.github.illya13.snakebattle.Board.*;
 
 public class StateImpl implements State {
     Board board;
-    LevelImpl level;
-    Field field;
     BFS bfs;
 
     int step;
@@ -38,9 +28,6 @@ public class StateImpl implements State {
 
     private StateImpl(Board board) {
         this.board = board;
-
-        level = new LevelImpl(board.boardAsString().replaceAll("\n", ""));
-        field = createGame(level);
 
         bfs = new BFS(board);
 
@@ -157,7 +144,7 @@ public class StateImpl implements State {
         public SnakeImpl(Point head) {
             this();
 
-            initSnake(head, level, field, this);
+            initSnake(head, board, this);
             initActions();
         }
 
@@ -284,8 +271,8 @@ public class StateImpl implements State {
             if (!isFly() && prev.isAt(head(), STONE)) {
                 result += 5;
             }
-            if (board.isAt(head(), ENEMY_HEAD_DEAD)) {
-                result += 10 * deadSize(head(), board);
+            if (!board.get(Elements.ENEMY_HEAD_DEAD).isEmpty()) {
+                result += 10 * deadSize(this, board);
             }
             if (!isFly() && prev.isAt(head(), ENEMY_ELEMENTS)) {
                 result += 10 * eatSize(head(), direction().inverted().change(head()), prev);
@@ -363,34 +350,8 @@ public class StateImpl implements State {
         }
     }
 
+
     // HELPERS
-
-    static Method parseSnake;
-    static Method getDirection;
-
-    static {
-        try {
-            parseSnake = LevelImpl.class.getDeclaredMethod("parseSnake", Point.class, Field.class);
-            parseSnake.setAccessible(true);
-            getDirection = Hero.class.getDeclaredMethod("getDirection");
-            getDirection.setAccessible(true);
-        } catch (NoSuchMethodException ignored) {
-            // no op
-        }
-    }
-
-    private static Field createGame(LevelImpl level) {
-        return new SnakeBoard(level,null,
-                new Timer(new com.codenjoy.dojo.services.settings.SimpleParameter<>(5)),
-                new Timer(new com.codenjoy.dojo.services.settings.SimpleParameter<>(300)),
-                new Timer(new com.codenjoy.dojo.services.settings.SimpleParameter<>(1)),
-                new com.codenjoy.dojo.services.settings.SimpleParameter<>(1),
-                new com.codenjoy.dojo.services.settings.SimpleParameter<>(10),
-                new com.codenjoy.dojo.services.settings.SimpleParameter<>(10),
-                new com.codenjoy.dojo.services.settings.SimpleParameter<>(3),
-                new com.codenjoy.dojo.services.settings.SimpleParameter<>(40)
-        );
-    }
 
     private SnakeImpl newSnake_() {
         return new SnakeImpl();
@@ -400,19 +361,12 @@ public class StateImpl implements State {
         return new StateImpl().newSnake_();
     }
 
-    private static void initSnake(Point head, LevelImpl level, Field field, SnakeImpl snake) {
-        snake.head = head;
-        try {
-            Hero hero = (Hero) parseSnake.invoke(level, head, field);
-            snake.direction = (Direction) getDirection.invoke(hero);
+    private static void initSnake(Point head, Board aBoard, SnakeImpl snake) {
+        Parser.ParsedSnake parsed = new Parser(aBoard).parseSnake(head);
 
-            for (Tail tail : hero.body()) {
-                snake.body.addFirst(tail);
-            }
-
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
-        }
+        snake.head = parsed.head();
+        snake.direction = parsed.direction();
+        snake.body = parsed.body();
     }
 
     private static void initPills(Board prev, SnakeImpl snake) {
@@ -421,13 +375,10 @@ public class StateImpl implements State {
     }
 
     private static int eatSize(Point target, Point winner, Board prev) {
-        LevelImpl oldLevel = new LevelImpl(prev.boardAsString().replaceAll("\n", ""));
-        Field oldField = createGame(oldLevel);
-
         List<SnakeImpl> all = new LinkedList<>();
         if (!winner.equals(prev.getMe())) {
             SnakeImpl snake = newSnake();
-            initSnake(prev.getMe(), oldLevel, oldField, snake);
+            initSnake(prev.getMe(), prev, snake);
             initPills(prev, snake);
             all.add(snake);
         }
@@ -435,7 +386,7 @@ public class StateImpl implements State {
         for(Point p: prev.getEnemies()) {
             if (!winner.equals(p)) {
                 SnakeImpl snake = newSnake();
-                initSnake(p, oldLevel, oldField, snake);
+                initSnake(p, prev, snake);
                 initPills(prev, snake);
                 all.add(snake);
             }
@@ -445,28 +396,38 @@ public class StateImpl implements State {
             if (snake.isFly())
                 continue;
 
-            int i = 0;
-            for (Point p : snake.body()) {
-                if (p.equals(target)) {
-                    return snake.size() - i;
-                }
-                i++;
-            }
+            int i = inSnake(target, snake);
+            if (i != -1) return i;
         }
 
         return 0;
     }
 
-    private static int deadSize(Point target, Board board) {
-        LevelImpl oldLevel = new LevelImpl(board.boardAsString().replaceAll("\n", ""));
-        Field oldField = createGame(oldLevel);
+    private static Integer inSnake(Point target, Snake snake) {
+        int i = 0;
+        for (Point p : snake.body()) {
+            if (p.equals(target)) {
+                return snake.size() - i;
+            }
+            i++;
+        }
+        return -1;
+    }
 
+    private static int deadSize(Snake alive, Board board) {
         for (Point point: board.get(Elements.ENEMY_HEAD_DEAD)) {
             SnakeImpl snake = newSnake();
-            initSnake(point, oldLevel, oldField, snake);
-            if (target.equals(snake.head())) {
-                return snake.size();
+            initSnake(point, board, snake);
+
+            int i = inSnake(snake.head(), alive);
+            if (i == -1) continue;
+
+            if ((i == 0) && snake.size() == alive.size()) {
+                // still getting alive snake
+                // need to find dead
+                System.out.println("fuck up");
             }
+            return snake.size();
         }
         return 0;
     }
