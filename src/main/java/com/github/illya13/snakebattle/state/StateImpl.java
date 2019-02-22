@@ -72,8 +72,19 @@ public class StateImpl implements State {
     }
 
     private static void copyFrom(EnemyImpl enemy, Map<Point, Enemy> enemies) {
-        EnemyImpl old = (EnemyImpl) enemies.get(enemy.direction().inverted().change(enemy.head()));
-        enemy.copyFrom(old);
+        EnemyImpl old = (EnemyImpl) enemies.remove(enemy.direction().inverted().change(enemy.head()));
+        if (old != null) {
+            enemy.copyFrom(old);
+            return;
+        }
+
+        for(Direction direction: all) {
+            old = (EnemyImpl) enemies.remove(direction.change(enemy.head()));
+            if (old != null) {
+                enemy.copyFrom(old);
+                return;
+            }
+        }
     }
 
     public void update() {
@@ -258,6 +269,11 @@ public class StateImpl implements State {
         }
 
         private int detectReward(Board prev) {
+            // seems only 1 possible reward
+            if (endOfRoundWin()) {
+                return 50;
+            }
+
             int result = 0;
             if (prev.isAt(head(), APPLE)) {
                 result += 1;
@@ -265,7 +281,7 @@ public class StateImpl implements State {
             if (prev.isAt(head(), GOLD)) {
                 result += 10;
             }
-            if (prev.isAt(head(), STONE)) {
+            if (!isFly() && prev.isAt(head(), STONE)) {
                 result += 5;
             }
             if (board.isAt(head(), ENEMY_HEAD_DEAD)) {
@@ -273,9 +289,6 @@ public class StateImpl implements State {
             }
             if (!isFly() && prev.isAt(head(), ENEMY_ELEMENTS)) {
                 result += 10 * eatSize(head(), direction().inverted().change(head()), prev);
-            }
-            if (endOfRoundWin()) {
-                result += 50;
             }
             return result;
         }
