@@ -16,10 +16,7 @@ import com.github.illya13.snakebattle.State;
 
 import java.lang.reflect.Method;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
@@ -29,43 +26,66 @@ import static com.github.illya13.snakebattle.Board.*;
 public class StateImpl implements State {
     Board board;
     LevelImpl level;
+    Field field;
     BFS bfs;
 
     int step;
 
     MeImpl me;
-    List<Enemy> enemies;
+    Map<Point, Enemy> enemies;
 
-    public StateImpl() {
-        me = new MeImpl();
-        enemies = new LinkedList<>();
-    }
-
-    public void reset() {
-        step = 0;
-        me.reset();
-        enemies.clear();
-    }
-
-    public void initStep(Board board) {
+    private StateImpl(Board board) {
         this.board = board;
+
         level = new LevelImpl(board.boardAsString().replaceAll("\n", ""));
+        field = createGame(level);
+
         bfs = new BFS(board);
 
-        step++;
-        me.initStep(board.getMe());
+        me = new MeImpl(board.getMe());
 
-        enemies.clear();
+        enemies = new HashMap<>();
         for(Point point: board.getEnemies()) {
-            EnemyImpl enemy = new EnemyImpl();
-            enemy.reset();
-            enemy.initStep(point);
-            enemies.add(enemy);
+            EnemyImpl enemy = new EnemyImpl(point);
+            enemies.put(enemy.head(), enemy);
         }
     }
 
-    public void stepTo(Direction direction) {
-        me.stepTo(direction);
+    public static StateImpl fromBoard(Board board) {
+        StateImpl state = new StateImpl(board);
+        state.step = 1;
+        return state;
+    }
+
+    public static StateImpl fromState(StateImpl old, Direction from, Board board) {
+        StateImpl state = new StateImpl(board);
+        state.step = old.step+1;
+
+        state.me.copyFrom(old.me);
+        state.me.direction = from;
+        for (Enemy enemy : state.enemies()) {
+            copyFrom((EnemyImpl)enemy, old.enemies);
+        }
+        return state;
+    }
+
+    private static void copyFrom(EnemyImpl enemy, Map<Point, Enemy> enemies) {
+        EnemyImpl old = (EnemyImpl) enemies.get(enemy.direction().inverted().change(enemy.head()));
+        enemy.copyFrom(old);
+    }
+
+    public void update() {
+        me.update();
+        for (Enemy enemy : enemies()) {
+            ((EnemyImpl)enemy).update();
+        }
+    }
+
+    public void stepFrom(Board prev) {
+        me.stepFrom(prev);
+        for (Enemy enemy : enemies()) {
+            ((EnemyImpl)enemy).stepFrom(prev);
+        }
     }
 
     @Override
@@ -89,8 +109,8 @@ public class StateImpl implements State {
     }
 
     @Override
-    public List<Enemy> enemies() {
-        return enemies;
+    public Collection<Enemy> enemies() {
+        return enemies.values();
     }
 
     @Override
@@ -105,38 +125,50 @@ public class StateImpl implements State {
         Direction direction;
         Point head;
         LinkedList<Point> body;
+
         int furyCounter;
         int flyCounter;
+        int reward;
 
         private List<Action> actions;
 
-        public SnakeImpl() {
+        public SnakeImpl(Point head) {
             body = new LinkedList<>();
             actions = new LinkedList<>();
-        }
 
-        public void reset() {
             furyCounter = 0;
             flyCounter = 0;
-        }
+            reward = 0;
 
-        public void initStep(Point head) {
             initSnake(head);
             initActions();
         }
 
-        private void initSnake(Point head) {
-            Field field = createGame(level);
+        public void copyFrom(SnakeImpl other) {
+            furyCounter = other.furyCounter;
+            flyCounter = other.flyCounter;
 
+            reward = other.reward;
+        }
+
+        public void update() {
+            checkAndDecPills();
+        }
+
+        public void stepFrom(Board prev) {
+            if (prev.isAt(head(), Elements.FURY_PILL)) {
+                incFury();
+            } else if (prev.isAt(head(), Elements.FLYING_PILL)) {
+                incFly();
+            }
+        }
+
+        private void initSnake(Point head) {
             this.head = head;
             try {
                 Hero hero = (Hero) parseSnake.invoke(level, head, field);
                 direction = (Direction) getDirection.invoke(hero);
-                if (hero.isFury() || hero.isFlying()) {
-                    checkAndDecPills();
-                }
 
-                body.clear();
                 for (Tail tail : hero.body()) {
                     body.addFirst(tail);
                 }
@@ -178,7 +210,7 @@ public class StateImpl implements State {
         }
 
         @Override
-        public List<Point> body() {
+        public Collection<Point> body() {
             return body;
         }
 
@@ -221,61 +253,51 @@ public class StateImpl implements State {
         }
 
         @Override
-        public List<Action> actions() {
+        public Collection<Action> actions() {
             return actions;
         }
 
         @Override
+        public int reward() {
+            return reward;
+        }
+
+        @Override
         public String toString() {
-            return direction + "[" + size() + "]" + pillsToString() + ", actions: " + actions();
+            return "{" + reward + "} " + direction + "[" + size() + "]" + pillsToString();
         }
 
         String pillsToString() {
-            return (isFury() ? ", fury" : "") +
-                    (isFly() ? ", fly" : "");
+            return (isFury() ? ", fury[" + fury() + "]" : "") +
+                    (isFly() ? ", fly[" + fly()+ "]" : "");
         }
     }
 
 
     private class EnemyImpl extends SnakeImpl implements Enemy {
-        public void initStep(Point head) {
-            if (board.isAt(head, ENEMY_HEAD_EVIL)) {
-                incFury();
-            } else if (board.isAt(head, ENEMY_HEAD_FLY)) {
-                incFly();
-            }
-            super.initStep(head);
+        public EnemyImpl(Point head) {
+            super(head);
         }
     }
 
 
     private class MeImpl extends SnakeImpl implements Me {
-        int reward;
-
-        public void reset() {
-            super.reset();
-            reward = 0;
+        public MeImpl(Point head) {
+            super(head);
         }
 
-        public void initStep(Point head) {
-            super.initStep(head);
-            handleCurrentReward();
-        }
-
+/*
         public void stepTo(Direction next) {
             Point point = next.change(head());
             updatePills(point);
             handleFutureReward(point);
         }
+*/
 
-        private void updatePills(Point point) {
-            if (board.isAt(point, Elements.FURY_PILL)) {
-                incFury();
-            } else if (board.isAt(point, Elements.FLYING_PILL)) {
-                incFly();
-            }
-        }
+/*
+*/
 
+/*
         private void handleCurrentReward() {
             int dx = getCurrentReward();
             if (dx > 0) {
@@ -283,12 +305,14 @@ public class StateImpl implements State {
                 System.out.println("+" + dx);
             }
         }
+*/
 
+/*
         private int getCurrentReward() {
             for (Point point: board.get(Elements.ENEMY_HEAD_DEAD)) {
                 EnemyImpl enemy = new EnemyImpl();
                 enemy.reset();
-                enemy.initStep(point);
+                enemy.init(point);
 
                 for (Point p: me.body()) {
                     if (p.equals(enemy.head())) {
@@ -298,7 +322,9 @@ public class StateImpl implements State {
             }
             return 0;
         }
+*/
 
+/*
         private void handleFutureReward(Point point) {
             int dx = getFutureReward(point);
             if (dx > 0) {
@@ -332,7 +358,9 @@ public class StateImpl implements State {
             }
             return 0;
         }
+*/
 
+/*
         private boolean endOfRoundWin() {
             if (enemies().isEmpty() && board.get(ENEMY_HEAD_DEAD).isEmpty())
                 return true;
@@ -343,7 +371,7 @@ public class StateImpl implements State {
                     max = enemy.size();
                 }
             }
-            return (step() == 300) && (size() > max);
+            return (initFromBoard() == 300) && (size() > max);
         }
 
         private boolean flyCase(Enemy enemy) {
@@ -357,22 +385,7 @@ public class StateImpl implements State {
         private boolean eatEnemy(Enemy enemy, int i) {
             return isFury() && !enemy.isFury();
         }
-
-        @Override
-        public int reward() {
-            return reward;
-        }
-
-        @Override
-        String pillsToString() {
-            return (isFury() ? ", fury[" + fury() + "]" : "") +
-                    (isFly() ? ", fly[" + fly()+ "]" : "");
-        }
-
-        @Override
-        public String toString() {
-            return "{" + reward + "} " + super.toString();
-        }
+*/
     }
 
 

@@ -58,7 +58,7 @@ public class Board extends AbstractBoard<Elements> {
     public Point getMe() {
         return (!get(MY_HEAD_ELEMENTS).isEmpty())
                 ? get(MY_HEAD_ELEMENTS).get(0)
-                : get(ENEMY_HEAD_DEAD).get(0);
+                : get(ENEMY_HEAD_FLY, ENEMY_HEAD_DEAD).get(0);
     }
 
     public boolean isGameStart() {
