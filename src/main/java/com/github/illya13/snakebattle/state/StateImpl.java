@@ -5,8 +5,6 @@ import com.codenjoy.dojo.services.Point;
 
 import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.codenjoy.dojo.snakebattle.model.board.Field;
-import com.codenjoy.dojo.snakebattle.model.board.SnakeBoard;
-import com.codenjoy.dojo.snakebattle.model.board.Timer;
 import com.codenjoy.dojo.snakebattle.model.hero.Hero;
 import com.codenjoy.dojo.snakebattle.model.hero.Tail;
 import com.codenjoy.dojo.snakebattle.model.level.LevelImpl;
@@ -26,7 +24,6 @@ import static com.github.illya13.snakebattle.Board.*;
 public class StateImpl implements State {
     Board board;
     LevelImpl level;
-    Field field;
     BFS bfs;
 
     int step;
@@ -34,12 +31,12 @@ public class StateImpl implements State {
     MeImpl me;
     Map<Point, Enemy> enemies;
 
+    private StateImpl() {}
+
     private StateImpl(Board board) {
         this.board = board;
 
         level = new LevelImpl(board.boardAsString().replaceAll("\n", ""));
-        field = createGame(level);
-
         bfs = new BFS(board);
 
         me = new MeImpl(board.getMe());
@@ -132,15 +129,19 @@ public class StateImpl implements State {
 
         private List<Action> actions;
 
-        public SnakeImpl(Point head) {
+        private SnakeImpl() {
             body = new LinkedList<>();
             actions = new LinkedList<>();
 
             furyCounter = 0;
             flyCounter = 0;
             reward = 0;
+        }
 
-            initSnake(head);
+        public SnakeImpl(Point head) {
+            this();
+
+            initSnake(head, level, this);
             initActions();
         }
 
@@ -161,43 +162,8 @@ public class StateImpl implements State {
             } else if (prev.isAt(head(), Elements.FLYING_PILL)) {
                 incFly();
             }
+            // updateReward(prev);
         }
-
-        private void initSnake(Point head) {
-            this.head = head;
-            try {
-                Hero hero = (Hero) parseSnake.invoke(level, head, field);
-                direction = (Direction) getDirection.invoke(hero);
-
-                for (Tail tail : hero.body()) {
-                    body.addFirst(tail);
-                }
-
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
-        }
-
-        private void initActions() {
-            Elements[] barrier = (isFly() || isFury())
-                    ? BARRIER_ELEMENTS
-                    : join(BARRIER_ELEMENTS, MY_ELEMENTS, ENEMY_ELEMENTS);
-
-            Elements[] target = new Elements[] {APPLE, GOLD, STONE, FURY_PILL, FLYING_PILL};
-
-            Direction inverted = direction().inverted();
-            actions.clear();
-            for(Direction d: all) {
-                if (d.equals(inverted))
-                    continue;
-
-                if (board.isAt(d.change(head()), barrier))
-                    continue;
-
-                actions.add(new ActionImpl(d,this, barrier, target));
-            }
-        }
-
 
         @Override
         public Direction direction() {
@@ -229,15 +195,6 @@ public class StateImpl implements State {
             return furyCounter;
         }
 
-        void checkAndDecPills() {
-            if (isFury()) furyCounter--;
-            if (isFly()) flyCounter--;
-        }
-
-        void incFury() {
-            furyCounter += MAX_DURATION;
-        }
-
         @Override
         public boolean isFly() {
             return flyCounter > 0;
@@ -267,37 +224,80 @@ public class StateImpl implements State {
             return "{" + reward + "} " + direction + "[" + size() + "]" + pillsToString();
         }
 
-        String pillsToString() {
-            return (isFury() ? ", fury[" + fury() + "]" : "") +
-                    (isFly() ? ", fly[" + fly()+ "]" : "");
+        private void initActions() {
+            Elements[] barrier = (isFly() || isFury())
+                    ? BARRIER_ELEMENTS
+                    : join(BARRIER_ELEMENTS, MY_ELEMENTS, ENEMY_ELEMENTS);
+
+            Elements[] target = new Elements[] {APPLE, GOLD, STONE, FURY_PILL, FLYING_PILL};
+
+            Direction inverted = direction().inverted();
+            actions.clear();
+            for(Direction d: all) {
+                if (d.equals(inverted))
+                    continue;
+
+                if (board.isAt(d.change(head()), barrier))
+                    continue;
+
+                actions.add(new ActionImpl(d,this, barrier, target));
+            }
         }
-    }
 
-
-    private class EnemyImpl extends SnakeImpl implements Enemy {
-        public EnemyImpl(Point head) {
-            super(head);
-        }
-    }
-
-
-    private class MeImpl extends SnakeImpl implements Me {
-        public MeImpl(Point head) {
-            super(head);
+        private void updateReward(Board prev) {
+            int dx = detectReward(prev);
+            if (dx > 0) {
+                reward += dx;
+                System.out.println("+" + dx);
+            }
         }
 
+        private int detectReward(Board prev) {
+            if (endOfRoundWin()) {
+                return 50;
+            } else if (prev.isAt(head(), APPLE)) {
+                return 1;
+            } else if (prev.isAt(head(), GOLD)) {
+                return 10;
+            } else if (prev.isAt(head(), STONE)) {
+                return 5;
+            } else if (prev.isAt(head(), ENEMY_ELEMENTS)) {
+                return 10 * oppositeSize(direction().inverted().change(head()), prev);
+                // find snake size on old board
 /*
-        public void stepTo(Direction next) {
-            Point point = next.change(head());
-            updatePills(point);
-            handleFutureReward(point);
-        }
+                for (Enemy enemy: enemies()) {
+                    int i = 0;
+                    for (Point p : enemy.body()) {
+                        if (p.equals(point)) {
+                            if (!flyCase(enemy) && (fightVictory(enemy, i) || eatEnemy(enemy, i))) {
+                                return (enemy.size() - i) * 10;
+                            }
+                            return 0;
+                        }
+                        i++;
+                    }
+                }
 */
+            }
+            return 0;
+        }
+
+        private boolean endOfRoundWin() {
+            if (enemies().isEmpty() && board.get(ENEMY_HEAD_DEAD).isEmpty())
+                return true;
+
+            int max = 0;
+            for(Enemy enemy: enemies()) {
+                if (enemy.size() > max) {
+                    max = enemy.size();
+                }
+            }
+            return (step() == 300) && (size() > max);
+        }
 
 /*
-*/
 
-/*
+
         private void handleCurrentReward() {
             int dx = getCurrentReward();
             if (dx > 0) {
@@ -325,54 +325,10 @@ public class StateImpl implements State {
 */
 
 /*
-        private void handleFutureReward(Point point) {
-            int dx = getFutureReward(point);
-            if (dx > 0) {
-                reward += dx;
-                System.out.println("+" + dx);
-            }
-        }
 
-        private int getFutureReward(Point point) {
-            if (endOfRoundWin()) {
-                return 50;
-            } else if (board.isAt(point, APPLE)) {
-                return 1;
-            } else if (board.isAt(point, GOLD)) {
-                return 10;
-            } else if (board.isAt(point, STONE) && size() >= 5) {
-                return 5;
-            } else if (board.isAt(point, ENEMY_ELEMENTS)) {
-                for (Enemy enemy: enemies()) {
-                    int i = 0;
-                    for (Point p: enemy.body()) {
-                        if (p.equals(point)) {
-                            if (!flyCase(enemy) && (fightVictory(enemy, i) || eatEnemy(enemy, i))) {
-                                return (enemy.size()-i) * 10;
-                            }
-                            return 0;
-                        }
-                        i++;
-                    }
-                }
-            }
-            return 0;
-        }
 */
 
 /*
-        private boolean endOfRoundWin() {
-            if (enemies().isEmpty() && board.get(ENEMY_HEAD_DEAD).isEmpty())
-                return true;
-
-            int max = 0;
-            for(Enemy enemy: enemies()) {
-                if (enemy.size() > max) {
-                    max = enemy.size();
-                }
-            }
-            return (initFromBoard() == 300) && (size() > max);
-        }
 
         private boolean flyCase(Enemy enemy) {
             return isFly() || enemy.isFly();
@@ -386,6 +342,34 @@ public class StateImpl implements State {
             return isFury() && !enemy.isFury();
         }
 */
+
+        private void checkAndDecPills() {
+            if (isFury()) furyCounter--;
+            if (isFly()) flyCounter--;
+        }
+
+        private void incFury() {
+            furyCounter += MAX_DURATION;
+        }
+
+        private String pillsToString() {
+            return (isFury() ? ", fury[" + fury() + "]" : "") +
+                    (isFly() ? ", fly[" + fly()+ "]" : "");
+        }
+    }
+
+
+    private class EnemyImpl extends SnakeImpl implements Enemy {
+        public EnemyImpl(Point head) {
+            super(head);
+        }
+    }
+
+
+    private class MeImpl extends SnakeImpl implements Me {
+        public MeImpl(Point head) {
+            super(head);
+        }
     }
 
 
@@ -432,16 +416,43 @@ public class StateImpl implements State {
         }
     }
 
-    private static Field createGame(LevelImpl level) {
-        return new SnakeBoard(level,null,
-                new Timer(new com.codenjoy.dojo.services.settings.SimpleParameter<>(5)),
-                new Timer(new com.codenjoy.dojo.services.settings.SimpleParameter<>(300)),
-                new Timer(new com.codenjoy.dojo.services.settings.SimpleParameter<>(1)),
-                new com.codenjoy.dojo.services.settings.SimpleParameter<>(1),
-                new com.codenjoy.dojo.services.settings.SimpleParameter<>(10),
-                new com.codenjoy.dojo.services.settings.SimpleParameter<>(10),
-                new com.codenjoy.dojo.services.settings.SimpleParameter<>(3),
-                new com.codenjoy.dojo.services.settings.SimpleParameter<>(40)
-        );
+    private SnakeImpl newSnake_() {
+        return new SnakeImpl();
+    }
+
+    private static SnakeImpl newSnake() {
+        return new StateImpl().newSnake_();
+    }
+
+    private static void initSnake(Point head, LevelImpl level, SnakeImpl snake) {
+        snake.head = head;
+        try {
+            Hero hero = (Hero) parseSnake.invoke(level, head, null);
+            snake.direction = (Direction) getDirection.invoke(hero);
+
+            for (Tail tail : hero.body()) {
+                snake.body.addFirst(tail);
+            }
+
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
+        }
+    }
+
+    private static int oppositeSize(Point winner, Board prev) {
+        LevelImpl oldLevel = new LevelImpl(prev.boardAsString().replaceAll("\n", ""));
+
+        List<SnakeImpl> all = new LinkedList<>();
+
+        SnakeImpl snake = newSnake();
+        initSnake(prev.getMe(), oldLevel, snake);
+        all.add(snake);
+
+        for(Point p: prev.getEnemies()) {
+            snake = newSnake();
+            initSnake(p, oldLevel, snake);
+            all.add(snake);
+        }
+        return 0;
     }
 }
