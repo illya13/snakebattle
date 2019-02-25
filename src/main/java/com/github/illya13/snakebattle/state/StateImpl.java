@@ -115,7 +115,7 @@ public class StateImpl implements State {
     }
 
 
-    private abstract class SnakeImpl extends Parser.ParsedSnake implements Snake {
+    public abstract class SnakeImpl extends Parser.ParsedSnake implements Snake {
         private static final int MAX_DURATION = 10;
 
         int furyCounter;
@@ -239,14 +239,14 @@ public class StateImpl implements State {
     }
 
 
-    private class EnemyImpl extends SnakeImpl implements Enemy {
+    public class EnemyImpl extends SnakeImpl implements Enemy {
         EnemyImpl(Parser.ParsedSnake other) {
             super(other);
         }
     }
 
 
-    private class MeImpl extends SnakeImpl implements Me {
+    public class MeImpl extends SnakeImpl implements Me {
         MeImpl(Parser.ParsedSnake other) {
             super(other);
         }

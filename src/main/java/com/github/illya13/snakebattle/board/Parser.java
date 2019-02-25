@@ -237,7 +237,7 @@ public class Parser {
     }
 
     private Elements getAt(Point pt) {
-        return board.getAt(pt);
+        return (pt.isOutOf(board.size())) ? null : board.getAt(pt);
     }
 
 
