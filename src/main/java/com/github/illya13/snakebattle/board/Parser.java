@@ -26,7 +26,7 @@ public class Parser {
         parsed.direction = direction;
 
         Elements headElement = getAt(head);
-        if (Arrays.asList(HEAD_FLY).contains(headElement)) {
+        if (Arrays.asList(HEAD_FLY, ENEMY_HEAD_FLY).contains(headElement)) {
             direction = getHeadDirectionWithMod(head);
             parsed.direction = direction;
         }
@@ -36,7 +36,7 @@ public class Parser {
             parsed.direction = direction;
         }
 
-        if (Arrays.asList(HEAD_DEAD).contains(headElement)) {
+        if (Arrays.asList(HEAD_DEAD, ENEMY_HEAD_DEAD).contains(headElement)) {
             direction = getHeadDirectionWithMod(head);
             parsed.direction = direction;
         }

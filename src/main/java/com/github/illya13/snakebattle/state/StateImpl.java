@@ -322,43 +322,6 @@ public class StateImpl implements State {
 
     // HELPERS
 
-/*
-    private StateImpl() {}
-
-    private EnemyImpl newEnemy_() {
-        return new EnemyImpl();
-    }
-
-    private static EnemyImpl newEnemy() {
-        return new StateImpl().newEnemy_();
-    }
-
-    private MeImpl newMe_() {
-        return new MeImpl();
-    }
-
-    private static MeImpl newMe() {
-        return new StateImpl().newMe_();
-    }
-
-    private static void initMe(Point head, Board aBoard, MeImpl snake) {
-        Parser.ParsedSnake parsed = new Parser(aBoard).parseSnake(head);
-
-        snake.head = parsed.head();
-        snake.direction = parsed.direction();
-        snake.body = parsed.body();
-    }
-
-    private static void initEnemy(Point head, Board aBoard, EnemyImpl snake) {
-        Parser.ParsedSnake parsed = new Parser(aBoard).parseEnemy(head);
-
-        snake.head = parsed.head();
-        snake.direction = parsed.direction();
-        snake.body = parsed.body();
-    }
-
-*/
-
     private static int eatSize(Point target, Point winner, Board prev) {
         for (Parser.ParsedSnake snake: prev.allSnakes()) {
             if (snake.isFly() || winner.equals(snake.head()))
@@ -373,8 +336,10 @@ public class StateImpl implements State {
 
     private static int deadSize(Parser.ParsedSnake alive, Board board) {
         for (Parser.ParsedSnake dead: board.getDeadSnakes()) {
-
             int i = alive.inSnake(dead.head());
+            if ((i == 0) && !alive.isFury() && (alive.size() - dead.size() < 2))
+                return 0;
+
             if (i == -1) continue;
 
             return dead.size();
