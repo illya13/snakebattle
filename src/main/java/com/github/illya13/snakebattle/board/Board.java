@@ -1,4 +1,4 @@
-package com.github.illya13.snakebattle;
+package com.github.illya13.snakebattle.board;
 
 
 import com.codenjoy.dojo.client.AbstractBoard;
@@ -7,6 +7,9 @@ import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 
@@ -45,6 +48,14 @@ public class Board extends AbstractBoard<Elements> {
         return result;
     }
 
+    private Parser parser;
+    private BFS bfs;
+
+    public Board() {
+        parser = new Parser(this);
+        bfs = new BFS(this);
+    }
+
     @Override
     public Elements valueOf(char ch) {
         return Elements.valueOf(ch);
@@ -55,10 +66,11 @@ public class Board extends AbstractBoard<Elements> {
         return size - 1 - y;
     }
 
-    public Point getMe() {
-        return (!get(MY_HEAD_ELEMENTS).isEmpty())
+    public Parser.ParsedSnake getMe() {
+        Point head = (!get(MY_HEAD_ELEMENTS).isEmpty())
                 ? get(MY_HEAD_ELEMENTS).get(0)
                 : get(ENEMY_HEAD_FLY, ENEMY_HEAD_DEAD).get(0);
+        return parser.parseSnake(head);
     }
 
     public boolean isGameStart() {
@@ -69,7 +81,41 @@ public class Board extends AbstractBoard<Elements> {
         return !get(HEAD_DEAD).isEmpty();
     }
 
-    public List<Point> getEnemies() {
-        return get(ENEMY_HEAD_ELEMENTS);
+    public boolean isLastStep() {
+        return getEnemies().isEmpty() && getDeadSnakes().isEmpty();
+    }
+
+    public List<Parser.ParsedSnake> getEnemies() {
+        return get(ENEMY_HEAD_ELEMENTS).stream()
+                .map(parser::parseEnemy).collect(Collectors.toList());
+    }
+
+    public List<Parser.ParsedSnake> getDeadSnakes() {
+        return get(ENEMY_HEAD_DEAD).stream()
+                .map(parser::parseEnemy).collect(Collectors.toList());
+    }
+
+    public List<Parser.ParsedSnake> allSnakes() {
+        return Stream.concat(
+                Stream.of(getMe()),
+                get(ENEMY_HEAD_ELEMENTS).stream().map(parser::parseEnemy)
+        ).collect(Collectors.toList());
+    }
+
+    public int maxOtherSnakeSize(Parser.ParsedSnake first) {
+        int max = 0;
+        for(Parser.ParsedSnake snake: allSnakes()) {
+            if (snake.head().equals(first.head()))
+                continue;
+
+            if (snake.size() > max) {
+                max = snake.size();
+            }
+        }
+        return max;
+    }
+
+    public Map<Point, Integer> bfs(Parser.ParsedSnake snake, Point start, Elements[] barrier, Elements[] targets) {
+        return bfs.bfs(snake, start, barrier, targets);
     }
 }

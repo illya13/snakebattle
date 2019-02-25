@@ -1,30 +1,26 @@
-package com.github.illya13.snakebattle.state;
+package com.github.illya13.snakebattle.board;
 
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.Elements;
-import com.github.illya13.snakebattle.Board;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
-import static com.codenjoy.dojo.snakebattle.model.Elements.ENEMY_HEAD_EVIL;
-import static com.github.illya13.snakebattle.Board.*;
+import static com.github.illya13.snakebattle.board.Board.*;
+
 
 public class Parser {
-    Board board;
+    private Board board;
 
     public Parser(Board board) {
         this.board = board;
     }
 
-    private Elements getAt(Point pt) {
-        return board.getAt(pt);
-    }
-
     public ParsedSnake parseSnake(Point head) {
         ParsedSnake parsed = new ParsedSnake(head);
+        initPills(parsed);
 
         Direction direction = getDirection(head);
         parsed.direction = direction;
@@ -59,6 +55,7 @@ public class Parser {
 
     public ParsedSnake parseEnemy(Point head) {
         ParsedSnake parsed = new ParsedSnake(head);
+        initEnemyPills(parsed);
 
         Direction direction = getEnemyDirection(head);
         parsed.direction = direction;
@@ -96,8 +93,7 @@ public class Parser {
         if (Arrays.asList(Elements.BODY_HORIZONTAL,
                 Elements.BODY_RIGHT_DOWN,
                 Elements.BODY_RIGHT_UP,
-                Elements.TAIL_END_LEFT).contains(atLeft))
-        {
+                Elements.TAIL_END_LEFT).contains(atLeft)) {
             return Direction.RIGHT;
         }
 
@@ -105,8 +101,7 @@ public class Parser {
         if (Arrays.asList(Elements.BODY_HORIZONTAL,
                 Elements.BODY_LEFT_DOWN,
                 Elements.BODY_LEFT_UP,
-                Elements.TAIL_END_RIGHT).contains(atRight))
-        {
+                Elements.TAIL_END_RIGHT).contains(atRight)) {
             return Direction.LEFT;
         }
 
@@ -114,8 +109,7 @@ public class Parser {
         if (Arrays.asList(Elements.BODY_VERTICAL,
                 Elements.BODY_LEFT_UP,
                 Elements.BODY_RIGHT_UP,
-                Elements.TAIL_END_DOWN).contains(atDown))
-        {
+                Elements.TAIL_END_DOWN).contains(atDown)) {
             return Direction.UP;
         }
 
@@ -123,12 +117,11 @@ public class Parser {
         if (Arrays.asList(Elements.BODY_VERTICAL,
                 Elements.BODY_LEFT_DOWN,
                 Elements.BODY_RIGHT_DOWN,
-                Elements.TAIL_END_UP).contains(atUp))
-        {
+                Elements.TAIL_END_UP).contains(atUp)) {
             return Direction.DOWN;
         }
 
-        for (Direction direction: all) {
+        for (Direction direction : all) {
             if (Arrays.asList(MY_ELEMENTS).contains(getAt(direction.change(head))))
                 return direction.inverted();
         }
@@ -141,8 +134,7 @@ public class Parser {
         if (Arrays.asList(Elements.ENEMY_BODY_HORIZONTAL,
                 Elements.ENEMY_BODY_RIGHT_DOWN,
                 Elements.ENEMY_BODY_RIGHT_UP,
-                Elements.ENEMY_TAIL_END_LEFT).contains(atLeft))
-        {
+                Elements.ENEMY_TAIL_END_LEFT).contains(atLeft)) {
             return Direction.RIGHT;
         }
 
@@ -150,8 +142,7 @@ public class Parser {
         if (Arrays.asList(Elements.ENEMY_BODY_HORIZONTAL,
                 Elements.ENEMY_BODY_LEFT_DOWN,
                 Elements.ENEMY_BODY_LEFT_UP,
-                Elements.ENEMY_TAIL_END_RIGHT).contains(atRight))
-        {
+                Elements.ENEMY_TAIL_END_RIGHT).contains(atRight)) {
             return Direction.LEFT;
         }
 
@@ -159,8 +150,7 @@ public class Parser {
         if (Arrays.asList(Elements.ENEMY_BODY_VERTICAL,
                 Elements.ENEMY_BODY_LEFT_UP,
                 Elements.ENEMY_BODY_RIGHT_UP,
-                Elements.ENEMY_TAIL_END_DOWN).contains(atDown))
-        {
+                Elements.ENEMY_TAIL_END_DOWN).contains(atDown)) {
             return Direction.UP;
         }
 
@@ -168,12 +158,11 @@ public class Parser {
         if (Arrays.asList(Elements.ENEMY_BODY_VERTICAL,
                 Elements.ENEMY_BODY_LEFT_DOWN,
                 Elements.ENEMY_BODY_RIGHT_DOWN,
-                Elements.ENEMY_TAIL_END_UP).contains(atUp))
-        {
+                Elements.ENEMY_TAIL_END_UP).contains(atUp)) {
             return Direction.DOWN;
         }
 
-        for (Direction direction: all) {
+        for (Direction direction : all) {
             if (Arrays.asList(ENEMY_ELEMENTS).contains(getAt(direction.change(head))))
                 return direction.inverted();
         }
@@ -219,31 +208,67 @@ public class Parser {
 
     private Direction getDirection(Point point) {
         switch (getAt(point)) {
-            case HEAD_DOWN : return Direction.DOWN;
-            case HEAD_UP : return Direction.UP;
-            case HEAD_LEFT : return Direction.LEFT;
-            default : return Direction.RIGHT;
+            case HEAD_DOWN:
+                return Direction.DOWN;
+            case HEAD_UP:
+                return Direction.UP;
+            case HEAD_LEFT:
+                return Direction.LEFT;
+            default:
+                return Direction.RIGHT;
         }
     }
 
     private Direction getEnemyDirection(Point point) {
         switch (getAt(point)) {
-            case ENEMY_HEAD_DOWN : return Direction.DOWN;
-            case ENEMY_HEAD_UP : return Direction.UP;
-            case ENEMY_HEAD_LEFT : return Direction.LEFT;
-            default : return Direction.RIGHT;
+            case ENEMY_HEAD_DOWN:
+                return Direction.DOWN;
+            case ENEMY_HEAD_UP:
+                return Direction.UP;
+            case ENEMY_HEAD_LEFT:
+                return Direction.LEFT;
+            default:
+                return Direction.RIGHT;
         }
     }
 
-    public static class ParsedSnake {
-        Direction direction;
-        Point head;
-        LinkedList<Point> body;
+    private Elements getAt(Point pt) {
+        return board.getAt(pt);
+    }
 
-        public ParsedSnake(Point head) {
+
+    private void initPills(ParsedSnake snake) {
+        snake.isFury = (board.isAt(snake.head, HEAD_EVIL));
+        snake.isFly = (board.isAt(snake.head, HEAD_FLY));
+    }
+
+    private void initEnemyPills(ParsedSnake snake) {
+        snake.isFury = (board.isAt(snake.head, ENEMY_HEAD_EVIL));
+        snake.isFly = (board.isAt(snake.head, ENEMY_HEAD_FLY));
+    }
+
+
+    public static class ParsedSnake {
+        protected Direction direction;
+        private Point head;
+        private LinkedList<Point> body;
+
+        private boolean isFury;
+        private boolean isFly;
+
+
+        private ParsedSnake(Point head) {
             this.head = head;
             body = new LinkedList<>();
             body.addLast(head);
+        }
+
+        public ParsedSnake(ParsedSnake other) {
+            this.head = other.head();
+            this.body = other.body();
+            this.direction = other.direction();
+            this.isFury = other.isFury();
+            this.isFly = other.isFly();
         }
 
         public Direction direction() {
@@ -257,5 +282,30 @@ public class Parser {
         public LinkedList<Point> body() {
             return body;
         }
+
+        public int size() {
+            return body.size();
+        }
+
+        public boolean isFury() {
+            return isFury;
+        }
+
+        public boolean isFly() {
+            return isFly;
+        }
+
+        public int inSnake(Point target) {
+            int i = 0;
+            for (Point p : body()) {
+                if (p.equals(target)) {
+                    return i;
+                }
+                i++;
+            }
+            return -1;
+        }
     }
 }
+
+

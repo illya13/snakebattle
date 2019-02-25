@@ -1,16 +1,14 @@
-package com.github.illya13.snakebattle.state;
+package com.github.illya13.snakebattle.board;
 
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
-import com.github.illya13.snakebattle.Board;
-import com.github.illya13.snakebattle.State;
 
 import java.util.*;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
-import static com.github.illya13.snakebattle.Board.*;
+import static com.github.illya13.snakebattle.board.Board.*;
 
 public class BFS {
     private Board board;
@@ -19,7 +17,7 @@ public class BFS {
         this.board = board;
     }
 
-    public Map<Point, Integer> bfs(State.Snake snake, Point start, Elements[] barrier, Elements[] targets) {
+    public Map<Point, Integer> bfs(Parser.ParsedSnake snake, Point start, Elements[] barrier, Elements[] targets) {
         Direction prev = (snake.head().equals(start)) ? snake.direction() : null;
 
         Queue<Point> queue = new LinkedList<>();

@@ -5,19 +5,19 @@ import com.codenjoy.dojo.services.Point;
 
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
-import com.github.illya13.snakebattle.Board;
+import com.github.illya13.snakebattle.board.Board;
 import com.github.illya13.snakebattle.State;
+import com.github.illya13.snakebattle.board.Parser;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
-import static com.github.illya13.snakebattle.Board.*;
+import static com.github.illya13.snakebattle.board.Board.*;
 
 
 public class StateImpl implements State {
     Board board;
-    BFS bfs;
 
     int step;
 
@@ -27,14 +27,11 @@ public class StateImpl implements State {
     private StateImpl(Board board) {
         this.board = board;
 
-        bfs = new BFS(board);
-
         me = new MeImpl(board.getMe());
 
         enemies = new HashMap<>();
-        for(Point point: board.getEnemies()) {
-            EnemyImpl enemy = new EnemyImpl(point);
-            enemies.put(enemy.head(), enemy);
+        for(Parser.ParsedSnake snake: board.getEnemies()) {
+            enemies.put(snake.head(), new EnemyImpl(snake));
         }
     }
 
@@ -49,7 +46,7 @@ public class StateImpl implements State {
         state.step = old.step+1;
 
         state.me.copyFrom(old.me);
-        state.me.direction = from;
+        state.me.overwriteDirection(from);
         for (Enemy enemy : state.enemies()) {
             copyFrom((EnemyImpl)enemy, old.enemies);
         }
@@ -124,12 +121,8 @@ public class StateImpl implements State {
     }
 
 
-    private abstract class SnakeImpl implements Snake {
+    private abstract class SnakeImpl extends Parser.ParsedSnake implements Snake {
         private static final int MAX_DURATION = 10;
-
-        Direction direction;
-        Point head;
-        LinkedList<Point> body;
 
         int furyCounter;
         int flyCounter;
@@ -137,9 +130,11 @@ public class StateImpl implements State {
 
         private List<Action> actions;
 
-        SnakeImpl() {
-            body = new LinkedList<>();
+        private SnakeImpl(Parser.ParsedSnake other) {
+            super(other);
+
             actions = new LinkedList<>();
+            initActions();
 
             furyCounter = 0;
             flyCounter = 0;
@@ -164,26 +159,6 @@ public class StateImpl implements State {
                 incFly();
             }
             updateReward(prev);
-        }
-
-        @Override
-        public Direction direction() {
-            return direction;
-        }
-
-        @Override
-        public Point head() {
-            return head;
-        }
-
-        @Override
-        public List<Point> body() {
-            return body;
-        }
-
-        @Override
-        public int size() {
-            return body.size();
         }
 
         @Override
@@ -222,7 +197,7 @@ public class StateImpl implements State {
 
         @Override
         public String toString() {
-            return "{" + reward + "} " + direction + "[" + size() + "]" + pillsToString();
+            return "{" + reward + "} " + direction() + "[" + size() + "]" + pillsToString();
         }
 
         void initActions() {
@@ -279,19 +254,8 @@ public class StateImpl implements State {
         }
 
         private boolean endOfRoundWin() {
-            if (enemies().isEmpty() && board.get(ENEMY_HEAD_DEAD).isEmpty())
-                return true;
-
-            int max = 0;
-            for(Snake snake: snakes()) {
-                if (snake.head().equals(head()))
-                    continue;
-
-                if (snake.size() > max) {
-                    max = snake.size();
-                }
-            }
-            return (step() == 300) && (size() > max);
+            return board.isLastStep() ||
+                    (step() == 300) && (size() > board.maxOtherSnakeSize(this));
         }
 
         private void checkAndDecPills() {
@@ -311,25 +275,19 @@ public class StateImpl implements State {
 
 
     private class EnemyImpl extends SnakeImpl implements Enemy {
-        EnemyImpl() {}
-
-        EnemyImpl(Point head) {
-            super();
-
-            initEnemy(head, board, this);
-            initActions();
+        EnemyImpl(Parser.ParsedSnake other) {
+            super(other);
         }
     }
 
 
     private class MeImpl extends SnakeImpl implements Me {
-        MeImpl() {}
+        MeImpl(Parser.ParsedSnake other) {
+            super(other);
+        }
 
-        MeImpl(Point head) {
-            super();
-
-            initMe(head, board, this);
-            initActions();
+        public void overwriteDirection(Direction direction) {
+            this.direction = direction;
         }
     }
 
@@ -338,9 +296,9 @@ public class StateImpl implements State {
         private Direction direction;
         private Map<Point, Integer> items;
 
-        public ActionImpl(Direction direction, Snake snake, Elements[] barrier, Elements[] target) {
+        public ActionImpl(Direction direction, SnakeImpl snake, Elements[] barrier, Elements[] target) {
             this.direction = direction;
-            items = bfs.bfs(snake, direction.change(snake.head()), barrier, target);
+            items = board.bfs(snake, direction.change(snake.head()), barrier, target);
         }
 
         @Override
@@ -364,6 +322,7 @@ public class StateImpl implements State {
 
     // HELPERS
 
+/*
     private StateImpl() {}
 
     private EnemyImpl newEnemy_() {
@@ -398,62 +357,28 @@ public class StateImpl implements State {
         snake.body = parsed.body();
     }
 
-    private static void initPills(Board prev, SnakeImpl snake) {
-        snake.furyCounter = (prev.isAt(snake.head(), HEAD_EVIL, ENEMY_HEAD_EVIL)) ? 2 : 0;
-        snake.flyCounter = (prev.isAt(snake.head(), HEAD_FLY, ENEMY_HEAD_FLY)) ? 2 : 0;
-    }
+*/
 
     private static int eatSize(Point target, Point winner, Board prev) {
-        List<Snake> snakes = boardSnakes(prev);
-
-        for (Snake snake: snakes) {
+        for (Parser.ParsedSnake snake: prev.allSnakes()) {
             if (snake.isFly() || winner.equals(snake.head()))
                 continue;
 
-            int i = inSnake(target, snake);
+            int i = snake.inSnake(target);
             if (i != -1) return snake.size() - i;
         }
 
         return 0;
     }
 
-    private static Integer inSnake(Point target, Snake snake) {
-        int i = 0;
-        for (Point p : snake.body()) {
-            if (p.equals(target)) {
-                return i;
-            }
-            i++;
-        }
-        return -1;
-    }
+    private static int deadSize(Parser.ParsedSnake alive, Board board) {
+        for (Parser.ParsedSnake dead: board.getDeadSnakes()) {
 
-    private static int deadSize(Snake alive, Board board) {
-        for (Point point: board.get(Elements.ENEMY_HEAD_DEAD)) {
-            EnemyImpl dead = newEnemy();
-            initEnemy(point, board, dead);
-
-            int i = inSnake(dead.head(), alive);
+            int i = alive.inSnake(dead.head());
             if (i == -1) continue;
 
             return dead.size();
         }
         return 0;
-    }
-
-    private static List<Snake> boardSnakes(Board board) {
-        List<Snake> snakes = new LinkedList<>();
-        MeImpl me = newMe();
-        initMe(board.getMe(), board, me);
-        initPills(board, me);
-        snakes.add(me);
-
-        for(Point p: board.getEnemies()) {
-            EnemyImpl enemy = newEnemy();
-            initEnemy(p, board, enemy);
-            initPills(board, enemy);
-            snakes.add(enemy);
-        }
-        return snakes;
     }
 }

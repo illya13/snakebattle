@@ -1,7 +1,7 @@
 package com.github.illya13.snakebattle.state;
 
 import com.codenjoy.dojo.services.Direction;
-import com.github.illya13.snakebattle.Board;
+import com.github.illya13.snakebattle.board.Board;
 import com.github.illya13.snakebattle.Observer;
 import com.github.illya13.snakebattle.State;
 

@@ -2,14 +2,16 @@ package com.github.illya13.snakebattle;
 
 import com.codenjoy.dojo.services.*;
 import com.codenjoy.dojo.client.WebSocketRunner;
+import com.github.illya13.snakebattle.board.Board;
 import com.github.illya13.snakebattle.solver.BFSSolver;
 import com.github.illya13.snakebattle.state.ObserverImpl;
 
 public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     static final String BASE_URL = "http://127.0.0.1:8080/codenjoy-contest/board/player/";
-    static final String PLAYER_CODE = "?code=3607711244046729292";
-    static final String PLAYER_HASH = "qk03ekf3sirb5dnhuoha";
+    static final String PLAYER_CODE = "?code=4229634859441050800";
+    static final String PLAYER_HASH = "3i0mbwz00fpwiqs971uo";
 
+    int total;
     boolean initialized;
     Observer observer;
     Solver solver;
@@ -19,12 +21,16 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     Bootstrap(Dice dice) {
         observer = new ObserverImpl();
         solver = new BFSSolver();
-        initialized = false;
+        total = 0;
     }
 
     @Override
     public String get(Board board) {
-        if (board.isGameOver()) return "";
+        if (board.isGameOver()) {
+            total += (state != null) ? state.me().reward() : 0;
+            System.out.println("TOTAL: " + total);
+            return "";
+        }
 
         if (board.isGameStart()) {
             initialized = false;

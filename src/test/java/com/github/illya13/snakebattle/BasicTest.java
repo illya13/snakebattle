@@ -3,6 +3,7 @@ package com.github.illya13.snakebattle;
 
 import com.codenjoy.dojo.services.Dice;
 import com.codenjoy.dojo.services.Direction;
+import com.github.illya13.snakebattle.board.Board;
 import com.github.illya13.snakebattle.state.StateImpl;
 import org.junit.Assert;
 import org.junit.Before;

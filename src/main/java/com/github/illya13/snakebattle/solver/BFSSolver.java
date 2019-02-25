@@ -3,13 +3,13 @@ package com.github.illya13.snakebattle.solver;
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.Elements;
-import com.github.illya13.snakebattle.Board;
+import com.github.illya13.snakebattle.board.Board;
 import com.github.illya13.snakebattle.Solver;
 import com.github.illya13.snakebattle.State;
 
 import java.util.Map;
 
-import static com.github.illya13.snakebattle.Board.*;
+import static com.github.illya13.snakebattle.board.Board.*;
 
 public class BFSSolver implements Solver {
     @Override
