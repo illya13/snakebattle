@@ -14,13 +14,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
-import static com.codenjoy.dojo.snakebattle.model.Elements.FLYING_PILL;
 import static com.github.illya13.snakebattle.board.Board.*;
 
 public class BFSSolver implements Solver {
     @Override
     public Direction next(State state) {
-        Direction direction = findFirst(state, Elements.FURY_PILL, Elements.APPLE, Elements.GOLD, Elements.FLYING_PILL);
+        Direction direction = findFirst(state, APPLE, GOLD, FURY_PILL, FLYING_PILL);
         return (direction != null) ? direction : Direction.RIGHT;
     }
 
@@ -74,7 +73,7 @@ public class BFSSolver implements Solver {
         if (!state.me().isFly() && !state.me().isFury())
             barrier = join(barrier, ENEMY_ELEMENTS);
 
-        Elements[] target = join(new Elements[] {APPLE, GOLD, STONE, FURY_PILL, FLYING_PILL}, ENEMY_HEAD_ELEMENTS);
+        Elements[] target = join(new Elements[] {APPLE, GOLD, FURY_PILL, FLYING_PILL});
 
         Direction inverted = state.me().direction().inverted();
         List<Action> actions = new LinkedList<>();
