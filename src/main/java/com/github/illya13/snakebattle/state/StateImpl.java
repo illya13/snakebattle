@@ -295,8 +295,17 @@ public class StateImpl implements State {
         private Map<Point, Integer> items;
 
         public ActionImpl(Direction direction, SnakeImpl snake, Elements[] barrier, Elements[] target) {
+            Point point = direction.change(snake.head());
+
             this.direction = direction;
-            items = board.bfs(snake, direction.change(snake.head()), barrier, target);
+
+            if (!board.isAt(point, NONE)) {
+                items = new LinkedHashMap<>();
+                items.put(point, 0);
+                items.putAll(board.bfs(snake, point, barrier, target));
+            } else {
+                items = board.bfs(snake, point, barrier, target);
+            }
         }
 
         @Override
