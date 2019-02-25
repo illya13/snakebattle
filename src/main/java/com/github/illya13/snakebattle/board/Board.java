@@ -5,6 +5,7 @@ import com.codenjoy.dojo.client.AbstractBoard;
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.Elements;
+import com.github.illya13.snakebattle.State;
 
 import java.util.List;
 import java.util.Map;
@@ -102,7 +103,7 @@ public class Board extends AbstractBoard<Elements> {
         ).collect(Collectors.toList());
     }
 
-    public Map<Point, Integer> bfs(Parser.ParsedSnake snake, Point start, Elements[] barrier, Elements[] targets) {
+    public Map<Point, Integer> bfs(State.Snake snake, Point start, Elements[] barrier, Elements[] targets) {
         return bfs.bfs(snake, start, barrier, targets);
     }
 

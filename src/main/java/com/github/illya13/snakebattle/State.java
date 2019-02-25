@@ -2,7 +2,6 @@ package com.github.illya13.snakebattle;
 
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
-import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.github.illya13.snakebattle.board.Board;
 
 import java.util.*;
@@ -10,7 +9,6 @@ import java.util.*;
 
 public interface State {
     Board board();
-    int liveness(Point point);
 
     int step();
 
@@ -29,8 +27,6 @@ public interface State {
         boolean isFly();
         int fly();
 
-        List<Action> actions();
-
         int reward();
     }
 
@@ -38,10 +34,5 @@ public interface State {
     }
 
     interface Me extends Snake {
-    }
-
-    interface Action {
-        Direction direction();
-        Map<Point, Integer> items(Elements... elements);
     }
 }

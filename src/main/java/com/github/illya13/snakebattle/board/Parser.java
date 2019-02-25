@@ -5,7 +5,9 @@ import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 import static com.github.illya13.snakebattle.board.Board.*;
@@ -40,7 +42,12 @@ public class Parser {
         Direction direction = parsed.direction.inverted();
 
         Point point = head;
+        Set<Point> visited = new HashSet<>();
         while (direction != null) {
+            if (visited.contains(point))
+                break;
+            visited.add(point);
+
             point = direction.change(point);
             parsed.body.addLast(point);
             direction = next(point, direction);

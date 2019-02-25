@@ -6,6 +6,8 @@ import com.github.illya13.snakebattle.board.Board;
 import com.github.illya13.snakebattle.solver.BFSSolver;
 import com.github.illya13.snakebattle.state.ObserverImpl;
 
+import java.io.PrintStream;
+
 public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     static final String BASE_URL = "http://127.0.0.1:8080/codenjoy-contest/board/player/";
     static final String PLAYER_CODE = "285147973966974500";
@@ -46,7 +48,9 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
         return direction.toString();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        System.setOut(new PrintStream(System.out, true, "UTF-8"));
+
         String hash = PLAYER_HASH;
         String code = PLAYER_CODE;
 

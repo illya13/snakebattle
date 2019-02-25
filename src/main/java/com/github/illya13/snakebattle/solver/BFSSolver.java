@@ -7,8 +7,14 @@ import com.github.illya13.snakebattle.board.Board;
 import com.github.illya13.snakebattle.Solver;
 import com.github.illya13.snakebattle.State;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static com.codenjoy.dojo.snakebattle.model.Elements.*;
+import static com.codenjoy.dojo.snakebattle.model.Elements.FLYING_PILL;
 import static com.github.illya13.snakebattle.board.Board.*;
 
 public class BFSSolver implements Solver {
@@ -22,7 +28,7 @@ public class BFSSolver implements Solver {
         int min = Integer.MAX_VALUE;
         Direction direction = null;
 
-        for (State.Action action: state.me().actions()) {
+        for (Action action: getActions(state)) {
             Point point = action.direction().change(state.me().head());
             if (unsafeBorder(state.board(), point))
                 continue;
@@ -59,5 +65,64 @@ public class BFSSolver implements Solver {
 
     private boolean unsafeEnemy(State state, Point point) {
         return state.board().isAt(point, ENEMY_ELEMENTS) && !state.me().isFly() && !state.me().isFury();
+    }
+
+    private List<Action> getActions(State state) {
+        Elements[] barrier = BARRIER_ELEMENTS;
+        if (!state.me().isFly())
+            barrier = join(barrier, MY_ELEMENTS);
+        if (!state.me().isFly() && !state.me().isFury())
+            barrier = join(barrier, ENEMY_ELEMENTS);
+
+        Elements[] target = join(new Elements[] {APPLE, GOLD, STONE, FURY_PILL, FLYING_PILL}, ENEMY_HEAD_ELEMENTS);
+
+        Direction inverted = state.me().direction().inverted();
+        List<Action> actions = new LinkedList<>();
+        for(Direction d: all) {
+            if (d.equals(inverted))
+                continue;
+
+            if (state.board().isAt(d.change(state.me().head()), barrier))
+                continue;
+
+            actions.add(new Action(state.board(), d,state.me(), barrier, target));
+        }
+        return actions;
+    }
+
+
+    private class Action {
+        private Board board;
+        private Direction direction;
+        private Map<Point, Integer> items;
+
+        public Action(Board board, Direction direction, State.Me snake, Elements[] barrier, Elements[] target) {
+            this.board = board;
+            Point point = direction.change(snake.head());
+
+            this.direction = direction;
+
+            if (!board.isAt(point, NONE)) {
+                items = new LinkedHashMap<>();
+                items.put(point, 0);
+                items.putAll(board.bfs(snake, point, barrier, target));
+            } else {
+                items = board.bfs(snake, point, barrier, target);
+            }
+        }
+
+        public Direction direction() {
+            return direction;
+        }
+
+        public Map<Point, Integer> items(Elements... elements) {
+            return items.entrySet().stream()
+                    .filter(map -> board.isAt(map.getKey(), elements))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
+        }
+
+        public String toString() {
+            return direction + "[" + items.size() + ']';
+        }
     }
 }

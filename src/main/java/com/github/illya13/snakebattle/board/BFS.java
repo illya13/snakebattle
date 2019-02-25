@@ -4,6 +4,7 @@ import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
+import com.github.illya13.snakebattle.State;
 
 import java.util.*;
 
@@ -17,7 +18,7 @@ public class BFS {
         this.board = board;
     }
 
-    public Map<Point, Integer> bfs(Parser.ParsedSnake snake, Point start, Elements[] barrier, Elements[] targets) {
+    public Map<Point, Integer> bfs(State.Snake snake, Point start, Elements[] barrier, Elements[] targets) {
         Direction prev = (snake.head().equals(start)) ? snake.direction() : null;
 
         Queue<Point> queue = new LinkedList<>();

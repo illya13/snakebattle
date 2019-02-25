@@ -10,7 +10,6 @@ import com.github.illya13.snakebattle.State;
 import com.github.illya13.snakebattle.board.Parser;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 import static com.github.illya13.snakebattle.board.Board.*;
@@ -89,11 +88,6 @@ public class StateImpl implements State {
     }
 
     @Override
-    public int liveness(Point point) {
-        return 0;
-    }
-
-    @Override
     public int step() {
         return step;
     }
@@ -128,13 +122,8 @@ public class StateImpl implements State {
         int flyCounter;
         int reward;
 
-        private List<Action> actions;
-
         private SnakeImpl(Parser.ParsedSnake other) {
             super(other);
-
-            actions = new LinkedList<>();
-            initActions();
 
             furyCounter = 0;
             flyCounter = 0;
@@ -185,10 +174,6 @@ public class StateImpl implements State {
             flyCounter += MAX_DURATION;
         }
 
-        @Override
-        public List<Action> actions() {
-            return actions;
-        }
 
         @Override
         public int reward() {
@@ -198,24 +183,6 @@ public class StateImpl implements State {
         @Override
         public String toString() {
             return "{" + reward + "} " + direction() + "[" + size() + "]" + pillsToString();
-        }
-
-        void initActions() {
-            Elements[] barrier = BARRIER_ELEMENTS;
-
-            Elements[] target = join(new Elements[] {APPLE, GOLD, STONE, FURY_PILL, FLYING_PILL}, ENEMY_HEAD_ELEMENTS);
-
-            Direction inverted = direction().inverted();
-            actions.clear();
-            for(Direction d: all) {
-                if (d.equals(inverted))
-                    continue;
-
-                if (board.isAt(d.change(head()), barrier))
-                    continue;
-
-                actions.add(new ActionImpl(d,this, barrier, target));
-            }
         }
 
         private void updateReward(Board prev) {
@@ -286,43 +253,6 @@ public class StateImpl implements State {
 
         public void overwriteDirection(Direction direction) {
             this.direction = direction;
-        }
-    }
-
-
-    private class ActionImpl implements Action {
-        private Direction direction;
-        private Map<Point, Integer> items;
-
-        public ActionImpl(Direction direction, SnakeImpl snake, Elements[] barrier, Elements[] target) {
-            Point point = direction.change(snake.head());
-
-            this.direction = direction;
-
-            if (!board.isAt(point, NONE)) {
-                items = new LinkedHashMap<>();
-                items.put(point, 0);
-                items.putAll(board.bfs(snake, point, barrier, target));
-            } else {
-                items = board.bfs(snake, point, barrier, target);
-            }
-        }
-
-        @Override
-        public Direction direction() {
-            return direction;
-        }
-
-        @Override
-        public Map<Point, Integer> items(Elements... elements) {
-            return items.entrySet().stream()
-                    .filter(map -> board.isAt(map.getKey(), elements))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
-        }
-
-        @Override
-        public String toString() {
-            return direction + "[" + items.size() + ']';
         }
     }
 }
