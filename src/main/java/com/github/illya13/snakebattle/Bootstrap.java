@@ -8,8 +8,8 @@ import com.github.illya13.snakebattle.state.ObserverImpl;
 
 public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     static final String BASE_URL = "http://127.0.0.1:8080/codenjoy-contest/board/player/";
-    static final String PLAYER_CODE = "?code=4229634859441050800";
-    static final String PLAYER_HASH = "3i0mbwz00fpwiqs971uo";
+    static final String PLAYER_CODE = "285147973966974500";
+    static final String PLAYER_HASH = "keme1dgf50kkvavrwzln";
 
     int total;
     boolean initialized;
@@ -47,9 +47,19 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     }
 
     public static void main(String[] args) {
+        String hash = PLAYER_HASH;
+        String code = PLAYER_CODE;
+
+        if (args.length > 1) {
+            hash = args[0];
+        }
+        if (args.length > 2) {
+            code = args[1];
+        }
+
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
-                BASE_URL + PLAYER_HASH + PLAYER_CODE,
+                BASE_URL + hash + "?code=" + code,
                 new Bootstrap(new RandomDice()),
                 new Board());
     }

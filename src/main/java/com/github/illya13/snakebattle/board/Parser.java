@@ -167,7 +167,7 @@ public class Parser {
                 return direction.inverted();
         }
 
-        throw new RuntimeException("Smth wrong with enemy head");
+        return Direction.RIGHT;
     }
 
     private Direction next(Point point, Direction direction) {
