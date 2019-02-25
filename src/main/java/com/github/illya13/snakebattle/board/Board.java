@@ -102,6 +102,37 @@ public class Board extends AbstractBoard<Elements> {
         ).collect(Collectors.toList());
     }
 
+    public Map<Point, Integer> bfs(Parser.ParsedSnake snake, Point start, Elements[] barrier, Elements[] targets) {
+        return bfs.bfs(snake, start, barrier, targets);
+    }
+
+    // HELPERS
+
+    public int eatSize(Point target, Point winner) {
+        for (Parser.ParsedSnake snake: allSnakes()) {
+            if (snake.isFly() || winner.equals(snake.head()))
+                continue;
+
+            int i = snake.inSnake(target);
+            if (i != -1) return snake.size() - i;
+        }
+
+        return 0;
+    }
+
+    public int deadSize(Parser.ParsedSnake alive) {
+        for (Parser.ParsedSnake dead: getDeadSnakes()) {
+            int i = alive.inSnake(dead.head());
+            if ((i == 0) && !alive.isFury() && (alive.size() - dead.size() < 2))
+                return 0;
+
+            if (i == -1) continue;
+
+            return dead.size();
+        }
+        return 0;
+    }
+
     public int maxOtherSnakeSize(Parser.ParsedSnake first) {
         int max = 0;
         for(Parser.ParsedSnake snake: allSnakes()) {
@@ -113,9 +144,5 @@ public class Board extends AbstractBoard<Elements> {
             }
         }
         return max;
-    }
-
-    public Map<Point, Integer> bfs(Parser.ParsedSnake snake, Point start, Elements[] barrier, Elements[] targets) {
-        return bfs.bfs(snake, start, barrier, targets);
     }
 }

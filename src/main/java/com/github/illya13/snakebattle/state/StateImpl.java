@@ -245,10 +245,10 @@ public class StateImpl implements State {
                 result += 5;
             }
             if (!isFly() && prev.isAt(head(), join(MY_ELEMENTS, ENEMY_ELEMENTS))) {
-                result += 10 * eatSize(head(), direction().inverted().change(head()), prev);
+                result += 10 * prev.eatSize(head(), direction().inverted().change(head()));
             }
             if (!board.get(Elements.ENEMY_HEAD_DEAD).isEmpty()) {
-                result += 10 * deadSize(this, board);
+                result += 10 * board.deadSize(this);
             }
             return result;
         }
@@ -317,33 +317,5 @@ public class StateImpl implements State {
         public String toString() {
             return direction + "[" + items.size() + ']';
         }
-    }
-
-
-    // HELPERS
-
-    private static int eatSize(Point target, Point winner, Board prev) {
-        for (Parser.ParsedSnake snake: prev.allSnakes()) {
-            if (snake.isFly() || winner.equals(snake.head()))
-                continue;
-
-            int i = snake.inSnake(target);
-            if (i != -1) return snake.size() - i;
-        }
-
-        return 0;
-    }
-
-    private static int deadSize(Parser.ParsedSnake alive, Board board) {
-        for (Parser.ParsedSnake dead: board.getDeadSnakes()) {
-            int i = alive.inSnake(dead.head());
-            if ((i == 0) && !alive.isFury() && (alive.size() - dead.size() < 2))
-                return 0;
-
-            if (i == -1) continue;
-
-            return dead.size();
-        }
-        return 0;
     }
 }
