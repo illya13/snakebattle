@@ -13,24 +13,26 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     static final String PLAYER_CODE = "285147973966974500";
     static final String PLAYER_HASH = "keme1dgf50kkvavrwzln";
 
-    int total;
     boolean initialized;
     Observer observer;
     Solver solver;
     Direction direction;
     State state;
+    Statistics statistics;
 
-    Bootstrap(Dice dice) {
+    Bootstrap(String filename) {
         observer = new ObserverImpl();
         solver = new BFSSolver();
-        total = 0;
+
+        if (filename != null)
+            statistics = new Statistics(filename);
     }
 
     @Override
     public String get(Board board) {
         if (board.isGameOver()) {
-            total += (state != null) ? state.me().reward() : 0;
-            System.out.println("TOTAL: " + total);
+            if (state != null && statistics != null)
+                statistics.update(state.me().reward());
             return "";
         }
 
@@ -53,6 +55,7 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
 
         String hash = PLAYER_HASH;
         String code = PLAYER_CODE;
+        String filename = "./stats.json";
 
         if (args.length > 0) {
             hash = args[0];
@@ -60,11 +63,14 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
         if (args.length > 1) {
             code = args[1];
         }
+        if (args.length > 2) {
+            filename = args[2];
+        }
 
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
                 BASE_URL + hash + "?code=" + code,
-                new Bootstrap(new RandomDice()),
+                new Bootstrap(filename),
                 new Board());
     }
 }

@@ -16,12 +16,12 @@ import static com.github.illya13.snakebattle.board.Board.*;
 
 
 public class StateImpl implements State {
-    Board board;
+    private Board board;
 
-    int step;
+    private int step;
 
-    MeImpl me;
-    Map<Point, Enemy> enemies;
+    private MeImpl me;
+    private Map<Point, Enemy> enemies;
 
     private StateImpl(Board board) {
         this.board = board;

@@ -15,15 +15,11 @@ import java.lang.reflect.Field;
 
 
 public class BasicTest {
-
-    private Dice dice;
     private Bootstrap ai;
 
     @Before
     public void setup() {
-        dice = Mockito.mock(Dice.class);
-        Mockito.when(dice.next(Matchers.anyInt())).thenReturn(50);
-        ai = new Bootstrap(dice);
+        ai = new Bootstrap(null);
     }
 
     private Board board(String board) {
