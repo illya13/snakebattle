@@ -50,10 +50,10 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
         String hash = PLAYER_HASH;
         String code = PLAYER_CODE;
 
-        if (args.length > 1) {
+        if (args.length > 0) {
             hash = args[0];
         }
-        if (args.length > 2) {
+        if (args.length > 1) {
             code = args[1];
         }
 
