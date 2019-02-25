@@ -201,11 +201,9 @@ public class StateImpl implements State {
         }
 
         void initActions() {
-            Elements[] barrier = (isFly() || isFury())
-                    ? BARRIER_ELEMENTS
-                    : join(BARRIER_ELEMENTS, MY_ELEMENTS, ENEMY_ELEMENTS);
+            Elements[] barrier = BARRIER_ELEMENTS;
 
-            Elements[] target = new Elements[] {APPLE, GOLD, STONE, FURY_PILL, FLYING_PILL};
+            Elements[] target = join(new Elements[] {APPLE, GOLD, STONE, FURY_PILL, FLYING_PILL}, ENEMY_HEAD_ELEMENTS);
 
             Direction inverted = direction().inverted();
             actions.clear();

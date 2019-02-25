@@ -30,6 +30,9 @@ public class BFSSolver implements Solver {
             if (unsafeStone(state, point))
                 continue;
 
+            if (unsafeEnemy(state, point))
+                continue;
+
             Map<Point, Integer> items = action.items(elements);
             if (items.isEmpty())
                 continue;
@@ -47,10 +50,14 @@ public class BFSSolver implements Solver {
 
     private boolean unsafeStone(State state, Point point) {
         return state.board().isAt(point, Elements.STONE) &&
-                ( (state.me().size() < 5) && !state.me().isFly() && !state.me().isFury());
+                (state.me().size() < 5) && !state.me().isFly() && !state.me().isFury();
     }
 
     private boolean unsafeBorder(Board board, Point point) {
         return board.isAt(point, join(BARRIER_ELEMENTS, ENEMY_ELEMENTS));
+    }
+
+    private boolean unsafeEnemy(State state, Point point) {
+        return state.board().isAt(point, ENEMY_ELEMENTS) && !state.me().isFly() && !state.me().isFury();
     }
 }
