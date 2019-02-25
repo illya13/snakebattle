@@ -22,26 +22,22 @@ public class Parser {
         ParsedSnake parsed = new ParsedSnake(head);
         initPills(parsed);
 
-        Direction direction = getDirection(head);
-        parsed.direction = direction;
+        parsed.direction = getDirection(head);
 
         Elements headElement = getAt(head);
         if (Arrays.asList(HEAD_FLY, ENEMY_HEAD_FLY).contains(headElement)) {
-            direction = getHeadDirectionWithMod(head);
-            parsed.direction = direction;
+            parsed.direction = getHeadDirectionWithMod(head, parsed.direction);
         }
 
         if (Arrays.asList(HEAD_EVIL).contains(headElement)) {
-            direction = getHeadDirectionWithMod(head);
-            parsed.direction = direction;
+            parsed.direction = getHeadDirectionWithMod(head, parsed.direction);
         }
 
         if (Arrays.asList(HEAD_DEAD, ENEMY_HEAD_DEAD).contains(headElement)) {
-            direction = getHeadDirectionWithMod(head);
-            parsed.direction = direction;
+            parsed.direction = getHeadDirectionWithMod(head, parsed.direction);
         }
 
-        direction = direction.inverted();
+        Direction direction = parsed.direction.inverted();
 
         Point point = head;
         while (direction != null) {
@@ -57,26 +53,22 @@ public class Parser {
         ParsedSnake parsed = new ParsedSnake(head);
         initEnemyPills(parsed);
 
-        Direction direction = getEnemyDirection(head);
-        parsed.direction = direction;
+        parsed.direction = getEnemyDirection(head);
 
         Elements headElement = getAt(head);
         if (Arrays.asList(ENEMY_HEAD_FLY).contains(headElement)) {
-            direction = getEnemyHeadDirectionWithMod(head);
-            parsed.direction = direction;
+            parsed.direction = getEnemyHeadDirectionWithMod(head, parsed.direction);
         }
 
         if (Arrays.asList(ENEMY_HEAD_EVIL).contains(headElement)) {
-            direction = getEnemyHeadDirectionWithMod(head);
-            parsed.direction = direction;
+            parsed.direction = getEnemyHeadDirectionWithMod(head, parsed.direction);
         }
 
         if (Arrays.asList(ENEMY_HEAD_DEAD).contains(headElement)) {
-            direction = getEnemyHeadDirectionWithMod(head);
-            parsed.direction = direction;
+            parsed.direction = getEnemyHeadDirectionWithMod(head, parsed.direction);
         }
 
-        direction = direction.inverted();
+        Direction direction = parsed.direction.inverted();
 
         Point point = head;
         while (direction != null) {
@@ -88,7 +80,7 @@ public class Parser {
         return parsed;
     }
 
-    private Direction getHeadDirectionWithMod(Point head) {
+    private Direction getHeadDirectionWithMod(Point head, Direction defaultDirection) {
         Elements atLeft = getAt(Direction.LEFT.change(head));
         if (Arrays.asList(Elements.BODY_HORIZONTAL,
                 Elements.BODY_RIGHT_DOWN,
@@ -126,10 +118,10 @@ public class Parser {
                 return direction.inverted();
         }
 
-        throw new RuntimeException("Smth wrong with my head");
+        return defaultDirection;
     }
 
-    private Direction getEnemyHeadDirectionWithMod(Point head) {
+    private Direction getEnemyHeadDirectionWithMod(Point head, Direction defaultDirection) {
         Elements atLeft = getAt(Direction.LEFT.change(head));
         if (Arrays.asList(Elements.ENEMY_BODY_HORIZONTAL,
                 Elements.ENEMY_BODY_RIGHT_DOWN,
@@ -167,7 +159,7 @@ public class Parser {
                 return direction.inverted();
         }
 
-        return Direction.RIGHT;
+        return defaultDirection;
     }
 
     private Direction next(Point point, Direction direction) {
