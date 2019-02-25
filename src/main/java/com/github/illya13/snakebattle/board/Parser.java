@@ -78,7 +78,12 @@ public class Parser {
         Direction direction = parsed.direction.inverted();
 
         Point point = head;
+        Set<Point> visited = new HashSet<>();
         while (direction != null) {
+            if (visited.contains(point))
+                break;
+            visited.add(point);
+
             point = direction.change(point);
             parsed.body.addLast(point);
             direction = enemyNext(point, direction);
