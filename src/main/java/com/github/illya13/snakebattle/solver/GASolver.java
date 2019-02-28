@@ -48,51 +48,19 @@ public class GASolver implements Solver {
     }
 
     private static class Action {
-        private State state;
         private Direction direction;
         private Point point;
-        private Map<Point, Integer> items;
-        private int[][] liveness;
         private Map<Features.FEATURE, Features.Reward> features;
 
         public Action(State state, Direction direction) {
-            this.state = state;
             this.direction = direction;
             this.point = direction.change(state.me().head());
-            liveness = state.board().liveness();
-            items = new LinkedHashMap<>();
 
-            if (!state.board().isAt(point, NONE)) {
-                items.put(point, 0);
-            }
-            initItems();
-            initEnemies();
-            initFeatures();
+            features = new Features(state, point).all();
         }
 
         public Direction direction() {
             return direction;
-        }
-
-
-        private void initItems() {
-            Elements[] barrier = BARRIER_ELEMENTS;
-            if (!state.me().isFly())
-                barrier = join(barrier, MY_ELEMENTS);
-            if (!state.me().isFly() && !state.me().isFury())
-                barrier = join(barrier, ENEMY_ELEMENTS);
-
-            Elements[] target = join(new Elements[] {APPLE, GOLD, STONE, FURY_PILL, FLYING_PILL});
-
-            items.putAll(state.board().bfs(state.me(), point, barrier, target));
-        }
-
-        private void initEnemies() {
-            items.putAll(state.board().bfs(state.me(), point, BARRIER_ELEMENTS, ENEMY_HEAD_ELEMENTS));
-        }
-
-        private void initFeatures() {
-            features = new Features(state, point, items, liveness).all();
         }
 
         public String rewardsAsString() {

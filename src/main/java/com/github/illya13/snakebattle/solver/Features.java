@@ -26,16 +26,34 @@ public class Features {
 
     private Map<FEATURE, Reward> all;
 
-    public Features(State state, Point point, Map<Point, Integer> items, int[][] liveness) {
+    public Features(State state, Point point) {
         this.state = state;
         this.point = point;
-        this.items = items;
-        this.liveness = liveness;
+        liveness = state.board().liveness();
 
-        init();
+        initItems();
+        initFeatures();
     }
 
-    private void init() {
+    private void initItems(){
+        items = new LinkedHashMap<>();
+
+        if (!state.board().isAt(point, NONE)) {
+            items.put(point, 0);
+        }
+
+        Elements[] barrier = BARRIER_ELEMENTS;
+        if (!state.me().isFly())
+            barrier = join(barrier, MY_ELEMENTS);
+        if (!state.me().isFly() && !state.me().isFury())
+            barrier = join(barrier, ENEMY_ELEMENTS);
+        Elements[] target = join(new Elements[] {APPLE, GOLD, STONE, FURY_PILL, FLYING_PILL});
+
+        items.putAll(state.board().bfs(state.me(), point, barrier, target));
+        items.putAll(state.board().bfs(state.me(), point, BARRIER_ELEMENTS, ENEMY_HEAD_ELEMENTS));
+    }
+
+    private void initFeatures() {
         all = new LinkedHashMap<>();
 
         all.put(FEATURE.LIVENESS, new Features.Liveness());
