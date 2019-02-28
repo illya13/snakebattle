@@ -22,7 +22,7 @@ public class GASolver implements Solver {
     }
 
     private Direction findBest(State state) {
-        double max = 0;
+        double max = Double.NEGATIVE_INFINITY;
         Direction direction = null;
 
         for (Action action: getActions(state)) {
