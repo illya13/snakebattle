@@ -3,15 +3,15 @@ package com.github.illya13.snakebattle;
 import com.codenjoy.dojo.services.*;
 import com.codenjoy.dojo.client.WebSocketRunner;
 import com.github.illya13.snakebattle.board.Board;
-import com.github.illya13.snakebattle.solver.BFSSolver;
+import com.github.illya13.snakebattle.solver.GASolver;
 import com.github.illya13.snakebattle.state.ObserverImpl;
 
 import java.io.PrintStream;
 
 public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     static final String BASE_URL = "http://127.0.0.1:8080/codenjoy-contest/board/player/";
-    static final String PLAYER_CODE = "285147973966974500";
-    static final String PLAYER_HASH = "keme1dgf50kkvavrwzln";
+    static final String PLAYER_CODE = "3485839216718225428";
+    static final String PLAYER_HASH = "6ejguzn33aqhhawzdyao";
 
     boolean initialized;
     Observer observer;
@@ -22,7 +22,7 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
 
     Bootstrap(String filename) {
         observer = new ObserverImpl();
-        solver = new BFSSolver();
+        solver = new GASolver();
 
         if (filename != null)
             statistics = new Statistics(filename);
@@ -30,6 +30,8 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
 
     @Override
     public String get(Board board) {
+        long ts = System.currentTimeMillis();
+
         if (board.isGameOver()) {
             if (state != null && statistics != null)
                 statistics.update(state.me().reward());
@@ -42,11 +44,12 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
         }
 
         state = (!initialized) ? observer.init(board) : observer.update(board, direction);
-        System.out.println(state.toString());
+        if (!initialized) initialized = true;
 
+        System.out.println(state.toString());
         direction = solver.next(state);
 
-        if (!initialized) initialized = true;
+        System.out.printf("latency: %d ms\n", System.currentTimeMillis() - ts);
         return direction.toString();
     }
 

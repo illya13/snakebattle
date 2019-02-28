@@ -3,6 +3,8 @@ package com.github.illya13.snakebattle;
 
 import com.codenjoy.dojo.services.Direction;
 import com.github.illya13.snakebattle.board.Board;
+import com.github.illya13.snakebattle.solver.BFSSolver;
+import com.github.illya13.snakebattle.solver.GASolver;
 import com.github.illya13.snakebattle.state.StateImpl;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,6 +19,7 @@ public class BasicTest {
     @Before
     public void setup() {
         ai = new Bootstrap(null);
+        ai.solver = new BFSSolver();
     }
 
     private Board board(String board) {
@@ -1697,6 +1700,78 @@ public class BasicTest {
                 "☼☼                           ☼\n" +
                 "☼☼        ○             ●    ☼\n" +
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
+    }
+
+    @Test
+    public void gaTest1() {
+        ai.solver = new GASolver();
+
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼         ○           ○     ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼      ☼#         ○         ☼\n" +
+                "☼☼                      ○    ☼\n" +
+                "☼#           ●               ☼\n" +
+                "☼☼                ☼#         ☼\n" +
+                "☼☼      ☼☼☼        ☼  ☼      ☼\n" +
+                "☼#      ☼      ○   ☼  ☼      ☼\n" +
+                "☼☼ æ    ☼○         ☼  ☼      ☼\n" +
+                "☼☼ │    ☼☼☼               ●  ☼\n" +
+                "☼# └>           ☼#           ☼\n" +
+                "☼☼ ╘═╗                      $☼\n" +
+                "☼☼   ▼●              ☼       ☼\n" +
+                "☼#             ○             ☼\n" +
+                "☼☼                  ○        ☼\n" +
+                "☼☼   ○             ☼#        ☼\n" +
+                "☼#       ☼☼ ☼                ☼\n" +
+                "☼☼          ☼     ●     ○    ☼\n" +
+                "☼☼       ☼☼ ☼                ☼\n" +
+                "☼#          ☼                ☼\n" +
+                "☼☼         ☼#                ☼\n" +
+                "☼☼           ○               ☼\n" +
+                "☼#                  ☼☼☼      ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼      ○        ☼☼☼#    ○   ☼\n" +
+                "☼#         ○                 ☼\n" +
+                "☼☼               ○           ☼\n" +
+                "☼☼      ○                    ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.DOWN);
+    }
+
+    @Test
+    public void gaTest2() {
+        ai.solver = new GASolver();
+
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼   ○  <┐ ┌┐                ☼\n" +
+                "☼#      ●└─┘│                ☼\n" +
+                "☼☼  ○   ☼#  │                ☼\n" +
+                "☼☼ ○      ○ │              ○ ☼\n" +
+                "☼# ○        │●●      ©       ☼\n" +
+                "☼☼      ®   ¤     ☼#         ☼\n" +
+                "☼☼      ☼☼☼        ☼  ☼      ☼\n" +
+                "☼#    ● ☼          ☼  ☼      ☼\n" +
+                "☼☼      ☼          ☼  ☼      ☼\n" +
+                "☼☼      ☼☼☼               ●  ☼\n" +
+                "☼#         ▲    ☼#         ® ☼\n" +
+                "☼☼      <─┐║                 ☼\n" +
+                "☼☼    ● ┌─┘║<──┐   ● ☼       ☼\n" +
+                "☼#      ¤  ╙   │             ☼\n" +
+                "☼☼             │             ☼\n" +
+                "☼☼             ¤   ☼#        ☼\n" +
+                "☼#       ☼☼ ☼                ☼\n" +
+                "☼☼          ☼     ●          ☼\n" +
+                "☼☼       ☼☼ ☼                ☼\n" +
+                "☼#          ☼                ☼\n" +
+                "☼☼         ☼#                ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#                  ☼☼☼      ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼               ☼☼☼#        ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
     }
 
     private void assertAI(String board, Direction expected) {

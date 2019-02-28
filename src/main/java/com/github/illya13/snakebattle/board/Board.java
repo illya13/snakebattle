@@ -4,6 +4,7 @@ package com.github.illya13.snakebattle.board;
 import com.codenjoy.dojo.client.AbstractBoard;
 import com.codenjoy.dojo.services.Direction;
 import com.codenjoy.dojo.services.Point;
+import com.codenjoy.dojo.services.PointImpl;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.github.illya13.snakebattle.State;
 
@@ -145,5 +146,55 @@ public class Board extends AbstractBoard<Elements> {
             }
         }
         return max;
+    }
+
+
+    private int[][] liveness;
+
+    public int[][] liveness() {
+        if (liveness != null)
+            return liveness;
+
+        liveness = new int[size()][size()];
+
+        for (int x = 0; x < size(); ++x) {
+            for (int y = 0; y < size(); ++y) {
+                liveness[x][y] = (isAt(x, y, BARRIER_ELEMENTS) ? 0 : 1);
+            }
+        }
+
+        for (int i = 0; i < size() / 2 ; ++i) {
+            for (int x = 0; x < size(); ++x) {
+                for (int y = 0; y < size(); ++y) {
+                    int min = Integer.MAX_VALUE;
+                    for (Direction direction : all) {
+                        Point p = direction.change(PointImpl.pt(x, y));
+                        if (p.isOutOf(size()))
+                            continue;
+
+                        if (liveness[p.getX()][p.getY()] < min) {
+                            min = liveness[p.getX()][p.getY()];
+                        }
+                    }
+                    liveness[x][y] = isAt(x, y, BARRIER_ELEMENTS) ? 0 : min + 1;
+                }
+            }
+        }
+
+        // debugSafe(liveness);
+        return liveness;
+    }
+
+    private void debugSafe(int[][] safeGo) {
+        for (int y = size() - 1; y >= 0; --y) {
+            for (int x = 0; x < size(); ++x) {
+                if (isAt(x, y, BARRIER_ELEMENTS)) {
+                    System.out.printf("%s", getAllAt(x, y));
+                } else {
+                    System.out.printf("%3d", safeGo[x][y]);
+                }
+            }
+            System.out.println();
+        }
     }
 }

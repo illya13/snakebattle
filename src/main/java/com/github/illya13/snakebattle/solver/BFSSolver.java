@@ -19,11 +19,11 @@ import static com.github.illya13.snakebattle.board.Board.*;
 public class BFSSolver implements Solver {
     @Override
     public Direction next(State state) {
-        Direction direction = findFirst(state, APPLE, GOLD, FURY_PILL, FLYING_PILL);
+        Direction direction = findClosest(state, APPLE, GOLD, FURY_PILL, FLYING_PILL);
         return (direction != null) ? direction : Direction.RIGHT;
     }
 
-    private Direction findFirst(State state, Elements... elements) {
+    private Direction findClosest(State state, Elements... elements) {
         int min = Integer.MAX_VALUE;
         Direction direction = null;
 
