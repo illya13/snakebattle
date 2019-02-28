@@ -1771,7 +1771,7 @@ public class BasicTest {
                 "☼#                           ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
     }
 
     private void assertAI(String board, Direction expected) {

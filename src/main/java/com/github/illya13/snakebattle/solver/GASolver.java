@@ -90,16 +90,65 @@ public class GASolver implements Solver {
             return direction;
         }
 
+        private double closestItemFeature(Elements... elements) {
+            double value = 1d / (1 + itemMinDistance(elements));
+            return normalizePath(value);
+        }
+
+        private double averageItemFeature(Elements... elements) {
+            double value = 1d / (1 + itemAverageDistance(elements));
+            return normalizePath(value);
+        }
+
+        private double closestStoneAndFuryFeature() {
+            double value = 1d * state.me().fury() / (1 + itemMinDistance(STONE));
+            return normalizePathWithPill(value);
+        }
+
+        private double closestStoneAndSizeFeature() {
+            double value = 1d * (state.me().size()-5) / (1 + itemMinDistance(STONE));
+            return normalizePathWithSize(value);
+        }
+
+        private double closestEnemyAndFuryFeature() {
+            double value = 1d * state.me().fury() / (1 + itemMinDistance(ENEMY_ELEMENTS));
+            return normalizePathWithPill(value);
+        }
+
+        private double closestEnemyAndSizeFeature() {
+            if (state.board().isAt(point, ENEMY_BODY_ELEMENTS))
+                return 0;
+
+            Map<Point, Integer> heads = items(ENEMY_HEAD_ELEMENTS);
+
+            for (Point p: heads.keySet()) {
+                for (State.Enemy enemy: state.enemies()) {
+                    if (enemy.head().equals(p)) {
+                        double value = 1d * (state.me().size()-enemy.size()) / (1 + heads.get(p));
+                        return normalizeDistanceWithDiff(value);
+                    }
+                }
+            }
+            return 0;
+        }
+
+        private double livenessFeature(Point point) {
+            return normalize(state.board().liveness()[point.getX()][point.getY()], 0, state.board().size() / 2d);
+        }
+
+
         public String rewardsAsString() {
+            double liveness = livenessFeature(point);
             double closestApple = closestItemFeature(APPLE);
             double closestGold = closestItemFeature(GOLD);
             double closestStone1 = closestStoneAndFuryFeature();
-            double closestStone2 = closestStoneAndSize();
+            double closestStone2 = closestStoneAndSizeFeature();
             double closestEnemy1 = closestEnemyAndFuryFeature();
-            double closestEnemy2 = closestEnemyAndSize();
+            double closestEnemy2 = closestEnemyAndSizeFeature();
             double average = averageItemFeature(APPLE, GOLD, FURY_PILL);
 
-            return String.format("gold: %.3f, apple: %.3f, stone: %.3f %.3f, enemy: %.3f %.3f, avg: %.3f",
+            return String.format("liveness: %.3f, gold: %.3f, apple: %.3f, stone: %.3f %.3f, enemy: %.3f %.3f, avg: %.3f",
+                    liveness,
                     closestGold, closestApple,
                     closestStone1, closestStone2,
                     closestEnemy1, closestEnemy2, average);
@@ -107,15 +156,16 @@ public class GASolver implements Solver {
         }
 
         public double rewards(){
+            double liveness = livenessFeature(point);
             double closestApple = closestItemFeature(APPLE);
             double closestGold = closestItemFeature(GOLD);
             double closestStone1 = closestStoneAndFuryFeature();
-            double closestStone2 = closestStoneAndSize();
+            double closestStone2 = closestStoneAndSizeFeature();
             double closestEnemy1 = closestEnemyAndFuryFeature();
-            double closestEnemy2 = closestEnemyAndSize();
+            double closestEnemy2 = closestEnemyAndSizeFeature();
             double average = averageItemFeature(APPLE, GOLD, FURY_PILL);
 
-            return closestGold + closestApple + closestStone1 + closestStone2 + closestEnemy1 + closestEnemy2 + average;
+            return liveness + closestGold + closestApple + closestStone1 + closestStone2 + closestEnemy1 + closestEnemy2 + average;
         }
 
         private Map<Point, Integer> items(Elements... elements) {
@@ -142,48 +192,6 @@ public class GASolver implements Solver {
                 sum += filtered.get(p);
             }
             return sum / filtered.size();
-        }
-
-        private double closestItemFeature(Elements... elements) {
-            double value = 1d / (1 + itemMinDistance(elements));
-            return normalizePath(value);
-        }
-
-        private double averageItemFeature(Elements... elements) {
-            double value = 1d / (1 + itemAverageDistance(elements));
-            return normalizePath(value);
-        }
-
-        private double closestStoneAndFuryFeature() {
-            double value = 1d * state.me().fury() / (1 + itemMinDistance(STONE));
-            return normalizePathWithPill(value);
-        }
-
-        private double closestStoneAndSize() {
-            double value = 1d * (state.me().size()-5) / (1 + itemMinDistance(STONE));
-            return normalizePathWithSize(value);
-        }
-
-        private double closestEnemyAndFuryFeature() {
-            double value = 1d * state.me().fury() / (1 + itemMinDistance(ENEMY_ELEMENTS));
-            return normalizePathWithPill(value);
-        }
-
-        private double closestEnemyAndSize() {
-            if (state.board().isAt(point, ENEMY_BODY_ELEMENTS))
-                return 0;
-
-            Map<Point, Integer> heads = items(ENEMY_HEAD_ELEMENTS);
-
-            for (Point p: heads.keySet()) {
-                for (State.Enemy enemy: state.enemies()) {
-                    if (enemy.head().equals(p)) {
-                        double value = 1d * (state.me().size()-enemy.size()) / (1 + heads.get(p));
-                        return normalizeDistanceWithDiff(value);
-                    }
-                }
-            }
-            return 0;
         }
 
         private double normalize(double value, double min, double max) {
