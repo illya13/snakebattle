@@ -5,6 +5,7 @@ import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.github.illya13.snakebattle.Solver;
 import com.github.illya13.snakebattle.State;
+import com.github.illya13.snakebattle.board.Board;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -107,7 +108,7 @@ public class GASolver implements Solver {
 
         private double closestStoneAndSizeFeature() {
             double value = 1d * (state.me().size()-5) / (1 + itemMinDistance(STONE));
-            return normalizePathWithSize(value);
+            return normalizeDistanceWithDiff(value);
         }
 
         private double closestEnemyAndFuryFeature() {
@@ -133,7 +134,9 @@ public class GASolver implements Solver {
         }
 
         private double livenessFeature(Point point) {
-            return normalize(state.board().liveness()[point.getX()][point.getY()], 0, state.board().size() / 2d);
+            Board board = state.board();
+            double value = board.liveness(point) / (board.size() / 2d);
+            return normalize(value, 0d, 1d);
         }
 
 
@@ -206,11 +209,7 @@ public class GASolver implements Solver {
         }
 
         private double normalizePathWithPill(double value) {
-            return normalize(value, 0, 19d);
-        }
-
-        private double normalizePathWithSize(double value) {
-            return normalize(value, 0, state.board().size());
+            return normalize(value, 0d, 19d);
         }
 
         private double normalizeDistanceWithDiff(double value) {

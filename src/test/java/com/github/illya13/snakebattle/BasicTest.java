@@ -1774,6 +1774,42 @@ public class BasicTest {
                 "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
     }
 
+    @Test
+    public void gaTest3() {
+        ai.solver = new GASolver();
+
+        assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
+                "☼☼                           ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼      ☼#                   ☼\n" +
+                "☼☼            ©         ○    ☼\n" +
+                "☼#                           ☼\n" +
+                "☼☼             ●  ☼#         ☼\n" +
+                "☼☼      ☼☼☼        ☼  ☼      ☼\n" +
+                "☼#      ☼          ☼  ☼      ☼\n" +
+                "☼☼      ☼          ☼  ☼   ●  ☼\n" +
+                "☼☼   ♦  ☼☼☼                  ☼\n" +
+                "☼#   │         ●☼#           ☼\n" +
+                "☼☼   └───┐ ×────>○◄╕         ☼\n" +
+                "☼☼    ●  │           ☼       ☼\n" +
+                "☼#       │                   ☼\n" +
+                "☼☼       ¤                   ☼\n" +
+                "☼☼             ®   ☼#        ☼\n" +
+                "☼#       ☼☼ ☼                ☼\n" +
+                "☼☼          ☼     ●          ☼\n" +
+                "☼☼       ☼☼ ☼                ☼\n" +
+                "☼#          ☼                ☼\n" +
+                "☼☼  ○      ☼#        <┐      ☼\n" +
+                "☼☼       ○         ┌──┘      ☼\n" +
+                "☼#              $ ┌┘☼☼☼      ☼\n" +
+                "☼☼          ○     └──┐       ☼\n" +
+                "☼☼               ☼☼☼#└ö      ☼\n" +
+                "☼#    ®                      ☼\n" +
+                "☼☼                           ☼\n" +
+                "☼☼   ○                       ☼\n" +
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.RIGHT);
+    }
+
     private void assertAI(String board, Direction expected) {
         String actual = ai.get(board(board));
         Assert.assertEquals(expected.toString(), actual);
