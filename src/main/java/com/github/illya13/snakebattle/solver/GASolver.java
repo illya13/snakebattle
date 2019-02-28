@@ -38,8 +38,6 @@ public class GASolver implements Solver {
     }
 
     private List<Action> getActions(State state) {
-        state.board().liveness();
-
         Direction inverted = state.me().direction().inverted();
         List<Action> actions = new LinkedList<>();
         for(Direction direction: all) {
@@ -58,6 +56,16 @@ public class GASolver implements Solver {
         private Point point;
         private Map<Point, Integer> items;
 
+        private double liveness;
+        private double closestApple;
+        private double closestGold;
+        private double closestStone1;
+        private double closestStone2;
+        private double closestEnemy1;
+        private double closestEnemy2;
+        private double average;
+
+
         public Action(State state, Direction direction) {
             this.state = state;
             this.direction = direction;
@@ -69,6 +77,18 @@ public class GASolver implements Solver {
             }
             initItems(point);
             initEnemies(point);
+            initFeatures();
+        }
+
+        private void initFeatures() {
+            liveness = livenessFeature(point);
+            closestApple = closestItemFeature(APPLE);
+            closestGold = closestItemFeature(GOLD);
+            closestStone1 = closestStoneAndFuryFeature();
+            closestStone2 = closestStoneAndSizeFeature();
+            closestEnemy1 = closestEnemyAndFuryFeature();
+            closestEnemy2 = closestEnemyAndSizeFeature();
+            average = averageItemFeature(APPLE, GOLD, FURY_PILL);
         }
 
         private void initItems(Point point) {
@@ -118,7 +138,7 @@ public class GASolver implements Solver {
 
         private double closestEnemyAndSizeFeature() {
             if (state.board().isAt(point, ENEMY_BODY_ELEMENTS))
-                return 0;
+                return -0.5d;
 
             Map<Point, Integer> heads = items(ENEMY_HEAD_ELEMENTS);
 
@@ -141,15 +161,6 @@ public class GASolver implements Solver {
 
 
         public String rewardsAsString() {
-            double liveness = livenessFeature(point);
-            double closestApple = closestItemFeature(APPLE);
-            double closestGold = closestItemFeature(GOLD);
-            double closestStone1 = closestStoneAndFuryFeature();
-            double closestStone2 = closestStoneAndSizeFeature();
-            double closestEnemy1 = closestEnemyAndFuryFeature();
-            double closestEnemy2 = closestEnemyAndSizeFeature();
-            double average = averageItemFeature(APPLE, GOLD, FURY_PILL);
-
             return String.format("liveness: %.3f, gold: %.3f, apple: %.3f, stone: %.3f %.3f, enemy: %.3f %.3f, avg: %.3f",
                     liveness,
                     closestGold, closestApple,
@@ -159,15 +170,6 @@ public class GASolver implements Solver {
         }
 
         public double rewards(){
-            double liveness = livenessFeature(point);
-            double closestApple = closestItemFeature(APPLE);
-            double closestGold = closestItemFeature(GOLD);
-            double closestStone1 = closestStoneAndFuryFeature();
-            double closestStone2 = closestStoneAndSizeFeature();
-            double closestEnemy1 = closestEnemyAndFuryFeature();
-            double closestEnemy2 = closestEnemyAndSizeFeature();
-            double average = averageItemFeature(APPLE, GOLD, FURY_PILL);
-
             return liveness + closestGold + closestApple + closestStone1 + closestStone2 + closestEnemy1 + closestEnemy2 + average;
         }
 
