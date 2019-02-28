@@ -5,13 +5,11 @@ import com.codenjoy.dojo.services.Point;
 import com.codenjoy.dojo.snakebattle.model.Elements;
 import com.github.illya13.snakebattle.Solver;
 import com.github.illya13.snakebattle.State;
-import com.github.illya13.snakebattle.board.Board;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
 import static com.github.illya13.snakebattle.board.Board.*;
@@ -49,22 +47,12 @@ public class GASolver implements Solver {
         return actions;
     }
 
-
-    private class Action {
+    private static class Action {
         private State state;
         private Direction direction;
         private Point point;
         private Map<Point, Integer> items;
-
-        private double liveness;
-        private double closestApple;
-        private double closestGold;
-        private double closestStone1;
-        private double closestStone2;
-        private double closestEnemy1;
-        private double closestEnemy2;
-        private double average;
-
+        private Map<Features.FEATURE, Features.Reward> features;
 
         public Action(State state, Direction direction) {
             this.state = state;
@@ -75,23 +63,17 @@ public class GASolver implements Solver {
             if (!state.board().isAt(point, NONE)) {
                 items.put(point, 0);
             }
-            initItems(point);
-            initEnemies(point);
+            initItems();
+            initEnemies();
             initFeatures();
         }
 
-        private void initFeatures() {
-            liveness = livenessFeature(point);
-            closestApple = closestItemFeature(APPLE);
-            closestGold = closestItemFeature(GOLD);
-            closestStone1 = closestStoneAndFuryFeature();
-            closestStone2 = closestStoneAndSizeFeature();
-            closestEnemy1 = closestEnemyAndFuryFeature();
-            closestEnemy2 = closestEnemyAndSizeFeature();
-            average = averageItemFeature(APPLE, GOLD, FURY_PILL);
+        public Direction direction() {
+            return direction;
         }
 
-        private void initItems(Point point) {
+
+        private void initItems() {
             Elements[] barrier = BARRIER_ELEMENTS;
             if (!state.me().isFly())
                 barrier = join(barrier, MY_ELEMENTS);
@@ -103,121 +85,30 @@ public class GASolver implements Solver {
             items.putAll(state.board().bfs(state.me(), point, barrier, target));
         }
 
-        private void initEnemies(Point point) {
+        private void initEnemies() {
             items.putAll(state.board().bfs(state.me(), point, BARRIER_ELEMENTS, ENEMY_HEAD_ELEMENTS));
         }
 
-        public Direction direction() {
-            return direction;
+        private void initFeatures() {
+            features = new Features(state, point, items).all();
         }
-
-        private double closestItemFeature(Elements... elements) {
-            double value = 1d / (1 + itemMinDistance(elements));
-            return normalizePath(value);
-        }
-
-        private double averageItemFeature(Elements... elements) {
-            double value = 1d / (1 + itemAverageDistance(elements));
-            return normalizePath(value);
-        }
-
-        private double closestStoneAndFuryFeature() {
-            double value = 1d * state.me().fury() / (1 + itemMinDistance(STONE));
-            return normalizePathWithPill(value);
-        }
-
-        private double closestStoneAndSizeFeature() {
-            double value = 1d * (state.me().size()-5) / (1 + itemMinDistance(STONE));
-            return normalizeDistanceWithDiff(value);
-        }
-
-        private double closestEnemyAndFuryFeature() {
-            double value = 1d * state.me().fury() / (1 + itemMinDistance(ENEMY_ELEMENTS));
-            return normalizePathWithPill(value);
-        }
-
-        private double closestEnemyAndSizeFeature() {
-            if (state.board().isAt(point, ENEMY_BODY_ELEMENTS))
-                return -0.5d;
-
-            Map<Point, Integer> heads = items(ENEMY_HEAD_ELEMENTS);
-
-            for (Point p: heads.keySet()) {
-                for (State.Enemy enemy: state.enemies()) {
-                    if (enemy.head().equals(p)) {
-                        double value = 1d * (state.me().size()-enemy.size()) / (1 + heads.get(p));
-                        return normalizeDistanceWithDiff(value);
-                    }
-                }
-            }
-            return 0;
-        }
-
-        private double livenessFeature(Point point) {
-            Board board = state.board();
-            double value = board.liveness(point) / (board.size() / 2d);
-            return normalize(value, 0d, 1d);
-        }
-
 
         public String rewardsAsString() {
-            return String.format("liveness: %.3f, gold: %.3f, apple: %.3f, stone: %.3f %.3f, enemy: %.3f %.3f, avg: %.3f",
-                    liveness,
-                    closestGold, closestApple,
-                    closestStone1, closestStone2,
-                    closestEnemy1, closestEnemy2, average);
-
+            StringBuilder sb = new StringBuilder();
+            for (Features.FEATURE feature: features.keySet()) {
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(String.format("%s: %.3f", feature, features.get(feature).reward()));
+            }
+            return sb.toString();
         }
 
         public double rewards(){
-            return liveness + closestGold + closestApple + closestStone1 + closestStone2 + closestEnemy1 + closestEnemy2 + average;
-        }
-
-        private Map<Point, Integer> items(Elements... elements) {
-            return items.entrySet().stream()
-                    .filter(map -> state.board().isAt(map.getKey(), elements))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (x, y) -> y, LinkedHashMap::new));
-        }
-
-        private int itemMinDistance(Elements... elements) {
-            Map<Point, Integer> filtered = items(elements);
-            if (filtered.isEmpty())
-                return Integer.MAX_VALUE;
-
-            return filtered.get(filtered.keySet().iterator().next());
-        }
-
-        private double itemAverageDistance(Elements... elements) {
-            Map<Point, Integer> filtered = items(elements);
-            if (filtered.isEmpty())
-                return Integer.MAX_VALUE;
-
-            double sum = 0d;
-            for (Point p: filtered.keySet()) {
-                sum += filtered.get(p);
+            double total = 0;
+            for (Features.FEATURE feature: features.keySet()) {
+                total += features.get(feature).reward();
             }
-            return sum / filtered.size();
+            return total;
         }
-
-        private double normalize(double value, double min, double max) {
-            double normalized = (value - min) / (max - min);
-            if (normalized < min) return min;
-            if (normalized > max) return max;
-            return normalized;
-        }
-
-        private double normalizePath(double value) {
-            return normalize(value, 1d / (2 * state.board().size()), 1d);
-        }
-
-        private double normalizePathWithPill(double value) {
-            return normalize(value, 0d, 19d);
-        }
-
-        private double normalizeDistanceWithDiff(double value) {
-            return -0.5d + normalize(value, -3, 3);
-        }
-
 
         public String toString() {
             return direction + "[" + String.format("%.3f", rewards())+ "] {" + rewardsAsString() + "}";
