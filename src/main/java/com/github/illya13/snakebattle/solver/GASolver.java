@@ -52,12 +52,14 @@ public class GASolver implements Solver {
         private Direction direction;
         private Point point;
         private Map<Point, Integer> items;
+        private int[][] liveness;
         private Map<Features.FEATURE, Features.Reward> features;
 
         public Action(State state, Direction direction) {
             this.state = state;
             this.direction = direction;
             this.point = direction.change(state.me().head());
+            liveness = state.board().liveness();
             items = new LinkedHashMap<>();
 
             if (!state.board().isAt(point, NONE)) {
@@ -90,7 +92,7 @@ public class GASolver implements Solver {
         }
 
         private void initFeatures() {
-            features = new Features(state, point, items).all();
+            features = new Features(state, point, items, liveness).all();
         }
 
         public String rewardsAsString() {

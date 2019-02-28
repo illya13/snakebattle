@@ -10,12 +10,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.codenjoy.dojo.snakebattle.model.Elements.*;
-import static com.codenjoy.dojo.snakebattle.model.Elements.STONE;
 import static com.github.illya13.snakebattle.board.Board.*;
 
 public class Features {
     enum FEATURE {
-        LIVENESS, APPLE, GOLD, AVERAGE,
+        LIVENESS, BODY, APPLE, GOLD, FURY, AVERAGE,
         STONE_N_FURY, STONE_N_SIZE,
         ENEMY_N_FURY, ENEMY_N_SIZE
     }
@@ -23,13 +22,15 @@ public class Features {
     private State state;
     private Point point;
     private Map<Point, Integer> items;
+    private int[][] liveness;
 
     private Map<FEATURE, Reward> all;
 
-    public Features(State state, Point point, Map<Point, Integer> items) {
+    public Features(State state, Point point, Map<Point, Integer> items, int[][] liveness) {
         this.state = state;
         this.point = point;
         this.items = items;
+        this.liveness = liveness;
 
         init();
     }
@@ -38,8 +39,10 @@ public class Features {
         all = new LinkedHashMap<>();
 
         all.put(FEATURE.LIVENESS, new Features.Liveness());
-        all.put(FEATURE.APPLE, new Features.ClosestAppleFeature());
-        all.put(FEATURE.GOLD, new Features.ClosestGoldFeature());
+        all.put(FEATURE.BODY, new Features.MyBody());
+        all.put(FEATURE.APPLE, new Features.ClosestFeature(APPLE));
+        all.put(FEATURE.GOLD, new Features.ClosestFeature(GOLD));
+        all.put(FEATURE.FURY, new Features.ClosestFeature(FURY_PILL));
         all.put(FEATURE.AVERAGE, new Features.AverageItemsFeature());
         all.put(FEATURE.STONE_N_FURY, new Features.ClosestStoneInFuryFeature());
         all.put(FEATURE.STONE_N_SIZE, new Features.ClosestStoneWithSizeFeature());
@@ -92,29 +95,35 @@ public class Features {
         @Override
         public double reward() {
             Board board = state.board();
-            double value = board.liveness(point) / (board.size() / 2d);
+            double value = liveness(point) / (board.size() / 2d);
             return normalize(value, 0d, 1d);
         }
     }
 
-    public class ClosestAppleFeature extends FeatureBase {
+    public class MyBody extends FeatureBase {
         @Override
         public double reward() {
-            return closestItemFeature(Elements.APPLE);
+            return (state.board().isAt(point, MY_BODY_ELEMENTS)) ? -0.5d : 0.5d;
         }
     }
 
-    public class ClosestGoldFeature extends FeatureBase {
+    public class ClosestFeature extends FeatureBase {
+        private Elements elements;
+
+        public ClosestFeature(Elements elements) {
+            this.elements = elements;
+        }
+
         @Override
         public double reward() {
-            return closestItemFeature(Elements.GOLD);
+            return closestItemFeature(elements);
         }
     }
 
     public class AverageItemsFeature extends FeatureBase {
         @Override
         public double reward() {
-            return averageItemFeature(Elements.APPLE, Elements.GOLD, FURY_PILL);
+            return averageItemFeature(APPLE, GOLD, FURY_PILL);
         }
     }
 
@@ -163,6 +172,10 @@ public class Features {
     }
 
     // HELPERS
+
+    private double liveness(Point point) {
+        return liveness[point.getX()][point.getY()];
+    }
 
     private Map<Point, Integer> filterItems(Elements... elements) {
         return items.entrySet().stream()

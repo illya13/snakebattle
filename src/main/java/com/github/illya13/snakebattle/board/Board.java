@@ -149,17 +149,8 @@ public class Board extends AbstractBoard<Elements> {
     }
 
 
-    public double liveness(Point point) {
-        return liveness()[point.getX()][point.getY()];
-    }
-
-    private int[][] liveness;
-
     public int[][] liveness() {
-        if (liveness != null)
-            return liveness;
-
-        liveness = new int[size()][size()];
+        int[][] liveness = new int[size()][size()];
 
         for (int x = 0; x < size(); ++x) {
             for (int y = 0; y < size(); ++y) {
