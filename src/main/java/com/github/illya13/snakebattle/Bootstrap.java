@@ -33,8 +33,10 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
         long ts = System.currentTimeMillis();
 
         if (board.isGameOver()) {
-            if (state != null && statistics != null)
+            if (state != null && statistics != null) {
+                solver.done(state.me().reward());
                 statistics.update(state.me().reward());
+            }
             return "";
         }
 
@@ -44,7 +46,10 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
         }
 
         state = (!initialized) ? observer.init(board) : observer.update(board, direction);
-        if (!initialized) initialized = true;
+        if (!initialized) {
+            solver.init();
+            initialized = true;
+        }
 
         System.out.println(state.toString());
         direction = solver.next(state);

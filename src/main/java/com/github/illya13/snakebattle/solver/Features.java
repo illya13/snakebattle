@@ -14,9 +14,8 @@ import static com.github.illya13.snakebattle.board.Board.*;
 
 public class Features {
     enum FEATURE {
-        LIVENESS, BODY, APPLE, GOLD, FURY, AVERAGE,
-        STONE_N_FURY, STONE_N_SIZE,
-        ENEMY_N_FURY, ENEMY_N_SIZE
+        LIVENESS, BODY, APPLE, GOLD, FURY, FLY, AVERAGE,
+        STONE_N_FURY, STONE_N_SIZE, ENEMY_N_FURY, ENEMY_N_SIZE
     }
 
     private State state;
@@ -61,6 +60,7 @@ public class Features {
         all.put(FEATURE.APPLE, new Features.ClosestFeature(APPLE));
         all.put(FEATURE.GOLD, new Features.ClosestFeature(GOLD));
         all.put(FEATURE.FURY, new Features.ClosestFeature(FURY_PILL));
+        all.put(FEATURE.FLY, new Features.ClosestFeature(FLYING_PILL));
         all.put(FEATURE.AVERAGE, new Features.AverageItemsFeature());
         all.put(FEATURE.STONE_N_FURY, new Features.ClosestStoneInFuryFeature());
         all.put(FEATURE.STONE_N_SIZE, new Features.ClosestStoneWithSizeFeature());
