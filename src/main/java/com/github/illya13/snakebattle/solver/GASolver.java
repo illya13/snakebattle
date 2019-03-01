@@ -52,6 +52,7 @@ public class GASolver implements Solver {
         double max = Double.NEGATIVE_INFINITY;
         Direction direction = null;
 
+        System.out.println(genotype);
         for (Action action: getActions(state)) {
             System.out.println(action);
             if (action.rewards() > max ) {
@@ -74,7 +75,7 @@ public class GASolver implements Solver {
         return actions;
     }
 
-    private static class Action {
+    private class Action {
         private Direction direction;
         private Point point;
         private Map<Features.FEATURE, Features.Reward> features;
@@ -101,8 +102,10 @@ public class GASolver implements Solver {
 
         public double rewards(){
             double total = 0;
+            int i = 0;
             for (Features.FEATURE feature: features.keySet()) {
-                total += features.get(feature).reward();
+                total += genotype.getChromosome().getGene(i).intValue() * features.get(feature).reward();
+                i++;
             }
             return total;
         }

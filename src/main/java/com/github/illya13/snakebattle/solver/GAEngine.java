@@ -16,7 +16,7 @@ import java.util.concurrent.*;
 import static io.jenetics.engine.EvolutionResult.toBestEvolutionResult;
 
 public class GAEngine {
-    public static final int POPULATION = 5;
+    public static final int POPULATION = 50;
     public static final String FILENAME = "population.obj";
 
     private Factory<Genotype<IntegerGene>> genotypeFactory;
