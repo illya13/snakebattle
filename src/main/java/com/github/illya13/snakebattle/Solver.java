@@ -6,4 +6,7 @@ public interface Solver {
     void init();
     Direction next(State state);
     void done(int reward);
+
+    String status();
+    void shutdown();
 }

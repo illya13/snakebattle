@@ -29,6 +29,14 @@ public class BFSSolver implements Solver {
     @Override
     public void done(int reward) {}
 
+    @Override
+    public String status() {
+        return "";
+    }
+
+    @Override
+    public void shutdown() {}
+
     private Direction findClosest(State state, Elements... elements) {
         int min = Integer.MAX_VALUE;
         Direction direction = null;

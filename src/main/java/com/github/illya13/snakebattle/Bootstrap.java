@@ -34,8 +34,8 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
 
         if (board.isGameOver()) {
             if (state != null && statistics != null) {
+                statistics.update(state.me().reward(), solver.status());
                 solver.done(state.me().reward());
-                statistics.update(state.me().reward());
             }
             return "";
         }

@@ -10,11 +10,11 @@ import java.util.Map;
 
 public class Statistics {
     private enum FIELDS {
-        CNT, SUM
+        CNT, SUM, STATUS
     }
 
     private String filename;
-    private Map<String, Double> stat;
+    private Map<String, String> stat;
 
     public Statistics(String filename) {
         this.filename = filename;
@@ -26,26 +26,27 @@ public class Statistics {
     }
 
     public double count() {
-        Double cnt = stat.get(FIELDS.CNT.name());
-        if (cnt == null) cnt = 0d;
-        return cnt;
+        String cnt = stat.get(FIELDS.CNT.name());
+        if (cnt == null) return 0d;
+        return Double.parseDouble(cnt);
     }
 
     public double total() {
-        Double sum = stat.get(FIELDS.SUM.name());
-        if (sum == null) sum = 0d;
-        return sum;
+        String sum = stat.get(FIELDS.SUM.name());
+        if (sum == null) return 0d;
+        return Double.parseDouble(sum);
     }
 
 
-    public void update(double rewards) {
+    public void update(double rewards, String status) {
         Double sum = total();
         sum += rewards;
-        stat.put(FIELDS.SUM.name(), sum);
+        stat.put(FIELDS.SUM.name(), sum.toString());
 
         Double cnt = count();
         cnt++;
-        stat.put(FIELDS.CNT.name(), cnt);
+        stat.put(FIELDS.CNT.name(), cnt.toString());
+        stat.put(FIELDS.STATUS.name(), status);
 
         writeJson(stat, filename);
     }
@@ -54,7 +55,7 @@ public class Statistics {
         return new String(Files.readAllBytes(Paths.get(path)));
     }
 
-    private Map<String, Double> readJson(String path) {
+    private Map<String, String> readJson(String path) {
         try {
             String json = read(path);
             TypeReference<Map<String, Double>> typeRef = new TypeReference<Map<String, Double>>() {};
@@ -69,7 +70,7 @@ public class Statistics {
         Files.write(Paths.get(path), content.getBytes());
     }
 
-    private void writeJson(Map<String, Double> map, String path) {
+    private void writeJson(Map<String, String> map, String path) {
         try{
             String json = new ObjectMapper().writeValueAsString(map);
             write(path, json);
