@@ -6,6 +6,7 @@ import com.github.illya13.snakebattle.board.Board;
 import com.github.illya13.snakebattle.solver.BFSSolver;
 import com.github.illya13.snakebattle.solver.GASolver;
 import com.github.illya13.snakebattle.state.StateImpl;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +21,11 @@ public class BasicTest {
     public void setup() {
         ai = new Bootstrap(null);
         ai.solver = new BFSSolver();
+    }
+
+    @After
+    public void shutdown() {
+        ai.solver.shutdown();
     }
 
     private Board board(String board) {

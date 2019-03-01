@@ -97,7 +97,7 @@ public class GAEngine {
 
     @Override
     public String toString() {
-        return String.format("%d %s", generation, population.toString());
+        return String.valueOf(generation);
     }
 
     // HELPERS

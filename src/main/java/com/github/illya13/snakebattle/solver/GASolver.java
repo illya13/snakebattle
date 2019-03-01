@@ -45,7 +45,7 @@ public class GASolver implements Solver {
 
     @Override
     public String status() {
-        return genotype + " | " + engine.toString();
+        return engine.toString() + ": " + genotype;
     }
 
     private Direction findBest(State state) {
