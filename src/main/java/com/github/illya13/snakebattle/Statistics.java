@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class Statistics {
     private enum FIELDS {
-        CNT, SUM, STATUS
+        CNT, SUM, LAST, STATUS
     }
 
     private String filename;
@@ -38,10 +38,11 @@ public class Statistics {
     }
 
 
-    public void update(double rewards, String status) {
+    public void update(Integer rewards, String status) {
         Double sum = total();
         sum += rewards;
         stat.put(FIELDS.SUM.name(), sum.toString());
+        stat.put(FIELDS.LAST.name(), rewards.toString());
 
         Double cnt = count();
         cnt++;

@@ -31,7 +31,7 @@ public class BFSSolver implements Solver {
 
     @Override
     public String status() {
-        return "";
+        return "BFS";
     }
 
     @Override
