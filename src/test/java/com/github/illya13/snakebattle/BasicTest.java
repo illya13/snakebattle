@@ -19,8 +19,7 @@ public class BasicTest {
 
     @Before
     public void setup() {
-        ai = new Bootstrap(null);
-        ai.solver = new BFSSolver();
+        ai = new Bootstrap(new BFSSolver(), null);
     }
 
     @After

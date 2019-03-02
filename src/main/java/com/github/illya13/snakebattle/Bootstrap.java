@@ -3,6 +3,7 @@ package com.github.illya13.snakebattle;
 import com.codenjoy.dojo.services.*;
 import com.codenjoy.dojo.client.WebSocketRunner;
 import com.github.illya13.snakebattle.board.Board;
+import com.github.illya13.snakebattle.solver.BFSSolver;
 import com.github.illya13.snakebattle.solver.GASolver;
 import com.github.illya13.snakebattle.state.ObserverImpl;
 
@@ -20,9 +21,9 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     State state;
     Statistics statistics;
 
-    Bootstrap(String filename) {
+    Bootstrap(Solver solver, String filename) {
         observer = new ObserverImpl();
-        solver = new GASolver();
+        this.solver = solver;
 
         if (filename != null)
             statistics = new Statistics(filename);
@@ -61,24 +62,43 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     public static void main(String[] args) throws Exception {
         System.setOut(new PrintStream(System.out, true, "UTF-8"));
 
+        String solverName = "";
         String hash = PLAYER_HASH;
         String code = PLAYER_CODE;
         String filename = "./stats.json";
 
         if (args.length > 0) {
-            hash = args[0];
+            solverName = args[0];
         }
         if (args.length > 1) {
-            code = args[1];
+            hash = args[1];
         }
         if (args.length > 2) {
-            filename = args[2];
+            code = args[2];
+        }
+        if (args.length > 3) {
+            filename = args[3];
+        }
+
+        Solver solver;
+        switch (solverName) {
+            case "BFS":
+                solver = new BFSSolver();
+                break;
+
+            case "GA":
+                solver = new GASolver();
+                break;
+
+            default:
+                solver = new BFSSolver();
+                break;
         }
 
         WebSocketRunner.runClient(
                 // paste here board page url from browser after registration
                 BASE_URL + hash + "?code=" + code,
-                new Bootstrap(filename),
+                new Bootstrap(solver, filename),
                 new Board());
     }
 }

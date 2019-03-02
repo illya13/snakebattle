@@ -56,6 +56,7 @@ public class GAEngine {
         while (!mainExecutor.isShutdown()) {
             population = evolve(population, generation);
             save(population);
+            System.out.println(population);
             generation++;
         }
     }
