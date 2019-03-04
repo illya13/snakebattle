@@ -182,7 +182,7 @@ public class StateImpl implements State {
 
         @Override
         public String toString() {
-            return "{" + reward + "} " + direction() + "[" + size() + "]" + pillsToString();
+            return "{" + reward + "} " + head() + direction() + "[" + size() + "]" + pillsToString();
         }
 
         private void updateReward(Board prev) {

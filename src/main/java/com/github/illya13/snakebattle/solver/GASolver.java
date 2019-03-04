@@ -9,21 +9,26 @@ import io.jenetics.IntegerGene;
 
 
 import java.util.*;
+import java.util.concurrent.Exchanger;
 
 import static com.github.illya13.snakebattle.board.Board.*;
 
 public class GASolver implements Solver {
     private GAEngine engine;
-    Genotype<IntegerGene> genotype;
+    private Genotype<IntegerGene> genotype;
+    private Exchanger<Integer> exchanger;
 
-    public GASolver() {
-        engine = new GAEngine();
+    public GASolver(GAEngine engine) {
+        this.engine = engine;
     }
 
     @Override
     public void init() {
-        if (genotype == null)
-            genotype = engine.next();
+        if (genotype == null) {
+            GAEngine.Request request = engine.next();
+            genotype = request.getGenotype();
+            exchanger = request.getExchanger();
+        }
     }
 
     @Override
@@ -34,8 +39,13 @@ public class GASolver implements Solver {
 
     @Override
     public void done(int reward) {
-        engine.evaluate(genotype, reward);
-        genotype = null;
+        try {
+            exchanger.exchange(reward);
+            genotype = null;
+            exchanger = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -4,21 +4,39 @@ package com.github.illya13.snakebattle;
 import com.codenjoy.dojo.services.Direction;
 import com.github.illya13.snakebattle.board.Board;
 import com.github.illya13.snakebattle.solver.BFSSolver;
+import com.github.illya13.snakebattle.solver.GAEngine;
 import com.github.illya13.snakebattle.solver.GASolver;
 import com.github.illya13.snakebattle.state.StateImpl;
+import io.jenetics.Genotype;
+import io.jenetics.IntegerChromosome;
+import io.jenetics.IntegerGene;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.Exchanger;
 
 
 public class BasicTest {
     private Bootstrap ai;
+    private GAEngine gaEngine;
 
     @Before
     public void setup() {
+        gaEngine = Mockito.mock(GAEngine.class);
+
+        IntegerGene gene = IntegerGene.of(0, 10);
+        // [3],[7],[9],[5],[3],[3],[6],[6],[4],[5],[2]
+        Genotype<IntegerGene> best = Genotype.of(IntegerChromosome.of(
+                gene.newInstance(3), gene.newInstance(7), gene.newInstance(9), gene.newInstance(5),
+                gene.newInstance(3), gene.newInstance(3), gene.newInstance(6), gene.newInstance(6),
+                gene.newInstance(4), gene.newInstance(5), gene.newInstance(6)
+        ));
+
+        Mockito.when(gaEngine.next()).thenReturn(new GAEngine.Request(best, new Exchanger<>()));
         ai = new Bootstrap(new BFSSolver(), null);
     }
 
@@ -1709,7 +1727,7 @@ public class BasicTest {
 
     @Test
     public void gaTest1() {
-        ai.solver = new GASolver();
+        ai.solver = new GASolver(gaEngine);
 
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼         ○           ○     ☼\n" +
@@ -1745,7 +1763,7 @@ public class BasicTest {
 
     @Test
     public void gaTest2() {
-        ai.solver = new GASolver();
+        ai.solver = new GASolver(gaEngine);
 
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼   ○  <┐ ┌┐                ☼\n" +
@@ -1776,12 +1794,12 @@ public class BasicTest {
                 "☼#                           ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.RIGHT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
     }
 
     @Test
     public void gaTest3() {
-        ai.solver = new GASolver();
+        ai.solver = new GASolver(gaEngine);
 
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
@@ -1817,7 +1835,7 @@ public class BasicTest {
 
     @Test
     public void gaTest4() {
-        ai.solver = new GASolver();
+        ai.solver = new GASolver(gaEngine);
 
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼                           ☼\n" +
@@ -1853,7 +1871,7 @@ public class BasicTest {
 
     @Test
     public void gaTest5() {
-        ai.solver = new GASolver();
+        ai.solver = new GASolver(gaEngine);
 
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼        ╔╕                 ☼\n" +
@@ -1914,12 +1932,12 @@ public class BasicTest {
                 "☼#                           ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.DOWN);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
     }
 
     @Test
     public void gaTest6() {
-        ai.solver = new GASolver();
+        ai.solver = new GASolver(gaEngine);
 
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼ ┌───┐    $   ○            ☼\n" +
@@ -2017,5 +2035,4 @@ public class BasicTest {
             // no op
         }
     }
-
 }

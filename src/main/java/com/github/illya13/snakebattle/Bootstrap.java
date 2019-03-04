@@ -4,10 +4,16 @@ import com.codenjoy.dojo.services.*;
 import com.codenjoy.dojo.client.WebSocketRunner;
 import com.github.illya13.snakebattle.board.Board;
 import com.github.illya13.snakebattle.solver.BFSSolver;
+import com.github.illya13.snakebattle.solver.GAEngine;
 import com.github.illya13.snakebattle.solver.GASolver;
 import com.github.illya13.snakebattle.state.ObserverImpl;
 
 import java.io.PrintStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
     static final String BASE_URL = "http://127.0.0.1:8080/codenjoy-contest/board/player/";
@@ -59,46 +65,64 @@ public class Bootstrap implements com.codenjoy.dojo.client.Solver<Board> {
         return direction.toString();
     }
 
+
     public static void main(String[] args) throws Exception {
         System.setOut(new PrintStream(System.out, true, "UTF-8"));
 
-        String solverName = "";
-        String hash = PLAYER_HASH;
-        String code = PLAYER_CODE;
-        String filename = "./stats.json";
+        final String solverName = (args.length > 0) ? args[0] : "";
+        final List<String> hash = new LinkedList<>();
+        final List<String> code = new LinkedList<>();
+        final List<String> filename = new LinkedList<>();
 
-        if (args.length > 0) {
-            solverName = args[0];
-        }
-        if (args.length > 1) {
-            hash = args[1];
-        }
-        if (args.length > 2) {
-            code = args[2];
-        }
-        if (args.length > 3) {
-            filename = args[3];
-        }
+        int i = 0;
+        do {
+            hash.add((args.length > i + 1) ? args[i+1] : PLAYER_HASH);
+            code.add((args.length > i + 2) ? args[i+2] : PLAYER_CODE);
+            filename.add((args.length > i + 3) ? args[i+3] : "./stats.json");
+            i  += (i==0) ? 3 : 2;
+        } while (i+3 < args.length);
 
-        Solver solver;
-        switch (solverName) {
-            case "BFS":
-                solver = new BFSSolver();
-                break;
+        run(solverName, hash, code, filename);
+    }
 
-            case "GA":
-                solver = new GASolver();
-                break;
+    private static CountDownLatch latch;
+    private static void run(final String solverName, final List<String> hash, final List<String> code, final List<String> filename) {
+        latch = new CountDownLatch(1);
+        ExecutorService executor = Executors.newFixedThreadPool(4);
 
-            default:
-                solver = new BFSSolver();
-                break;
+        GAEngine gaEngine = new GAEngine();
+
+        try {
+            for (int i=0; i<hash.size(); i++) {
+                Solver solver;
+                switch (solverName) {
+                    case "BFS":
+                        solver = new BFSSolver();
+                        break;
+
+                    case "GA":
+                        solver = new GASolver(gaEngine);
+                        break;
+
+                    default:
+                        solver = new BFSSolver();
+                        break;
+                }
+                runOne(executor, solver, hash.get(i), code.get(i), filename.get(i));
+            }
+
+            latch.await();
+            executor.shutdown();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+    }
 
-        WebSocketRunner.runClient(
-                // paste here board page url from browser after registration
-                BASE_URL + hash + "?code=" + code,
-                new Bootstrap(solver, filename),
-                new Board());
+    private static void runOne(final ExecutorService executor, final Solver solver, final String hash, final String code, final String filename) {
+        executor.submit(() -> {
+            WebSocketRunner.runClient(BASE_URL + hash + "?code=" + code,
+                    new Bootstrap(solver, filename),
+                    new Board());
+        });
     }
 }

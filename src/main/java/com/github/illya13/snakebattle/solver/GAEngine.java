@@ -10,7 +10,6 @@ import io.jenetics.util.ISeq;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.concurrent.*;
 
 import static io.jenetics.engine.EvolutionResult.toBestEvolutionResult;
@@ -22,8 +21,7 @@ public class GAEngine {
     private Factory<Genotype<IntegerGene>> genotypeFactory;
     private Engine<IntegerGene, Integer> engine;
 
-    private BlockingQueue<Genotype<IntegerGene>> requests;
-    private Map<Genotype<IntegerGene>, Exchanger<Integer>> exchangerMap;
+    private BlockingQueue<Request> requests;
 
     private ExecutorService engineExecutor;
     private ExecutorService mainExecutor;
@@ -33,11 +31,10 @@ public class GAEngine {
 
 
     public GAEngine() {
-        engineExecutor = Executors.newSingleThreadExecutor();
+        engineExecutor = Executors.newFixedThreadPool(4);
         mainExecutor = Executors.newSingleThreadExecutor();
 
         requests = new LinkedBlockingQueue<>();
-        exchangerMap = new HashMap<>();
 
         genotypeFactory = Genotype.of(IntegerChromosome.of (0, 10 , 11));
         engine = Engine.builder(this::fitness, genotypeFactory)
@@ -69,28 +66,17 @@ public class GAEngine {
 
     private Integer fitness(Genotype<IntegerGene> gt) {
         try {
-            requests.put(gt);
-
-            Exchanger<Integer> exchanger = new Exchanger<>();
-            exchangerMap.put(gt, exchanger);
-
-            return exchanger.exchange(0);
+            Request request = new Request(gt, new Exchanger<>());
+            requests.put(request);
+            return request.getExchanger().exchange(0);
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    public Genotype<IntegerGene> next() {
+    public Request next() {
         try {
             return requests.take();
-        } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public void evaluate(Genotype<IntegerGene> genotype, Integer reward) {
-        try {
-            exchangerMap.get(genotype).exchange(reward);
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         }
@@ -129,5 +115,23 @@ public class GAEngine {
     public void shutdown() {
         engineExecutor.shutdown();
         mainExecutor.shutdown();
+    }
+
+    public static class Request {
+        private Genotype<IntegerGene> genotype;
+        private Exchanger<Integer> exchanger;
+
+        public Request(Genotype<IntegerGene> genotype, Exchanger<Integer> exchanger) {
+            this.genotype = genotype;
+            this.exchanger = exchanger;
+        }
+
+        public Genotype<IntegerGene> getGenotype() {
+            return genotype;
+        }
+
+        public Exchanger<Integer> getExchanger() {
+            return exchanger;
+        }
     }
 }
