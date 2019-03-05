@@ -31,6 +31,13 @@ public class GAEngine {
 
 
     public GAEngine() {
+        final Selector<IntegerGene, Integer> survivorsSelector = new TournamentSelector(3);
+        final Selector<IntegerGene, Integer> offspringSelector = new TournamentSelector(3);
+        Alterer<IntegerGene, Integer> alterer = Alterer.of(new Alterer[]{
+                new UniformCrossover(0.2d, 0.2d),
+                new Mutator(0.15d)
+        });
+
         engineExecutor = Executors.newFixedThreadPool(4);
         mainExecutor = Executors.newSingleThreadExecutor();
 
@@ -40,6 +47,12 @@ public class GAEngine {
         engine = Engine.builder(this::fitness, genotypeFactory)
                 .populationSize(POPULATION)
                 .executor(engineExecutor)
+                .survivorsSelector((population, count, optimize) -> {
+                    ISeq<Phenotype<IntegerGene, Integer>> selected = survivorsSelector.select(population, count, optimize);
+                    return selected.map(s -> s.newInstance(s.getGenotype()));
+                })
+                .offspringSelector(offspringSelector)
+                .alterers(alterer)
                 .build();
 
         mainExecutor.submit(this::run);

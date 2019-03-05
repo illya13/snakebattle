@@ -20,7 +20,7 @@ import java.lang.reflect.Field;
 import java.util.concurrent.Exchanger;
 
 
-public class BasicTest {
+public class SolverTest {
     private Bootstrap ai;
     private GAEngine gaEngine;
 
