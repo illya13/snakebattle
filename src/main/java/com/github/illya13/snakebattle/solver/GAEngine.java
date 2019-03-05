@@ -10,6 +10,8 @@ import io.jenetics.util.ISeq;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.*;
 
 import static io.jenetics.engine.EvolutionResult.toBestEvolutionResult;
@@ -119,7 +121,26 @@ public class GAEngine {
     }
 
     private ISeq<Phenotype<IntegerGene, Integer>> generate() {
-        ISeq<Phenotype<IntegerGene, Integer>> population = genotypeFactory.instances()
+        // LIVENESS BARRIER ENEMY STONE BODY
+        // APPLE GOLD FURY FLY AVERAGE
+        // STONE_N_FURY STONE_N_SIZE ENEMY_N_FURY ENEMY_N_SIZE
+
+        // 3 10 10 10 3
+        // 7 7 7 0 1
+        // 3 1 3 1
+        IntegerGene gene = IntegerGene.of(0, 10);
+
+        Genotype<IntegerGene> guess = Genotype.of(IntegerChromosome.of(
+                gene.newInstance(3), gene.newInstance(10), gene.newInstance(10), gene.newInstance(10), gene.newInstance(3),
+                gene.newInstance(7), gene.newInstance(7), gene.newInstance(7), gene.newInstance(0), gene.newInstance(1),
+                gene.newInstance(3), gene.newInstance(1), gene.newInstance(6), gene.newInstance(1)
+        ));
+
+        List<Genotype<IntegerGene>> list = new LinkedList<>();
+        for (int i=0; i<POPULATION; i++)
+            list.add(guess);
+
+        ISeq<Phenotype<IntegerGene, Integer>> population = list.stream()
                 .map(gt -> Phenotype.of(gt, 1, this::fitness))
                 .limit(POPULATION).collect(ISeq.toISeq());
         return population;

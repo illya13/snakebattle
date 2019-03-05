@@ -29,11 +29,11 @@ public class SolverTest {
         gaEngine = Mockito.mock(GAEngine.class);
 
         IntegerGene gene = IntegerGene.of(0, 10);
-        // [3],[7],[9],[5],[3],[3],[6],[6],[4],[5],[2]
+
         Genotype<IntegerGene> best = Genotype.of(IntegerChromosome.of(
-                gene.newInstance(3), gene.newInstance(7), gene.newInstance(9), gene.newInstance(5),
-                gene.newInstance(3), gene.newInstance(3), gene.newInstance(6), gene.newInstance(6),
-                gene.newInstance(4), gene.newInstance(5), gene.newInstance(6)
+                gene.newInstance(3), gene.newInstance(10), gene.newInstance(10), gene.newInstance(10), gene.newInstance(3),
+                gene.newInstance(7), gene.newInstance(7), gene.newInstance(7), gene.newInstance(0), gene.newInstance(1),
+                gene.newInstance(3), gene.newInstance(1), gene.newInstance(6), gene.newInstance(1)
         ));
 
         Mockito.when(gaEngine.next()).thenReturn(new GAEngine.Request(best, new Exchanger<>()));
@@ -1932,7 +1932,7 @@ public class SolverTest {
                 "☼#                           ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.DOWN);
     }
 
     @Test
@@ -1968,7 +1968,7 @@ public class SolverTest {
                 "☼#®                      ○   ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.LEFT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n", Direction.UP);
         assertAI("☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼\n" +
                 "☼☼ ┌───┐    $   ○            ☼\n" +
                 "☼# └┐● │    © ○              ☼\n" +
@@ -1998,7 +1998,7 @@ public class SolverTest {
                 "☼#®                      ○   ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼                           ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.DOWN);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.UP);
     }
 
     private void assertAI(String board, Direction expected) {

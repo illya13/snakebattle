@@ -14,7 +14,8 @@ import static com.github.illya13.snakebattle.board.Board.*;
 
 public class Features {
     enum FEATURE {
-        LIVENESS, BODY, APPLE, GOLD, FURY, FLY, AVERAGE,
+        LIVENESS, BARRIER, ENEMY, STONE, BODY,
+        APPLE, GOLD, FURY, FLY, AVERAGE,
         STONE_N_FURY, STONE_N_SIZE, ENEMY_N_FURY, ENEMY_N_SIZE
     }
 
@@ -56,12 +57,17 @@ public class Features {
         all = new LinkedHashMap<>();
 
         all.put(FEATURE.LIVENESS, new Features.Liveness());
+        all.put(FEATURE.BARRIER, new Barrier());
+        all.put(FEATURE.ENEMY, new Features.Enemy());
+        all.put(FEATURE.STONE, new Features.Stone());
         all.put(FEATURE.BODY, new Features.MyBody());
+
         all.put(FEATURE.APPLE, new Features.ClosestFeature(APPLE));
         all.put(FEATURE.GOLD, new Features.ClosestFeature(GOLD));
         all.put(FEATURE.FURY, new Features.ClosestFeature(FURY_PILL));
         all.put(FEATURE.FLY, new Features.ClosestFeature(FLYING_PILL));
         all.put(FEATURE.AVERAGE, new Features.AverageItemsFeature());
+
         all.put(FEATURE.STONE_N_FURY, new Features.ClosestStoneInFuryFeature());
         all.put(FEATURE.STONE_N_SIZE, new Features.ClosestStoneWithSizeFeature());
         all.put(FEATURE.ENEMY_N_FURY, new Features.ClosestEnemyInFuryFeature());
@@ -115,6 +121,34 @@ public class Features {
             Board board = state.board();
             double value = liveness(point) / (board.size() / 2d);
             return normalize(value, 0d, 1d);
+        }
+    }
+
+    public class Barrier extends FeatureBase {
+        @Override
+        public double reward() {
+            if (state.board().isAt(point, BARRIER_ELEMENTS))
+                return -0.5d;
+            return 0.5d;
+        }
+    }
+
+    public class Enemy extends FeatureBase {
+        @Override
+        public double reward() {
+            if (state.board().isAt(point, ENEMY_ELEMENTS) && !state.me().isFly() && !state.me().isFury())
+                return -0.5d;
+            return 0.5d;
+        }
+    }
+
+    public class Stone extends FeatureBase {
+        @Override
+        public double reward() {
+            if (state.board().isAt(point, Elements.STONE) &&
+                    (state.me().size() < 5) && !state.me().isFly() && !state.me().isFury())
+                return -0.5d;
+            return 0.5d;
         }
     }
 
@@ -172,9 +206,6 @@ public class Features {
     public class ClosestEnemyWithSizeFeature extends FeatureBase {
         @Override
         public double reward() {
-            if (state.board().isAt(point, ENEMY_BODY_ELEMENTS))
-                return -0.5d;
-
             Map<Point, Integer> heads = filterItems(ENEMY_HEAD_ELEMENTS);
 
             for (Point p: heads.keySet()) {
