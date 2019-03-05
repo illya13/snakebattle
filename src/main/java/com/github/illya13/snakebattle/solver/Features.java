@@ -57,7 +57,7 @@ public class Features {
         all = new LinkedHashMap<>();
 
         all.put(FEATURE.LIVENESS, new Features.Liveness());
-        all.put(FEATURE.BARRIER, new Barrier());
+        all.put(FEATURE.BARRIER, new Features.Barrier());
         all.put(FEATURE.ENEMY, new Features.Enemy());
         all.put(FEATURE.STONE, new Features.Stone());
         all.put(FEATURE.BODY, new Features.MyBody());
@@ -101,7 +101,7 @@ public class Features {
         }
 
         double normalizeDistanceWithDiff(double value) {
-            return -0.5d + normalize(value, -3, 3);
+            return normalize(value, -3, 3);
         }
 
         double closestItemFeature(Elements... elements) {
@@ -128,8 +128,8 @@ public class Features {
         @Override
         public double reward() {
             if (state.board().isAt(point, BARRIER_ELEMENTS))
-                return -0.5d;
-            return 0.5d;
+                return 0d;
+            return 1d;
         }
     }
 
@@ -137,8 +137,8 @@ public class Features {
         @Override
         public double reward() {
             if (state.board().isAt(point, ENEMY_ELEMENTS) && !state.me().isFly() && !state.me().isFury())
-                return -0.5d;
-            return 0.5d;
+                return 0d;
+            return 1d;
         }
     }
 
@@ -147,15 +147,15 @@ public class Features {
         public double reward() {
             if (state.board().isAt(point, Elements.STONE) &&
                     (state.me().size() < 5) && !state.me().isFly() && !state.me().isFury())
-                return -0.5d;
-            return 0.5d;
+                return 0d;
+            return 1d;
         }
     }
 
     public class MyBody extends FeatureBase {
         @Override
         public double reward() {
-            return (state.board().isAt(point, MY_BODY_ELEMENTS)) ? -0.5d : 0.5d;
+            return (state.board().isAt(point, MY_BODY_ELEMENTS)) ? 0d : 1d;
         }
     }
 
