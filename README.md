@@ -45,3 +45,18 @@ java -jar target/snakebattle-client-jar-with-dependencies.jar
 # nice to have
 - https://habr.com/ru/post/282522/
 - https://www.baeldung.com/java-monte-carlo-tree-search
+
+# server
+- build / start
+```
+git clone https://github.com/codenjoyme/codenjoy.git
+
+cd codenjoy/CodingDojo/
+mvn clean install -DskipTests=true
+
+cd builder
+mvn clean package -Dcontext=codenjoy-contest -Psnakebattle
+mvn -DMAVEN_OPTS=-Xmx1024m -Dmaven.test.skip=true clean jetty:run-war -Psnakebattle
+```
+- admin [http://127.0.0.1:8080/codenjoy-contest/admin](http://127.0.0.1:8080/codenjoy-contest/admin)
+- register [http://127.0.0.1:8080/codenjoy-contest/](http://127.0.0.1:8080/codenjoy-contest/) 

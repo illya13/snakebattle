@@ -26,6 +26,11 @@
             <version>1.0.27</version>
         </dependency>
         <dependency>
+            <groupId>io.jenetics</groupId>
+            <artifactId>jenetics</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
         </dependency>
@@ -84,7 +89,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.illya13.snakebattle.Solver</mainClass>
+                            <mainClass>com.github.illya13.snakebattle.Bootstrap</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
