@@ -14,9 +14,13 @@ import java.util.concurrent.Exchanger;
 import static com.github.illya13.snakebattle.board.Board.*;
 
 public class GASolver implements Solver {
+    private static final int MAX_RUN = 20;
+
     private GAEngine engine;
     private Genotype<IntegerGene> genotype;
     private Exchanger<Integer> exchanger;
+    private int run;
+    private int total;
 
     public GASolver(GAEngine engine) {
         this.engine = engine;
@@ -28,6 +32,8 @@ public class GASolver implements Solver {
             GAEngine.Request request = engine.next();
             genotype = request.getGenotype();
             exchanger = request.getExchanger();
+            run = 0;
+            total = 0;
         }
     }
 
@@ -39,8 +45,13 @@ public class GASolver implements Solver {
 
     @Override
     public void done(int reward) {
+        total += reward;
+        run++;
+        if (run < MAX_RUN)
+            return;
+
         try {
-            exchanger.exchange(reward);
+            exchanger.exchange(total / MAX_RUN);
             genotype = null;
             exchanger = null;
         } catch (InterruptedException e) {

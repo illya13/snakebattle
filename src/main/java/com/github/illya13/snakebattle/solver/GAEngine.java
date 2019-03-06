@@ -49,10 +49,13 @@ public class GAEngine {
         engine = Engine.builder(this::fitness, genotypeFactory)
                 .populationSize(POPULATION)
                 .executor(engineExecutor)
+/*
                 .survivorsSelector((population, count, optimize) -> {
                     ISeq<Phenotype<IntegerGene, Integer>> selected = survivorsSelector.select(population, count, optimize);
                     return selected.map(s -> s.newInstance(s.getGenotype()));
                 })
+*/
+                .survivorsSelector(survivorsSelector)
                 .offspringSelector(offspringSelector)
                 .alterers(alterer)
                 .build();
