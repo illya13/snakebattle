@@ -136,19 +136,31 @@ public class Features {
     public class Enemy extends FeatureBase {
         @Override
         public double reward() {
+            if (state.board().isAt(point, ENEMY_HEAD_ELEMENTS)) {
+                for (State.Enemy enemy: state.enemies()) {
+                    if (enemy.head().equals(point)) {
+                        boolean attack = (state.me().isFury() && !enemy.isFury()) ||
+                                (!enemy.isFury() && (state.me().size() - enemy.size() > 1));
+                        return attack ? 1d : 0d;
+                    }
+                }
+            }
             if (state.board().isAt(point, ENEMY_ELEMENTS) && !state.me().isFly() && !state.me().isFury())
                 return 0d;
-            return 1d;
+            return 0.5d;
         }
     }
 
     public class Stone extends FeatureBase {
         @Override
         public double reward() {
+            if (state.board().isAt(point, Elements.STONE) && state.me().isFury())
+                return 1d;
+
             if (state.board().isAt(point, Elements.STONE) &&
                     (state.me().size() < 5) && !state.me().isFly() && !state.me().isFury())
                 return 0d;
-            return 1d;
+            return 0.5d;
         }
     }
 
