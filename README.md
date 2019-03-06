@@ -4,7 +4,6 @@ codenjoy snakebattle bot
 # more info
 - http://codenjoy.com/
 - https://github.com/codenjoyme/codenjoy
-- https://epam-bot-challenge.com.ua/
 
 # build
 ```
@@ -14,6 +13,19 @@ mvn clean compile assembly:single
 # start
 ```
 java -jar target/snakebattle-client-jar-with-dependencies.jar
+```
+OR
+```
+java -jar target/snakebattle-client-jar-with-dependencies.jar <METHOD> <HASH 1> <CODE 1> <STAT_FILENAME 1> ... <HASH n> <CODE n> <STAT_FILENAME n>
+```
+where 
+```
+METHOD: "BFS" | "GA" | "RL"
+```
+Examples:
+```
+java -jar snakebattle-client-jar-with-dependencies.jar "BFS" "keme1dgf50kkvavrwzln" "285147973966974500" "bot1.json"
+java -jar snakebattle-client-jar-with-dependencies.jar "GA" "6ejguzn33aqhhawzdyao" "3485839216718225428" "bot3.json" "nq0g7eyaofe0a8xrplph" "3242248498438480567" "bot4.json"
 ```
 
 # other repo's
@@ -30,10 +42,6 @@ java -jar target/snakebattle-client-jar-with-dependencies.jar
 # links
 - https://www.codingame.com/
 - https://www.codewars.com/
-
-# nice to have
-- https://habr.com/ru/post/282522/
-- https://www.baeldung.com/java-monte-carlo-tree-search
 
 # server
 - build / start
