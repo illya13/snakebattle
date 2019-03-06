@@ -16,17 +16,22 @@ java -jar target/snakebattle-client-jar-with-dependencies.jar
 ```
 OR
 ```
-java -jar target/snakebattle-client-jar-with-dependencies.jar <METHOD> <HASH 1> <CODE 1> <STAT_FILENAME 1> ... <HASH n> <CODE n> <STAT_FILENAME n>
+java -jar target/snakebattle-client-jar-with-dependencies.jar <SOLVER> <HASH 1> <CODE 1> <STAT_FILENAME 1> ... <HASH n> <CODE n> <STAT_FILENAME n>
 ```
 where 
 ```
-METHOD: "BFS" | "GA" | "RL"
+SOLVER: "BFS" | "GA" | "RL"
 ```
 Examples:
 ```
 java -jar snakebattle-client-jar-with-dependencies.jar "BFS" "keme1dgf50kkvavrwzln" "285147973966974500" "bot1.json"
 java -jar snakebattle-client-jar-with-dependencies.jar "GA" "6ejguzn33aqhhawzdyao" "3485839216718225428" "bot3.json" "nq0g7eyaofe0a8xrplph" "3242248498438480567" "bot4.json"
 ```
+
+# internal details
+- game state - [State.java](src/main/java/com/github/illya13/snakebattle/State.java)
+- solver interface - [Solver.java](src/main/java/com/github/illya13/snakebattle/Solver.java) 
+- simplest closest item solver (BFS-based with manual constraints validation) - [BFSSolver.java](src/main/java/com/github/illya13/snakebattle/solver/BFSSolver.java) 
 
 # other repo's
 - https://github.com/ashelkov/snake_bot_challenge
