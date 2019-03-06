@@ -34,6 +34,7 @@ java -jar snakebattle-client-jar-with-dependencies.jar "GA" "6ejguzn33aqhhawzdya
 - simplest closest item solver (BFS-based with manual constraints validation) - [BFSSolver.java](src/main/java/com/github/illya13/snakebattle/solver/BFSSolver.java)
 - set of features for ML / GA and other optimisation [Features.java](src/main/java/com/github/illya13/snakebattle/solver/Features.java). Feature scaling [min-max normalization](https://en.m.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)) applied.  
 - [jenetics](http://jenetics.io/) -based Genetic Algorithm(GA) solver - [GASolver.java](src/main/java/com/github/illya13/snakebattle/solver/GASolver.java)
+- advanced Board with snakes parsing, BFS and board liveness - [Board.java](src/main/java/com/github/illya13/snakebattle/board/Board.java)
 
 # other repo's
 - https://github.com/ashelkov/snake_bot_challenge

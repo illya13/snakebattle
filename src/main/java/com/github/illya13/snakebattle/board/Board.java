@@ -176,11 +176,11 @@ public class Board extends AbstractBoard<Elements> {
             }
         }
 
-        // debugSafe(liveness);
+        // debugLiveness(liveness);
         return liveness;
     }
 
-    private void debugSafe(int[][] safeGo) {
+    private void debugLiveness(int[][] safeGo) {
         for (int y = size() - 1; y >= 0; --y) {
             for (int x = 0; x < size(); ++x) {
                 if (isAt(x, y, BARRIER_ELEMENTS)) {
