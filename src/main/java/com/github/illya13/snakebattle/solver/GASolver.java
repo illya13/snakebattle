@@ -14,7 +14,7 @@ import java.util.concurrent.Exchanger;
 import static com.github.illya13.snakebattle.board.Board.*;
 
 public class GASolver implements Solver {
-    private static final int MAX_RUN = 20;
+    private static final int MAX_RUN = 100;
 
     private GAEngine engine;
     private Genotype<IntegerGene> genotype;
