@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 import static io.jenetics.engine.EvolutionResult.toBestEvolutionResult;
 
 public class GAEngine {
-    public static final int POPULATION = 50;
+    public static final int POPULATION = 100;
     public static final String FILENAME = "population.obj";
 
     private Factory<Genotype<IntegerGene>> genotypeFactory;
@@ -45,17 +45,15 @@ public class GAEngine {
 
         requests = new LinkedBlockingQueue<>();
 
-        genotypeFactory = Genotype.of(IntegerChromosome.of (0, 10 , 11));
+        genotypeFactory = Genotype.of(IntegerChromosome.of (0, 10 , 14));
         engine = Engine.builder(this::fitness, genotypeFactory)
                 .populationSize(POPULATION)
                 .executor(engineExecutor)
-/*
                 .survivorsSelector((population, count, optimize) -> {
                     ISeq<Phenotype<IntegerGene, Integer>> selected = survivorsSelector.select(population, count, optimize);
                     return selected.map(s -> s.newInstance(s.getGenotype()));
                 })
-*/
-                .survivorsSelector(survivorsSelector)
+//                .survivorsSelector(survivorsSelector)
                 .offspringSelector(offspringSelector)
                 .alterers(alterer)
                 .build();
@@ -124,6 +122,12 @@ public class GAEngine {
     }
 
     private ISeq<Phenotype<IntegerGene, Integer>> generate() {
+        ISeq<Phenotype<IntegerGene, Integer>> population = genotypeFactory.instances()
+                .map(gt -> Phenotype.of(gt, 1, this::fitness))
+                .limit(POPULATION).collect(ISeq.toISeq());
+        return population;
+/*
+
         // LIVENESS BARRIER ENEMY STONE BODY
         // APPLE GOLD FURY FLY AVERAGE
         // STONE_N_FURY STONE_N_SIZE ENEMY_N_FURY ENEMY_N_SIZE
@@ -147,6 +151,7 @@ public class GAEngine {
                 .map(gt -> Phenotype.of(gt, 1, this::fitness))
                 .limit(POPULATION).collect(ISeq.toISeq());
         return population;
+*/
     }
 
     public void shutdown() {

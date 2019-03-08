@@ -21,7 +21,7 @@ import static com.github.illya13.snakebattle.board.Board.*;
 
 public class GASolver implements Solver {
     public static final String FILENAME = "features.csv";
-    private static final int MAX_RUN = 100;
+    private static final int MAX_RUN = 3;
 
     private GAEngine engine;
     private Genotype<IntegerGene> genotype;
