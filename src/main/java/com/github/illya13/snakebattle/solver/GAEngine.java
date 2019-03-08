@@ -22,7 +22,7 @@ import static io.jenetics.engine.EvolutionResult.toBestEvolutionResult;
 public class GAEngine {
     public static final int POPULATION = 100;
     public static final String OBJ_FILENAME = "population.obj";
-    public static final String TXT_FILENAME = "population.csv";
+    public static final String TXT_FILENAME = "population.txt";
 
     private Factory<Genotype<IntegerGene>> genotypeFactory;
     private Engine<IntegerGene, Integer> engine;
