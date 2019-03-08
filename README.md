@@ -38,8 +38,8 @@ java -jar snakebattle-client-jar-with-dependencies.jar "GA" "6ejguzn33aqhhawzdya
 
 # features
 for each point in all possible directions:
-- LIVENESS - how `safe` is to go to the point 
-- BARRIER - there is stone at the point
+- LIVENESS - how far is the point from the walls 
+- BARRIER - there is wall at the point
 - ENEMY - there is an enemy at the point and it is good / safe to go
 - STONE - there is a stone at the point and it is good / safe to go
 - BODY - our snake's body
