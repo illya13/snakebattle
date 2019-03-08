@@ -34,8 +34,26 @@ java -jar snakebattle-client-jar-with-dependencies.jar "GA" "6ejguzn33aqhhawzdya
 - simplest but efficient `closest item` solver (BFS-based with manual constraints validation) - [BFSSolver.java](src/main/java/com/github/illya13/snakebattle/solver/BFSSolver.java)
 - set of features for ML / GA and other optimisation - [Features.java](src/main/java/com/github/illya13/snakebattle/solver/Features.java). Feature scaling [min-max normalization](https://en.m.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)) applied.  
 - [jenetics](http://jenetics.io/) -based Genetic Algorithm(GA) solver - [GASolver.java](src/main/java/com/github/illya13/snakebattle/solver/GASolver.java). It takes `400min` to evaluate `15 genotypes` by `2 GA solvers` locally, game timer period: `100ms`. Each `evaluation` is an average reward over `100` game rounds.  
-
 - advanced Board with snakes parsing, BFS and board liveness - [Board.java](src/main/java/com/github/illya13/snakebattle/board/Board.java)
+
+# features
+for each close points:
+- LIVENESS - how `safe` is to go to the point 
+- BARRIER - there is stone at the point
+- ENEMY - there is an enemy at the point and it is good / safe to go
+- STONE - there is a stone at the point and it is good / safe to go
+- BODY - our snake's body
+- APPLE - how close we are to the nearest apple
+- GOLD - how close we are to the nearest gold
+- FURY - how close we are to the nearest fury pill
+- FLY - how close we are to the nearest fly pill
+- AVERAGE - average distance to the items
+- STONE_N_FURY - how close we are to the nearest stone in fury mode
+- STONE_N_SIZE - how close we are to the nearest stone with our snake size
+- ENEMY_N_FURY - how close we are to the nearest enemy in fury mode
+- ENEMY_N_SIZE - how close we are to the nearest enemy with our size and enemy snake's size
+
+![Feutares](features.png)
 
 # other repo's
 - https://github.com/ashelkov/snake_bot_challenge
