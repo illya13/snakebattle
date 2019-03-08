@@ -37,7 +37,7 @@ java -jar snakebattle-client-jar-with-dependencies.jar "GA" "6ejguzn33aqhhawzdya
 - advanced Board with snakes parsing, BFS and board liveness - [Board.java](src/main/java/com/github/illya13/snakebattle/board/Board.java)
 
 # features
-for each close points:
+for each point in all possible directions:
 - LIVENESS - how `safe` is to go to the point 
 - BARRIER - there is stone at the point
 - ENEMY - there is an enemy at the point and it is good / safe to go
