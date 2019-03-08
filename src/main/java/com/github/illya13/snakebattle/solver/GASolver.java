@@ -129,7 +129,7 @@ public class GASolver implements Solver {
         }
 
         public double rewards(){
-            saveFeatures();
+            // saveFeatures();
             double total = 0;
             int i = 0;
             for (Features.FEATURE feature: features.keySet()) {
