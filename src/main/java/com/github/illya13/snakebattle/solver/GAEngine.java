@@ -135,7 +135,7 @@ public class GAEngine {
 
     private void savePopulationTxt(ISeq<Phenotype<IntegerGene, Integer>> population, BufferedWriter writer) throws IOException {
         writer.write("generation: ");
-        writer.write(String.valueOf(population.get(0).getGeneration()));
+        writer.write(String.valueOf(generation));
         writer.write('\n');
 
         int min = Integer.MAX_VALUE;
