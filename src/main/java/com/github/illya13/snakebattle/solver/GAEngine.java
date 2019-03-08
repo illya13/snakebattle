@@ -8,17 +8,21 @@ import io.jenetics.util.Factory;
 import io.jenetics.util.IO;
 import io.jenetics.util.ISeq;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.*;
 
 import static io.jenetics.engine.EvolutionResult.toBestEvolutionResult;
 
 public class GAEngine {
     public static final int POPULATION = 100;
-    public static final String FILENAME = "population.obj";
+    public static final String OBJ_FILENAME = "population.obj";
+    public static final String TXT_FILENAME = "population.csv";
 
     private Factory<Genotype<IntegerGene>> genotypeFactory;
     private Engine<IntegerGene, Integer> engine;
@@ -106,7 +110,7 @@ public class GAEngine {
     // HELPERS
 
     private ISeq<Phenotype<IntegerGene, Integer>> load() {
-        final File file = new File(FILENAME);
+        final File file = new File(OBJ_FILENAME);
         try {
             return (ISeq<Phenotype<IntegerGene, Integer>>) IO.object.read(file);
         } catch (IOException e) {
@@ -115,10 +119,56 @@ public class GAEngine {
     }
 
     private void save(ISeq<Phenotype<IntegerGene, Integer>> population) {
-        final File file = new File(FILENAME);
+        File objFile = new File(OBJ_FILENAME);
+        Path path = Paths.get(TXT_FILENAME);
         try {
-            IO.object.write(population, file);
+            IO.object.write(population, objFile);
+
+            BufferedWriter writer = (!Files.exists(path))
+                    ? Files.newBufferedWriter(path, StandardOpenOption.CREATE_NEW)
+                    : Files.newBufferedWriter(path, StandardOpenOption.APPEND);
+
+            savePopulationTxt(population, writer);
+            writer.close();
         } catch (IOException ignored) {}
+    }
+
+    private void savePopulationTxt(ISeq<Phenotype<IntegerGene, Integer>> population, BufferedWriter writer) throws IOException {
+        writer.write("generation: ");
+        writer.write(String.valueOf(population.get(0).getGeneration()));
+        writer.write('\n');
+
+        int min = Integer.MAX_VALUE;
+        int max = 0;
+        int total = 0;
+        Chromosome<IntegerGene> best = population.get(0).getGenotype().getChromosome();
+        for (int i=0; i < population.size(); i++) {
+            writer.write(population.get(i).toString());
+            writer.write('\n');
+            if (population.get(i).getFitness()> max) {
+                max = population.get(i).getFitness();
+                best = population.get(i).getGenotype().getChromosome();
+            }
+            if (population.get(i).getFitness() < min) {
+                min = population.get(i).getFitness();
+            }
+            total += population.get(i).getFitness();
+        }
+
+        writer.write("min: ");
+        writer.write(String.valueOf(min));
+        writer.write('\t');
+
+        writer.write("max: ");
+        writer.write(String.valueOf(max));
+        writer.write('\t');
+
+        writer.write("avg: ");
+        writer.write(String.valueOf(total / population.size()));
+        writer.write('\n');
+
+        writer.write(best.toString());
+        writer.write("\n\n");
     }
 
     private ISeq<Phenotype<IntegerGene, Integer>> generate() {

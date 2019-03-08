@@ -144,11 +144,11 @@ public class GASolver implements Solver {
         }
 
         private synchronized void saveFeatures() {
-            Path p = Paths.get(FILENAME);
+            Path path = Paths.get(FILENAME);
 
             try {
-                if (!Files.exists(p)) {
-                    BufferedWriter writer = Files.newBufferedWriter(p, StandardOpenOption.CREATE_NEW);
+                if (!Files.exists(path)) {
+                    BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE_NEW);
                     for (Features.FEATURE feature: features.keySet()) {
                         writer.write(feature.toString());
                         writer.write(',');
@@ -156,7 +156,7 @@ public class GASolver implements Solver {
                     writer.write('\n');
                     writer.close();
                 }
-                BufferedWriter writer = Files.newBufferedWriter(p, StandardOpenOption.APPEND);
+                BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
                 for (Features.FEATURE feature: features.keySet()) {
                     writer.write(String.valueOf(features.get(feature).reward()));
                     writer.write(',');
