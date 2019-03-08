@@ -53,6 +53,7 @@ for each point in all possible directions:
 - ENEMY_N_FURY - how close we are to the nearest enemy in fury mode
 - ENEMY_N_SIZE - how close we are to the nearest enemy with our size and enemy snake's size
 
+Values distribution: 
 ![Feutares](features.png)
 
 # other repo's
