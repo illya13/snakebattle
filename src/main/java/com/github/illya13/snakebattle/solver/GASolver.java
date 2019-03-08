@@ -8,12 +8,19 @@ import io.jenetics.Genotype;
 import io.jenetics.IntegerGene;
 
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.Exchanger;
 
 import static com.github.illya13.snakebattle.board.Board.*;
 
 public class GASolver implements Solver {
+    public static final String FILENAME = "features.csv";
     private static final int MAX_RUN = 100;
 
     private GAEngine engine;
@@ -122,6 +129,7 @@ public class GASolver implements Solver {
         }
 
         public double rewards(){
+            saveFeatures();
             double total = 0;
             int i = 0;
             for (Features.FEATURE feature: features.keySet()) {
@@ -133,6 +141,31 @@ public class GASolver implements Solver {
 
         public String toString() {
             return direction + "[" + String.format("%.3f", rewards())+ "] {" + rewardsAsString() + "}";
+        }
+
+        private synchronized void saveFeatures() {
+            Path p = Paths.get(FILENAME);
+
+            try {
+                if (!Files.exists(p)) {
+                    BufferedWriter writer = Files.newBufferedWriter(p, StandardOpenOption.CREATE_NEW);
+                    for (Features.FEATURE feature: features.keySet()) {
+                        writer.write(feature.toString());
+                        writer.write(',');
+                    }
+                    writer.write('\n');
+                    writer.close();
+                }
+                BufferedWriter writer = Files.newBufferedWriter(p, StandardOpenOption.APPEND);
+                for (Features.FEATURE feature: features.keySet()) {
+                    writer.write(String.valueOf(features.get(feature).reward()));
+                    writer.write(',');
+                }
+                writer.write('\n');
+                writer.close();
+            } catch (IOException ioe) {
+                throw new IllegalStateException(ioe);
+            }
         }
     }
 }

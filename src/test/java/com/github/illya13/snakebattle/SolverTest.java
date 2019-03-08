@@ -1830,7 +1830,7 @@ public class SolverTest {
                 "☼#    ®                      ☼\n" +
                 "☼☼                           ☼\n" +
                 "☼☼   ○                       ☼\n" +
-                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.LEFT);
+                "☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼☼", Direction.DOWN);
     }
 
     @Test

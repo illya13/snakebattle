@@ -68,9 +68,9 @@ public class Features {
         all.put(FEATURE.FLY, new Features.ClosestFeature(FLYING_PILL));
         all.put(FEATURE.AVERAGE, new Features.AverageItemsFeature());
 
-        all.put(FEATURE.STONE_N_FURY, new Features.ClosestStoneInFuryFeature());
+        all.put(FEATURE.STONE_N_FURY, new Features.ClosestItemInFuryFeature(STONE));
         all.put(FEATURE.STONE_N_SIZE, new Features.ClosestStoneWithSizeFeature());
-        all.put(FEATURE.ENEMY_N_FURY, new Features.ClosestEnemyInFuryFeature());
+        all.put(FEATURE.ENEMY_N_FURY, new Features.ClosestItemInFuryFeature(ENEMY_HEAD_ELEMENTS));
         all.put(FEATURE.ENEMY_N_SIZE, new Features.ClosestEnemyWithSizeFeature());
     }
 
@@ -87,40 +87,32 @@ public class Features {
     abstract class FeatureBase implements Reward {
         double normalize(double value, double min, double max) {
             double normalized = (value - min) / (max - min);
-            if (normalized < min) return min;
-            if (normalized > max) return max;
+            if (normalized < 0) return 0d;
+            if (normalized > 1) return 1d;
             return normalized;
         }
 
-        double normalizePath(double value) {
-            return normalize(value, 1d / (2 * state.board().size()), 1d);
-        }
-
-        double normalizePathWithPill(double value) {
-            return normalize(value, 0d, 19d);
-        }
-
-        double normalizeDistanceWithDiff(double value) {
-            return normalize(value, -3, 3);
-        }
-
         double closestItemFeature(Elements... elements) {
-            double value = 1d / (1 + itemMinDistance(elements));
-            return normalizePath(value);
+            double value = itemMinDistance(elements);
+            return 1-normalize(value, 0d, 2 * state.board().size());
+        }
+
+        double closestItemInFuryFeature(Elements... elements) {
+            double value = state.me().fury() * closestItemFeature(elements);
+            return normalize(value, 0d, 19);
         }
 
         double averageItemFeature(Elements... elements) {
-            double value = 1d / (1 + itemAverageDistance(elements));
-            return normalizePath(value);
+            double value = itemAverageDistance(elements);
+            return normalize(value, 0, 2 * state.board().size());
         }
     }
 
     public class Liveness extends FeatureBase {
         @Override
         public double reward() {
-            Board board = state.board();
-            double value = liveness(point) / (board.size() / 2d);
-            return normalize(value, 0d, 1d);
+            double value = liveness[point.getX()][point.getY()];
+            return normalize(value, 0d, state.board().size() / 5d);
         }
     }
 
@@ -172,9 +164,9 @@ public class Features {
     }
 
     public class ClosestFeature extends FeatureBase {
-        private Elements elements;
+        private Elements[] elements;
 
-        public ClosestFeature(Elements elements) {
+        public ClosestFeature(Elements ...elements) {
             this.elements = elements;
         }
 
@@ -191,27 +183,24 @@ public class Features {
         }
     }
 
-    public class ClosestStoneInFuryFeature extends FeatureBase {
+    public class ClosestItemInFuryFeature extends FeatureBase {
+        private Elements[] elements;
+
+        public ClosestItemInFuryFeature(Elements ...elements) {
+            this.elements = elements;
+        }
+
         @Override
         public double reward() {
-            double value = 1d * state.me().fury() / (1 + itemMinDistance(STONE));
-            return normalizePathWithPill(value);
+            return closestItemInFuryFeature(elements);
         }
     }
 
     public class ClosestStoneWithSizeFeature extends FeatureBase {
         @Override
         public double reward() {
-            double value = 1d * (state.me().size()-5) / (1 + itemMinDistance(STONE));
-            return normalizeDistanceWithDiff(value);
-        }
-    }
-
-    public class ClosestEnemyInFuryFeature extends FeatureBase {
-        @Override
-        public double reward() {
-            double value = 1d * state.me().fury() / (1 + itemMinDistance(ENEMY_ELEMENTS));
-            return normalizePathWithPill(value);
+            double value = state.me().size() * closestItemFeature(STONE);
+            return normalize(value, 0d, state.board().size());
         }
     }
 
@@ -223,8 +212,8 @@ public class Features {
             for (Point p: heads.keySet()) {
                 for (State.Enemy enemy: state.enemies()) {
                     if (enemy.head().equals(p)) {
-                        double value = 1d * (state.me().size()-enemy.size()) / (1 + heads.get(p));
-                        return normalizeDistanceWithDiff(value);
+                        double value = 1d * state.me().size() * heads.get(p) / enemy.size();
+                        return normalize(value, 0d, state.board().size() * state.board().size() / 5d);
                     }
                 }
             }
@@ -233,10 +222,6 @@ public class Features {
     }
 
     // HELPERS
-
-    private double liveness(Point point) {
-        return liveness[point.getX()][point.getY()];
-    }
 
     private Map<Point, Integer> filterItems(Elements... elements) {
         return items.entrySet().stream()
