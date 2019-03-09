@@ -70,7 +70,7 @@ Parameters:
 - offspring selector: TournamentSelector(3)
 - alterers: UniformCrossover(0.2, 0.2), Mutator(0.15)
 
-generations:
+Generations / rewards:
 
 |  # | max | avg | best chromosome                                                  |
 |----|-----|-----|------------------------------------------------------------------|
