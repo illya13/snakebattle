@@ -231,27 +231,32 @@ public class Features {
         }
     }
 
-    public class EscapeFuryFeature extends FeatureBase {
+    public class EscapeFuryFeature extends ClosestEnemyWithSizeFeature {
         @Override
         public double reward() {
             Map<Point, Integer> heads = filterItems(ENEMY_HEAD_ELEMENTS);
 
             for (Point p: heads.keySet()) {
                 for (State.Enemy enemy: state.enemies()) {
-                    if (enemy.head().equals(p)) {
+                    if (enemy.head().equals(p) && enemy.isFury()) {
+                        if (state.me().isFury())
+                            return 1 - super.reward();
+
                         double value = heads.get(p) * enemy.fury();
                         return 1 - normalize(value, 0d, 9 * 2 * state.board().size());
                     }
                 }
             }
-            return 0;
+            return 1;
         }
     }
 
     public class EscapeTraffic extends FeatureBase {
         @Override
         public double reward() {
-            return 1  - averageItemFeature(ENEMY_ELEMENTS);
+            if (state.me().isFury())
+                return normalize(state.me().fury(), 0d, 19);
+            return 1 - averageItemFeature(ENEMY_ELEMENTS);
         }
     }
 
