@@ -32,7 +32,7 @@ java -jar snakebattle-client-jar-with-dependencies.jar "GA" "6ejguzn33aqhhawzdya
 - game state - [State.java](src/main/java/com/github/illya13/snakebattle/State.java)
 - solver interface - [Solver.java](src/main/java/com/github/illya13/snakebattle/Solver.java) 
 - simplest but efficient `closest item` solver (BFS-based with manual constraints validation) - [BFSSolver.java](src/main/java/com/github/illya13/snakebattle/solver/BFSSolver.java)
-- set of features for ML / GA and other optimisation - [Features.java](src/main/java/com/github/illya13/snakebattle/solver/Features.java). Feature scaling [min-max normalization](https://en.m.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)) applied.  
+- set of features for ML / GA and other optimisation - [Features.java](src/main/java/com/github/illya13/snakebattle/solver/Features.java). Feature scaling [min-max normalization](https://en.m.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)) has been applied.  
 - [jenetics](http://jenetics.io/) -based Genetic Algorithm(GA) solver - [GASolver.java](src/main/java/com/github/illya13/snakebattle/solver/GASolver.java). It takes `~75min` to evaluate `100 genotypes` by `2 GA solvers` locally, game timer period: `100ms`. Each `evaluation` is an average reward over `3` game rounds.  
 - advanced Board with snakes parsing, BFS and board liveness - [Board.java](src/main/java/com/github/illya13/snakebattle/board/Board.java)
 
@@ -58,7 +58,7 @@ Values distribution:
 
 # GA solver
 Intuition:
-- snake has a chromosome
+- snake has a chromosome that encodes its behaviour
 - chromosome is a sequence of 14 integer genes from 0 to 10 representing weight of each feature in total weight calculation
 - i.e. **weight = sum (w\[i\] * feature\[i\])**
 - fitness: average reward of a snake with a given chromosome in game environment    
