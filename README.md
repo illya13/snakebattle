@@ -33,7 +33,7 @@ java -jar snakebattle-client-jar-with-dependencies.jar "GA" "6ejguzn33aqhhawzdya
 - solver interface - [Solver.java](src/main/java/com/github/illya13/snakebattle/Solver.java) 
 - simplest but efficient `closest item` solver (BFS-based with manual constraints validation) - [BFSSolver.java](src/main/java/com/github/illya13/snakebattle/solver/BFSSolver.java)
 - set of features for ML / GA and other optimisation - [Features.java](src/main/java/com/github/illya13/snakebattle/solver/Features.java). Feature scaling [min-max normalization](https://en.m.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)) applied.  
-- [jenetics](http://jenetics.io/) -based Genetic Algorithm(GA) solver - [GASolver.java](src/main/java/com/github/illya13/snakebattle/solver/GASolver.java). It takes `400min` to evaluate `15 genotypes` by `2 GA solvers` locally, game timer period: `100ms`. Each `evaluation` is an average reward over `100` game rounds.  
+- [jenetics](http://jenetics.io/) -based Genetic Algorithm(GA) solver - [GASolver.java](src/main/java/com/github/illya13/snakebattle/solver/GASolver.java). It takes `~75min` to evaluate `100 genotypes` by `2 GA solvers` locally, game timer period: `100ms`. Each `evaluation` is an average reward over `3` game rounds.  
 - advanced Board with snakes parsing, BFS and board liveness - [Board.java](src/main/java/com/github/illya13/snakebattle/board/Board.java)
 
 # features
@@ -55,6 +55,30 @@ for each point in all possible directions:
 
 Values distribution: 
 ![Feutares](features.png)
+
+# GA solver
+Intuition:
+- snake has a chromosome
+- chromosome is a sequence of 14 integer genes from 0 to 10 representing weight of each feature in total weight calculation
+- i.e. **weight = sum (w\[i\] * feature\[i\])**
+- fitness: average reward of a snake with a given chromosome in game environment    
+
+Parameters:
+- population: 100
+- offspring fraction: 0.6
+- survivors selector: TournamentSelector(3)
+- offspring selector: TournamentSelector(3)
+- alterers: UniformCrossover(0.2, 0.2), Mutator(0.15)
+
+generations:
+
+|  # | max | avg | best chromosome                                                  |
+|----|-----|-----|------------------------------------------------------------------|
+|  1 | 124 |  27 |       [[3],[7],[4],[5],[9],[10],[4],[0],[4],[5],[9],[3],[8],[7]] |
+|  2 | 146 |  30 |       [[1],[5],[4],[9],[7],[2],[10],[5],[5],[2],[8],[4],[5],[2]] |
+|  3 | 218 |  42 |     [[1],[6],[10],[10],[8],[6],[6],[10],[4],[8],[6],[3],[2],[6]] |
+|  4 | 252 |  47 |       [[0],[8],[9],[4],[3],[5],[8],[10],[0],[7],[4],[5],[6],[0]] |
+|  5 | 187 |  50 |       [[0],[8],[9],[4],[3],[6],[8],[10],[0],[7],[4],[5],[0],[6]] |
 
 # other repo's
 - https://github.com/ashelkov/snake_bot_challenge

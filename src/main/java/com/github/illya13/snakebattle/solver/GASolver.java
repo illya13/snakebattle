@@ -83,8 +83,8 @@ public class GASolver implements Solver {
         System.out.println(genotype);
         for (Action action: getActions(state)) {
             System.out.println(action);
-            if (action.rewards() > max ) {
-                max  = action.rewards();
+            if (action.weight() > max ) {
+                max  = action.weight();
                 direction = action.direction();
             }
         }
@@ -119,7 +119,7 @@ public class GASolver implements Solver {
             return direction;
         }
 
-        public String rewardsAsString() {
+        public String weightAsString() {
             StringBuilder sb = new StringBuilder();
             for (Features.FEATURE feature: features.keySet()) {
                 if (sb.length() > 0) sb.append(", ");
@@ -128,7 +128,7 @@ public class GASolver implements Solver {
             return sb.toString();
         }
 
-        public double rewards(){
+        public double weight(){
             // saveFeatures();
             double total = 0;
             int i = 0;
@@ -140,7 +140,7 @@ public class GASolver implements Solver {
         }
 
         public String toString() {
-            return direction + "[" + String.format("%.3f", rewards())+ "] {" + rewardsAsString() + "}";
+            return direction + "[" + String.format("%.3f", weight())+ "] {" + weightAsString() + "}";
         }
 
         private synchronized void saveFeatures() {
