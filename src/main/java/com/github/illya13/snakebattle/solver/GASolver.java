@@ -21,7 +21,7 @@ import static com.github.illya13.snakebattle.board.Board.*;
 
 public class GASolver implements Solver {
     public static final String FILENAME = "features.csv";
-    private static final int MAX_RUN = 3;
+    private static final int MAX_RUN = 1;
 
     private GAEngine engine;
     private Genotype<IntegerGene> genotype;
@@ -129,7 +129,7 @@ public class GASolver implements Solver {
         }
 
         public double weight(){
-            // saveFeatures();
+            saveFeatures();
             double total = 0;
             int i = 0;
             for (Features.FEATURE feature: features.keySet()) {

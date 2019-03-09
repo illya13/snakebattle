@@ -16,7 +16,8 @@ public class Features {
     enum FEATURE {
         LIVENESS, BARRIER, ENEMY, STONE, BODY,
         APPLE, GOLD, FURY, FLY, AVERAGE,
-        STONE_N_FURY, STONE_N_SIZE, ENEMY_N_FURY, ENEMY_N_SIZE
+        STONE_N_FURY, STONE_N_SIZE, ENEMY_N_FURY, ENEMY_N_SIZE,
+        ESCAPE_FURY, ESCAPE_TRAFFIC
     }
 
     private State state;
@@ -66,12 +67,15 @@ public class Features {
         all.put(FEATURE.GOLD, new Features.ClosestFeature(GOLD));
         all.put(FEATURE.FURY, new Features.ClosestFeature(FURY_PILL));
         all.put(FEATURE.FLY, new Features.ClosestFeature(FLYING_PILL));
-        all.put(FEATURE.AVERAGE, new Features.AverageItemsFeature());
+        all.put(FEATURE.AVERAGE, new Features.AverageItemsFeature(APPLE, GOLD, FURY_PILL));
 
         all.put(FEATURE.STONE_N_FURY, new Features.ClosestItemInFuryFeature(STONE));
         all.put(FEATURE.STONE_N_SIZE, new Features.ClosestStoneWithSizeFeature());
         all.put(FEATURE.ENEMY_N_FURY, new Features.ClosestItemInFuryFeature(ENEMY_HEAD_ELEMENTS));
         all.put(FEATURE.ENEMY_N_SIZE, new Features.ClosestEnemyWithSizeFeature());
+
+        all.put(FEATURE.ESCAPE_FURY, new Features.EscapeFuryFeature());
+        all.put(FEATURE.ESCAPE_TRAFFIC, new Features.EscapeTraffic());
     }
 
     public interface Reward {
@@ -177,9 +181,15 @@ public class Features {
     }
 
     public class AverageItemsFeature extends FeatureBase {
+        private Elements[] elements;
+
+        public AverageItemsFeature(Elements ...elements) {
+            this.elements = elements;
+        }
+
         @Override
         public double reward() {
-            return averageItemFeature(APPLE, GOLD, FURY_PILL);
+            return averageItemFeature(elements);
         }
     }
 
@@ -218,6 +228,30 @@ public class Features {
                 }
             }
             return 0;
+        }
+    }
+
+    public class EscapeFuryFeature extends FeatureBase {
+        @Override
+        public double reward() {
+            Map<Point, Integer> heads = filterItems(ENEMY_HEAD_ELEMENTS);
+
+            for (Point p: heads.keySet()) {
+                for (State.Enemy enemy: state.enemies()) {
+                    if (enemy.head().equals(p)) {
+                        double value = heads.get(p) * enemy.fury();
+                        return 1 - normalize(value, 0d, 9 * 2 * state.board().size());
+                    }
+                }
+            }
+            return 0;
+        }
+    }
+
+    public class EscapeTraffic extends FeatureBase {
+        @Override
+        public double reward() {
+            return 1  - averageItemFeature(ENEMY_ELEMENTS);
         }
     }
 

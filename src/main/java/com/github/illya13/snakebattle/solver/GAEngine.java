@@ -49,7 +49,7 @@ public class GAEngine {
 
         requests = new LinkedBlockingQueue<>();
 
-        genotypeFactory = Genotype.of(IntegerChromosome.of (0, 10 , 14));
+        genotypeFactory = Genotype.of(IntegerChromosome.of (0, 10 , 16));
         engine = Engine.builder(this::fitness, genotypeFactory)
                 .populationSize(POPULATION)
                 .executor(engineExecutor)

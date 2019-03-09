@@ -31,9 +31,10 @@ public class SolverTest {
         IntegerGene gene = IntegerGene.of(0, 10);
 
         Genotype<IntegerGene> best = Genotype.of(IntegerChromosome.of(
-                gene.newInstance(3), gene.newInstance(10), gene.newInstance(10), gene.newInstance(10), gene.newInstance(3),
-                gene.newInstance(7), gene.newInstance(7), gene.newInstance(7), gene.newInstance(0), gene.newInstance(1),
-                gene.newInstance(3), gene.newInstance(1), gene.newInstance(6), gene.newInstance(1)
+                gene.newInstance(1), gene.newInstance(1), gene.newInstance(1), gene.newInstance(1), gene.newInstance(1),
+                gene.newInstance(1), gene.newInstance(1), gene.newInstance(1), gene.newInstance(1), gene.newInstance(1),
+                gene.newInstance(1), gene.newInstance(1), gene.newInstance(1), gene.newInstance(1),
+                gene.newInstance(1), gene.newInstance(1)
         ));
 
         Mockito.when(gaEngine.next()).thenReturn(new GAEngine.Request(best, new Exchanger<>()));
