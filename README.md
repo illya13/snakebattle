@@ -48,10 +48,12 @@ for each point in all possible directions:
 - FURY - how close we are to the nearest fury pill
 - FLY - how close we are to the nearest fly pill
 - AVERAGE - average distance to the items
-- STONE_N_FURY - how close we are to the nearest stone in fury mode
+- STONE_N_FURY - how close we are to the nearest stone while we are in fury mode
 - STONE_N_SIZE - how close we are to the nearest stone with our snake size
-- ENEMY_N_FURY - how close we are to the nearest enemy in fury mode
+- ENEMY_N_FURY - how close we are to the nearest enemy while we are in fury mode
 - ENEMY_N_SIZE - how close we are to the nearest enemy with our size and enemy snake's size
+- ESCAPE_FURY - how close we are to the nearest enemy which is in fury
+- ESCAPE_TRAFFIC - how close we are to the enemy bodies in average
 
 Values distribution: 
 ![Feutares](features.png)
@@ -59,7 +61,7 @@ Values distribution:
 # GA solver
 Intuition:
 - snake has a chromosome that encodes its behaviour
-- chromosome is a sequence of 14 integer genes from 0 to 10 representing weight of each feature in total weight calculation
+- chromosome is a sequence of 16 integer genes from 0 to 10 representing weight of each feature in total weight calculation
 - i.e. **weight = sum (w\[i\] * feature\[i\])**
 - fitness: average reward of a snake with a given chromosome in game environment    
 
